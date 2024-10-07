@@ -1,4 +1,4 @@
-FROM bitwalker/alpine-elixir-phoenix:latest
+FROM bitwalker/alpine-elixir-phoenix:1.14
 
 # Set exposed ports
 ENV PORT=4000 MIX_ENV=dev
