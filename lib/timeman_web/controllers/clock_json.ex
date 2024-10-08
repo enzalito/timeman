@@ -17,9 +17,9 @@ defmodule TimemanWeb.ClockJSON do
 
   defp data(%Clock{} = clock) do
     %{
-      id: clock.id,
+      time: clock.time,
       status: clock.status,
-      time: clock.time
+      user_id: clock.user_id
     }
   end
 end

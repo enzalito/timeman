@@ -16,8 +16,11 @@ defmodule TimemanWeb.Router do
 
   scope "/api", TimemanWeb do
     pipe_through :api
+
+    post "/clocks/:user_id", ClockController, :create_clock_for_user
+    get "/clocks/:user_id", ClockController, :clocks_by_user
+
     resources "/users", UserController, except: [:new, :edit]
-    resources "/clocks", ClockController, except: [:new, :edit]
   end
 
   scope "/", TimemanWeb do

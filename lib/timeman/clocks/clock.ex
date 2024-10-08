@@ -16,4 +16,5 @@ defmodule Timeman.Clocks.Clock do
     |> cast(attrs, [:status, :time, :user_id])
     |> validate_required([:status, :time, :user_id])
   end
+
 end

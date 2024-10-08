@@ -101,4 +101,13 @@ defmodule Timeman.Clocks do
   def change_clock(%Clock{} = clock, attrs \\ %{}) do
     Clock.changeset(clock, attrs)
   end
+
+  # TODO
+  def list_clocks_from_user(user_id) do
+    Repo.all(from c in Clock, where: c.user_id == ^user_id)
+  end
+
+  # def get_clock_by_user_id!(user_id) do
+  #   Repo.get_by!(Clock, user_id: user_id)
+  # end
 end
