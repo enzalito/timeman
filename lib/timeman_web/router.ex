@@ -14,6 +14,11 @@ defmodule TimemanWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api", TimemanWeb do
+    pipe_through :api
+    resources "/users", UserController, except: [:new, :edit]
+  end
+
   scope "/", TimemanWeb do
     pipe_through :browser
 
