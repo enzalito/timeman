@@ -7,7 +7,10 @@ services:
       - db
     network_mode: host
     volumes:
-      - ./:/app
+      - ./:/opt/app
+      - /opt/app/_build
+      - /opt/app/deps
+      - /opt/app/assets/node_modules
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
