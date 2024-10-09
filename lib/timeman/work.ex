@@ -37,6 +37,10 @@ defmodule Timeman.Work do
   """
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
 
+  def get_working_time_by_Id_UserId!(userId) do
+    Repo.all(from w in WorkingTime, where: w.user == ^userId)
+  end
+
   @doc """
   Creates a working_time.
 

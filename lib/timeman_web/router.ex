@@ -20,9 +20,10 @@ defmodule TimemanWeb.Router do
     post "/clocks/:user_id", ClockController, :create_clock_for_user
     get "/clocks/:user_id", ClockController, :clocks_by_user
 
-    resources "/users", UserController, except: [:new, :edit]
+    # resources "/users", UserController, except: [:new, :edit]
     # resources "/workingtime", WorkingTimeController, except: [:new, :edit]
     post "/workingtime/:userId", WorkingTimeController, :createWithUserRelation
+    get "/workingtime/:userId/:id", WorkingTimeController, :get
   end
 
   scope "/", TimemanWeb do

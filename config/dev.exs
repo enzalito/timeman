@@ -5,7 +5,7 @@ config :timeman, Timeman.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "timeman_dev",
+  database: "postgres",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -68,7 +68,7 @@ config :timeman, dev_routes: true
 config :timeman, :phoenix_swagger,
   swagger_files: %{
     "priv/static/swagger.json" => [
-      router: TimemanWeb.Router,
+      router: TimemanWeb.Router
     ]
   }
 

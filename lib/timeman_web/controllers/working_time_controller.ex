@@ -35,6 +35,17 @@ defmodule TimemanWeb.WorkingTimeController do
     end
   end
 
+  def get(conn, %{"userId" => userId, "id" => id}) do
+    working_time_by_user = Work.get_working_time_by_Id_UserId!(userId)
+    IO.inspect(working_time_by_user)
+
+    result = Enum.find(working_time_by_user, fn wt -> wt.id == String.to_integer(id) end)
+    IO.inspect(result, label: "result")
+
+    # working_time_by_id = Work.get_working_time!(id)
+    render(conn, :show, working_time: result)
+  end
+
   def show(conn, %{"id" => id}) do
     working_time = Work.get_working_time!(id)
     render(conn, :show, working_time: working_time)
