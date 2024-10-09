@@ -9,7 +9,8 @@ defmodule Timeman.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      compilers: Mix.compilers ++ [:phoenix_swagger],
     ]
   end
 
@@ -34,6 +35,9 @@ defmodule Timeman.MixProject do
     [
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.5"},
+      {:phoenix_swagger, "~> 0.8"},
+      {:ex_json_schema, "~> 0.5"},
+      {:poison, "~> 2.2 or ~> 3.0"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},

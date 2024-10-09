@@ -15,6 +15,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
+    command: bash -c "mix deps.get && mix phx.server"
   db:
     image: postgres:16
     network_mode: host

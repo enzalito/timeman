@@ -35,7 +35,13 @@ defmodule Timeman.Account do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id) when is_number(id), do: Repo.get!(User, id)
+
+  def get_user!(%{"email" => email}), do: Repo.one!(from u in User, where: u.email == ^email)
+
+  def get_user!(%{"username" => username}), do: Repo.one!(from u in User, where: u.username == ^username)
+
+  def get_user!(%{"email" => email, "username" => username}), do: Repo.one!(from u in User, where: u.email == ^email and u.username == ^username)
 
   @doc """
   Creates a user.

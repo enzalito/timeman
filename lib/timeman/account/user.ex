@@ -5,8 +5,6 @@ defmodule Timeman.Account.User do
   schema "users" do
     field :username, :string
     field :email, :string
-
-    timestamps(type: :utc_datetime)
   end
 
   @doc false

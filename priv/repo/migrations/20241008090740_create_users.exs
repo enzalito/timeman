@@ -3,10 +3,8 @@ defmodule Timeman.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-      add :username, :string
-      add :email, :string
-
-      timestamps(type: :utc_datetime)
+      add :username, :string, null: false
+      add :email, :string, null: false
     end
   end
 end
