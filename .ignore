@@ -1,5 +1,5 @@
 deps/
 _build/
-lib/
-priv/
 assets/
+.cache/
+.elixir_ls/

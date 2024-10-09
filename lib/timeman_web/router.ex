@@ -33,11 +33,6 @@ defmodule TimemanWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", TimemanWeb do
-  #   pipe_through :api
-  # end
-
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:timeman, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
@@ -52,6 +47,19 @@ defmodule TimemanWeb.Router do
 
       live_dashboard "/dashboard", metrics: TimemanWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+
+    scope "/api/swagger" do
+      forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :timeman, swagger_file: "swagger.json"
+    end
+
+    def swagger_info do
+      %{
+        info: %{
+          version: "1.0",
+          title: "Timeman"
+        }
+      }
     end
   end
 end

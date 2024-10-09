@@ -65,6 +65,13 @@ config :timeman, TimemanWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :timeman, dev_routes: true
 
+config :timeman, :phoenix_swagger,
+  swagger_files: %{
+    "priv/static/swagger.json" => [
+      router: TimemanWeb.Router,
+    ]
+  }
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
