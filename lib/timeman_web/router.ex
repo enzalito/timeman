@@ -1,4 +1,5 @@
 defmodule TimemanWeb.Router do
+  alias WorkingTimeController
   use TimemanWeb, :router
 
   pipeline :browser do
@@ -17,6 +18,7 @@ defmodule TimemanWeb.Router do
   scope "/api", TimemanWeb do
     pipe_through :api
     resources "/users", UserController, except: [:new, :edit]
+    get "/work_time_one_user/:user/:start/:end", WorkingTimeController, :showTimeForOneUser
   end
 
   scope "/", TimemanWeb do
