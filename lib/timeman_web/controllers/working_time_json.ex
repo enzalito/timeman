@@ -29,8 +29,9 @@ defmodule TimemanWeb.WorkingTimeJSON do
     %{
       id: working_time.id,
       start: working_time.start,
-      end: working_time.end
+      end: working_time.end,
+      user: working_time.user
     }
   end
-
+  
 end

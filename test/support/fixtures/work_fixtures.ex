@@ -11,8 +11,8 @@ defmodule Timeman.WorkFixtures do
     {:ok, working_time} =
       attrs
       |> Enum.into(%{
-        end: ~N[2024-10-07 15:24:00],
-        start: ~N[2024-10-07 15:24:00]
+        end: ~N[2024-10-07 15:07:00],
+        start: ~N[2024-10-07 15:07:00]
       })
       |> Timeman.Work.create_working_time()
 
