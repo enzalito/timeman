@@ -27,7 +27,7 @@ defmodule TimemanWeb.Router do
 
     post "/workingtime/:userId", WorkingTimeController, :createWithUserRelation
 
-    get "/workingtime/:userId/:id", WorkingTimeController, :get
+    get "/workingtime/:userId/:id", WorkingTimeController, :getWorkingTime
 
     get "/workingtime/:userId", WorkingTimeController, :showTimeForOneUser
   end

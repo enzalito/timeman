@@ -1,15 +1,11 @@
 defmodule TimemanWeb.WorkingTimeController do
   use TimemanWeb, :controller
+  use PhoenixSwagger
 
   alias Timeman.Work
   alias Timeman.Work.WorkingTime
 
   action_fallback TimemanWeb.FallbackController
-
-  def index(conn, _params) do
-    workingtime = Work.list_workingtime()
-    render(conn, :index, workingtime: workingtime)
-  end
 
   # def create(conn, %{"userId" => userId, "working_time" => working_time_params}) do
   #   with {:ok, %WorkingTime{} = working_time} <- Work.create_working_time(working_time_params) do
@@ -21,10 +17,7 @@ defmodule TimemanWeb.WorkingTimeController do
   # end
 
   def createWithUserRelation(conn, %{"userId" => userId, "working_time" => working_time_params}) do
-    IO.inspect(userId, label: "userId")
-
     workingTimeObject = Map.put(working_time_params, "user", userId)
-    IO.inspect(workingTimeObject, label: "workingTimeObject")
 
     with {:ok, %WorkingTime{} = workingTime} <-
            Work.create_working_time(workingTimeObject) do
@@ -35,15 +28,19 @@ defmodule TimemanWeb.WorkingTimeController do
     end
   end
 
-  def get(conn, %{"userId" => userId, "id" => id}) do
+  def getWorkingTime(conn, %{"userId" => userId, "id" => id}) do
     working_time_by_user = Work.get_working_time_by_Id_UserId!(userId)
-    IO.inspect(working_time_by_user)
 
     result = Enum.find(working_time_by_user, fn wt -> wt.id == String.to_integer(id) end)
-    IO.inspect(result, label: "result")
 
-    # working_time_by_id = Work.get_working_time!(id)
-    render(conn, :show, working_time: result)
+    cond do
+      is_nil(result) ->
+        json(conn, %{data: []})
+        |> put_status(:bad_request)
+
+      true ->
+        render(conn, :show, working_time: result)
+    end
   end
 
   def showTimeForOneUser(conn, params) do
@@ -84,5 +81,179 @@ defmodule TimemanWeb.WorkingTimeController do
     with {:ok, %WorkingTime{}} <- Work.delete_working_time(working_time) do
       send_resp(conn, :no_content, "")
     end
+  end
+
+  def swagger_definitions do
+    %{
+      WorkingTimeRequest:
+        swagger_schema do
+          title("WorkingTimeRequest")
+          description("POST body for creating a WorkingTime")
+
+          property(
+            :working_time,
+            %Schema{
+              properties: %{
+                start: %{type: :string, description: "start of the period", required: true},
+                end: %{
+                  type: :string,
+                  description: "end of the period",
+                  format: :email,
+                  required: true
+                },
+                user: %{
+                  type: :string,
+                  description: "user id",
+                  required: false
+                }
+              },
+              example: %{
+                start: "2024-07-29 12:28:29",
+                end: "2024-08-30 12:28:29",
+                user: 1
+              }
+            },
+            "The working time details"
+          )
+        end,
+      WorkingTimeResponse:
+        swagger_schema do
+          title("WorkingTimeResponse")
+          description("Response schema for WorkingTime user")
+
+          property(
+            :data,
+            %Schema{
+              properties: %{
+                start: %{type: :string, description: "start of the period", required: true},
+                end: %{
+                  type: :string,
+                  description: "end of the period",
+                  format: :email,
+                  required: true
+                },
+                user: %{
+                  type: :string,
+                  description: "user id",
+                  required: true
+                }
+              },
+              example: %{
+                start: "2024-07-29 12:28:29",
+                end: "2024-08-30 12:28:29",
+                user: 1
+              }
+            },
+            "The working details details"
+          )
+        end
+    }
+  end
+
+  swagger_path :getWorkingTime do
+    get("/api/workingtime/{userId}/{id}")
+    summary("Get working time by userId and id")
+    produces("application/json")
+    deprecated(false)
+    parameter(:userId, :path, :string, "user id", example: "1")
+    parameter(:id, :path, :string, "id", example: "1")
+
+    response(200, "OK", Schema.ref(:WorkingTimeResponse),
+      example: %{
+        data: %{
+          user: 1,
+          id: 1,
+          start: "2024-07-29 12:28:29",
+          end: "2024-08-30 12:28:29"
+        }
+      }
+    )
+  end
+
+  swagger_path :showTimeForOneUser do
+    get("/api/workingtime/{userId}")
+    summary("Show working times for a specific user within specified ")
+    produces("application/json")
+    deprecated(false)
+    parameter(:userId, :path, :string, "User ID", required: true, example: 1)
+
+    parameter(:start, :query, :string, "start period",
+      required: true,
+      example: "2024-07-29T12:28:29"
+    )
+
+    parameter(:end, :query, :string, "end period", required: true, example: "2024-08-30T12:28:29")
+
+    response(200, "OK", Schema.ref(:WorkingTimeResponse),
+      example: %{
+        data: %{
+          user: 1,
+          id: 1,
+          start: "2024-07-29 12:28:29",
+          end: "2024-08-30 12:28:29"
+        }
+      }
+    )
+  end
+
+  swagger_path :createWithUserRelation do
+    post("/api/workingtime/{userId}")
+    summary("Create working time")
+    produces("application/json")
+    deprecated(false)
+
+    parameter(:userId, :path, :string, "user id", required: true, example: 1)
+
+    parameter(:working_time, :body, Schema.ref(:WorkingTimeRequest), "The user details",
+      example: %{
+        working_time: %{start: "2024-07-29 12:28:29", end: "2024-08-30 12:28:29"}
+      }
+    )
+
+    response(201, "OK", Schema.ref(:WorkingTimeResponse),
+      example: %{
+        data: %{
+          user: 1,
+          id: 1,
+          start: "2024-07-29T12:28:29",
+          end: "2024-08-30T12:28:29"
+        }
+      }
+    )
+  end
+
+  swagger_path :update do
+    put("/api/workingtime/{id}")
+    summary("Update working time")
+    produces("application/json")
+    deprecated(false)
+    parameter(:id, :path, :number, "working time id", required: true, example: 1)
+
+    parameter(:working_time, :body, Schema.ref(:WorkingTimeRequest), "The user details",
+      example: %{
+        working_time: %{start: "2024-07-29 12:28:29", end: "2024-08-30 12:28:29"}
+      }
+    )
+
+    response(200, "OK", Schema.ref(:WorkingTimeResponse),
+      example: %{
+        data: %{
+          user: 1,
+          id: 1,
+          start: "2024-07-29T12:28:29",
+          end: "2024-08-30T12:28:29"
+        }
+      }
+    )
+  end
+
+  swagger_path :delete do
+    PhoenixSwagger.Path.delete("/api/workingtime/{id}")
+    summary("Delete working time")
+    produces("application/json")
+    deprecated(false)
+    parameter(:id, :path, :number, "working time id", required: true, example: 1)
+
+    response(204, "OK")
   end
 end
