@@ -1,22 +1,22 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: ./dockerfile
-    depends_on:
-      - db
-    network_mode: host
-    volumes:
-      - ./:/opt/app
-      - /opt/app/_build
-      - /opt/app/deps
-      - /opt/app/assets/node_modules
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=db
-    command: bash -c "mix deps.get && mix phx.server"
-  db:
+  #  app:
+  #    build:
+  #      context: .
+  #      dockerfile: ./dockerfile
+  #    depends_on:
+  #      - db
+  #    network_mode: host
+  #    volumes:
+  #      - ./:/opt/app
+  #      - /opt/app/_build
+  #      - /opt/app/deps
+  #      - /opt/app/assets/node_modules
+  #    environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_HOST=db
+  #    command: bash -c "mix deps.get && mix phx.server"
+   db:
     image: postgres:16
     network_mode: host
     environment:

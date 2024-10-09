@@ -1,4 +1,5 @@
 defmodule TimemanWeb.Router do
+  alias WorkingTimeController
   use TimemanWeb, :router
 
   pipeline :browser do
@@ -20,10 +21,15 @@ defmodule TimemanWeb.Router do
     post "/clocks/:user_id", ClockController, :create_clock_for_user
     get "/clocks/:user_id", ClockController, :clocks_by_user
 
-    # resources "/users", UserController, except: [:new, :edit]
-    # resources "/workingtime", WorkingTimeController, except: [:new, :edit]
+    resources "/users", UserController, except: [:new, :edit]
+
+    resources "/workingtime", WorkingTimeController, except: [:index, :edit, :new, :show, :create]
+
     post "/workingtime/:userId", WorkingTimeController, :createWithUserRelation
+
     get "/workingtime/:userId/:id", WorkingTimeController, :get
+
+    get "/workingtime/:userId", WorkingTimeController, :showTimeForOneUser
   end
 
   scope "/", TimemanWeb do

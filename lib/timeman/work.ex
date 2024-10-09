@@ -5,7 +5,6 @@ defmodule Timeman.Work do
 
   import Ecto.Query, warn: false
   alias Timeman.Repo
-
   alias Timeman.Work.WorkingTime
 
   @doc """
@@ -39,6 +38,15 @@ defmodule Timeman.Work do
 
   def get_working_time_by_Id_UserId!(userId) do
     Repo.all(from w in WorkingTime, where: w.user == ^userId)
+  end
+
+  def get_working_time_for_user!(user, start_time, end_time) do
+    query =
+      from wt in WorkingTime,
+        where: wt.user == ^user and wt.start >= ^start_time and wt.end <= ^end_time,
+        select: wt
+
+    Repo.all(query)
   end
 
   @doc """

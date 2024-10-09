@@ -46,9 +46,27 @@ defmodule TimemanWeb.WorkingTimeController do
     render(conn, :show, working_time: result)
   end
 
-  def show(conn, %{"id" => id}) do
-    working_time = Work.get_working_time!(id)
-    render(conn, :show, working_time: working_time)
+  def showTimeForOneUser(conn, params) do
+    # Accessing the path parameter
+    userId = conn.params["userId"]
+
+    # Accessing query parameters
+    start = Map.get(params, "start")
+    end_time = Map.get(params, "end")
+
+    # Check if the required query parameters are present
+    cond do
+      is_nil(start) || start == "" ->
+        json(conn, %{error: "Missing required query parameter: start"})
+        |> put_status(:bad_request)
+
+      is_nil(end_time) || end_time == "" ->
+        json(conn, %{error: "Missing required query parameter: end"}) |> put_status(:bad_request)
+
+      true ->
+        working_time = Work.get_working_time_for_user!(userId, start, end_time)
+        render(conn, :show, working_time: working_time)
+    end
   end
 
   def update(conn, %{"id" => id, "working_time" => working_time_params}) do
