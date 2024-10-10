@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router"
-import User from "@/components/User.vue"
+import { RouterView } from "vue-router"
+import AuthUser from "@/components/AuthUser.vue"
+import UnauthUser from "@/components/UnauthUser.vue"
+
+import { useUserStore } from "@/stores/user"
+
+const userStore = useUserStore()
+const isAuthenticated = () => {
+  return userStore.user !== undefined
+}
 </script>
 
 <template>
-  <header>
-    <p>Hi there</p>
-  </header>
-
-  <User />
+  <AuthUser v-if="isAuthenticated()" />
+  <UnauthUser v-else />
   <RouterView />
 </template>

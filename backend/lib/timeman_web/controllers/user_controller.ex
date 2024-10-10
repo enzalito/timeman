@@ -36,7 +36,7 @@ defmodule TimemanWeb.UserController do
   end
 
   def delete(conn, %{"id" => id}) do
-    user = Account.get_user!(id)
+    user = Account.get_user!(String.to_integer(id))
 
     with {:ok, %User{}} <- Account.delete_user(user) do
       send_resp(conn, :no_content, "")

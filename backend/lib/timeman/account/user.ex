@@ -12,5 +12,7 @@ defmodule Timeman.Account.User do
     user
     |> cast(attrs, [:username, :email])
     |> validate_required([:username, :email])
+    |> unique_constraint(:username)
+    |> unique_constraint(:email)
   end
 end

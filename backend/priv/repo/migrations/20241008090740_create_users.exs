@@ -6,5 +6,7 @@ defmodule Timeman.Repo.Migrations.CreateUsers do
       add :username, :string, null: false
       add :email, :string, null: false
     end
+    create unique_index(:users, [:username])
+    create unique_index(:users, [:email])
   end
 end
