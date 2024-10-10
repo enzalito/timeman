@@ -41,8 +41,6 @@ const updateTime = () => {
   currentTime.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
-console.log(clockIn.value)
-
 const handleClick = () => {
   const clockData = {
     clock: {
