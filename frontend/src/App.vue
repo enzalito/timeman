@@ -2,6 +2,7 @@
 import { RouterView } from "vue-router"
 import AuthUser from "@/components/AuthUser.vue"
 import UnauthUser from "@/components/UnauthUser.vue"
+import WorkingTime from "@/components/WorkingTime/WorkingTime.vue";
 
 import { useUserStore } from "@/stores/user"
 
@@ -14,5 +15,6 @@ const isAuthenticated = () => {
 <template>
   <AuthUser v-if="isAuthenticated()" />
   <UnauthUser v-else />
+  <WorkingTime />
   <RouterView />
 </template>
