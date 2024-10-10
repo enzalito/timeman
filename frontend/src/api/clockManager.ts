@@ -25,7 +25,6 @@ export type ClockResponse = z.infer<typeof clockResponse>
 export async function createClock(clock: ClockRequest): Promise<ClockResponse> {
   try {
     const userId = clock.clock.user_id
-    console.log(JSON.stringify(clock))
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/clocks/${userId}`, {
       method: "POST",
       headers: {
@@ -35,7 +34,6 @@ export async function createClock(clock: ClockRequest): Promise<ClockResponse> {
     })
     return await response.json()
   } catch (error) {
-    console.log(error)
     throw new Error("Error when creating clock")
   }
 }
