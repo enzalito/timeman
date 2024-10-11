@@ -1,38 +1,36 @@
 <script setup lang="ts">
-import {
-  Card
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Edit2 as Edit, Trash, ArrowRight, Check} from 'lucide-vue-next'
-import DatePicker from './DatePicker.vue'
-import { ref } from 'vue';
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Edit2 as Edit, Trash, ArrowRight, Check } from "lucide-vue-next"
+import DatePicker from "./DatePicker.vue"
+import { ref } from "vue"
 
-import {
-  parseDate,
-  type DateValue,
-} from '@internationalized/date'
-import { z } from 'zod';
-import { toTypedSchema } from '@vee-validate/zod';
-import { useForm } from 'vee-validate';
-import { FormField } from '../ui/form';
+import { type DateValue } from "@internationalized/date"
+import { z } from "zod"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
+import { FormField } from "../ui/form"
 
-import Input from '../ui/input/Input.vue';
-import FormItem from '../ui/form/FormItem.vue';
-import { useUserStore } from '@/stores/user';
-import { createWorkingTime, deleteWorkingTime, getWorkingTime, updateWorkingTime } from '@/api/workingTime';
-import { useDateFormat } from '@vueuse/core';
+import Input from "../ui/input/Input.vue"
+import FormItem from "../ui/form/FormItem.vue"
+import { useUserStore } from "@/stores/user"
+import {
+  createWorkingTime,
+  deleteWorkingTime,
+  getWorkingTime,
+  updateWorkingTime
+} from "@/api/workingTime"
+import { useDateFormat } from "@vueuse/core"
 
 const userStore = useUserStore()
 const userId = userStore.user?.id
 
 const routeWorkingTimeId = 7
 
-
 const data = await getWorkingTime(userId!, routeWorkingTimeId)
 
 const isEditing = ref<boolean>(false)
 const isCreating = ref<boolean>(true)
-
 
 function toggleEditMode() {
   isCreating.value = false
@@ -48,32 +46,28 @@ const row = data.data
 if (row && Object.keys(row).length > 0) {
   isCreating.value = false
 }
-console.log(row, isCreating.value);
 
 const startDateInitial = row?.start ? new Date(row.start) : new Date()
 const endDateInitial = row?.end ? new Date(row.start) : new Date()
 
-const formSchema = toTypedSchema(z.object({
-  start: z
-  .date()
-  .refine(v => v, { message: 'Start date required.' }),
-  end: z
-  .date()
-  .refine(v => v, { message: 'End date required' }),
-  id: z
-  .number().optional()
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    start: z.date().refine((v) => v, { message: "Start date required." }),
+    end: z.date().refine((v) => v, { message: "End date required" }),
+    id: z.number().optional()
+  })
+)
 
-const { handleSubmit, setFieldValue, values,  } = useForm({
+const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
   initialValues: {
     start: startDateInitial,
     end: endDateInitial,
     id: row.id
-  },
+  }
 })
 
-function handleChange(column: 'start' | 'end', valueParam: DateValue) {
+function handleChange(column: "start" | "end", valueParam: DateValue) {
   const newDate = new Date(valueParam.toString())
 
   const oldDate = values[column]
@@ -90,73 +84,69 @@ function handleChange(column: 'start' | 'end', valueParam: DateValue) {
   setFieldValue(column, newDate)
 }
 
-const onSubmit = handleSubmit( async (submitValues) => {
+const onSubmit = handleSubmit(async (submitValues) => {
   toggleEditMode()
 
   useDateFormat(values.start, "YYYY-MM-DD")
-
 
   const start = values.start?.toISOString()
   const end = values.end?.toISOString()
 
   let data
   if (submitValues.id) {
-    const res = await updateWorkingTime({working_time: { start, end }}, submitValues.id)
+    const res = await updateWorkingTime({ working_time: { start, end } }, submitValues.id)
     data = res.data
   } else {
-    const res = await createWorkingTime({working_time: { start, end }}, userId!)
+    const res = await createWorkingTime({ working_time: { start, end } }, userId!)
     data = res.data
   }
 
   if (!data) {
-    console.error("Error: no data after updating or creating working time");
+    console.error("Error: no data after updating or creating working time")
     return
   }
 
   const startDate = new Date(data.start)
   const endDate = new Date(data.end)
 
-  setFieldValue('start', startDate)
-  setFieldValue('end', endDate)
-  setFieldValue('id', data.id)
-
+  setFieldValue("start", startDate)
+  setFieldValue("end", endDate)
+  setFieldValue("id", data.id)
 })
 
 async function handleDelete() {
   toggleCreateMode()
 
   if (!values.id) {
-    console.error("WorkingTime/handleDelete: Error, attempting to delete while no id present for working time");
+    console.error(
+      "WorkingTime/handleDelete: Error, attempting to delete while no id present for working time"
+    )
     return
   }
   await deleteWorkingTime(values.id)
 
-  setFieldValue('start', undefined)
-  setFieldValue('end', undefined)
-  setFieldValue('id', undefined)
-
+  setFieldValue("start", undefined)
+  setFieldValue("end", undefined)
+  setFieldValue("id", undefined)
 }
 
+const startTimeString = useDateFormat(values.start, "HH:mm:ss")
+const endTimeString = useDateFormat(values.end, "HH:mm:ss")
 
-  const startTimeString = useDateFormat(values.start, 'HH:mm:ss')
-  const endTimeString = useDateFormat(values.end, 'HH:mm:ss')
+const handleTimeChange = (key: "start" | "end", v: string) => {
+  const splited = v.split(":")
 
-  const handleTimeChange = (key: "start" | "end", v: string) => {
-    const splited = v.split(':')
-
-    if (splited.length !== 3) {
-      console.error("input not in the right format: hh-mm-ss");
-      return
-    }
-
-    const [hour, minutes, seconds] = splited
-
-    values[key]?.setHours(Number(hour))
-    values[key]?.setMinutes(Number(minutes))
-    values[key]?.setSeconds(Number(seconds))
-
+  if (splited.length !== 3) {
+    console.error("input not in the right format: hh-mm-ss")
+    return
   }
 
+  const [hour, minutes, seconds] = splited
+
+  values[key]?.setHours(Number(hour))
+  values[key]?.setMinutes(Number(minutes))
+  values[key]?.setSeconds(Number(seconds))
+}
 </script>
 
 <template>
@@ -180,13 +170,16 @@ async function handleDelete() {
             </FormItem>
           </FormField>
         </div>
-            <p v-else>{{ useDateFormat(values.start, 'YYYY-MM-DD HH:mm:ss') }} UTC</p>
+        <p v-else>{{ useDateFormat(values.start, "YYYY-MM-DD HH:mm:ss") }} UTC</p>
       </div>
       <ArrowRight />
       <div>
         <div class="flex flex-row gap-2" v-if="isEditing">
           <FormField name="end">
-            <DatePicker :formValue="values.end?.toISOString().split('T')[0]" @change="(value) => handleChange('end', value)" />
+            <DatePicker
+              :formValue="values.end?.toISOString().split('T')[0]"
+              @change="(value) => handleChange('end', value)"
+            />
           </FormField>
           <FormField name="endTime">
             <FormItem>
@@ -198,7 +191,7 @@ async function handleDelete() {
             </FormItem>
           </FormField>
         </div>
-          <p v-else>{{ useDateFormat(values.end, 'YYYY-MM-DD HH:mm:ss') }} UTC</p>
+        <p v-else>{{ useDateFormat(values.end, "YYYY-MM-DD HH:mm:ss") }} UTC</p>
       </div>
 
       <div class="flex items-center gap-2">
@@ -210,7 +203,6 @@ async function handleDelete() {
           <Edit class="h-4 w-4" />
           <span class="sr-only">Cancel</span>
         </Button>
-
 
         <!-- <Button v-if="isEditing" @click="toggleEditMode" variant="destructive" size="sm">
           <X class="h-4 w-4" />

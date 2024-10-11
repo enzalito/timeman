@@ -50,10 +50,10 @@
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       };
 
-      const fetchData_workingtime = async (userId: number, start: string, end: string) => {
+      const fetchData_workingtime = async (userId: number) => {
         try {
               
-          const url = `http://localhost:4000/api/workingtime/${userId}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+          const url = `http://localhost:4000/api/workingtime/${userId}`;
           const response = await fetch(url); 
 
           if (!response.ok) {
@@ -78,7 +78,7 @@
 
       onMounted(()=> {  
         if (userStore.user) {
-          fetchData_workingtime(userStore.user.id, "0000-01-01 00:00:00", "9999-10-09 10:00:00");
+          fetchData_workingtime(userStore.user.id);
         }
       });
 
@@ -122,4 +122,3 @@
   }
 
 </style>
-  

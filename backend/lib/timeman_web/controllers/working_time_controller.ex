@@ -44,25 +44,14 @@ defmodule TimemanWeb.WorkingTimeController do
 
   def showTimeForOneUser(conn, params) do
     # Accessing the path parameter
-    user_id = params["user_Id"]
+    user_id = params["user_id"]
 
     # Accessing query parameters
     start = Map.get(params, "start")
     end_time = Map.get(params, "end")
 
-    # Check if the required query parameters are present
-    cond do
-      is_nil(start) || start == "" ->
-        json(conn, %{error: "Missing required query parameter: start"})
-        |> put_status(:bad_request)
-
-      is_nil(end_time) || end_time == "" ->
-        json(conn, %{error: "Missing required query parameter: end"}) |> put_status(:bad_request)
-
-      true ->
-        working_time = Work.get_working_time_for_user!(user_id, start, end_time)
-        render(conn, :show, working_time: working_time)
-    end
+    working_time = Work.get_working_time_for_user!(user_id, start, end_time)
+    render(conn, :show, working_time: working_time)
   end
 
   def update(conn, %{"id" => id, "working_time" => working_time_params}) do
@@ -170,13 +159,11 @@ defmodule TimemanWeb.WorkingTimeController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :string, "User ID", required: true, example: 1)
-
-    parameter(:start, :query, :string, "start period",
-      required: true,
+    parameter(:start, :query, :string, "start time",
+      required: false,
       example: "2024-07-29T12:28:29"
     )
-
-    parameter(:end, :query, :string, "end period", required: true, example: "2024-08-30T12:28:29")
+    parameter(:end, :query, :string, "end time", required: false, example: "2024-08-30T12:28:29")
 
     response(200, "OK", Schema.ref(:WorkingTimeResponse),
       example: %{

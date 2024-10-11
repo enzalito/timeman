@@ -1,18 +1,8 @@
 import { z } from "zod"
 
-export const naiveDateTimeSchema = z.string().refine(
-  (val) => {
-    const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
-    return regex.test(val)
-  },
-  {
-    message: "Invalid datetime format, expected 'YYYY-MM-DD HH:MM:SS'"
-  }
-)
-
 export const clock = z.object({
   status: z.boolean(),
-  time: naiveDateTimeSchema,
+  time: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
   user_id: z.number().min(1)
 })
 

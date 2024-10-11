@@ -2,9 +2,9 @@ import { z } from "zod"
 
 export const workingTime = z.object({
   id: z.number().min(1),
-  start: z.string().min(1, "start date shouldn't be empty"),
-  end: z.string().min(1, "start date shouldn't be empty"),
-  user_id: z.string()
+  user_id: z.string(),
+  start: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
+  end: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)
 })
 export type WorkingTime = z.infer<typeof workingTime>
 
@@ -22,6 +22,18 @@ export const workingTimeResponse = z.object({
   data: workingTime
 })
 export type WorkingTimeResponse = z.infer<typeof workingTimeResponse>
+
+export const workingTimeBulkResponse = z.object({
+  data: z.array(workingTime)
+})
+export type WorkingTimeBulkResponse = z.infer<typeof workingTimeBulkResponse>
+
+export async function getWorkingTimes(userId: number): Promise<WorkingTimeBulkResponse> {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}`, {
+    method: "GET"
+  })
+  return await response.json()
+}
 
 export async function getWorkingTime(userId: number, woId: number): Promise<WorkingTimeResponse> {
   const response = await fetch(
