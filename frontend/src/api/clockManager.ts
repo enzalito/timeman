@@ -1,3 +1,4 @@
+import { defineStore } from "pinia"
 import { z } from "zod"
 
 export const naiveDateTimeSchema = z.string().refine(
@@ -10,21 +11,29 @@ export const naiveDateTimeSchema = z.string().refine(
   }
 )
 
+export const clock = z.object({
+  status: z.boolean(),
+  time: naiveDateTimeSchema,
+  user_id: z.number().min(1)
+})
+
 export const clockRequest = z.object({
-  clock: z.object({
-    status: z.boolean(),
-    time: naiveDateTimeSchema,
-    user_id: z.number().min(1)
-  })
+  clock: clock.omit({ user_id: true })
 })
 export type ClockRequest = z.infer<typeof clockRequest>
-export const clockResponse = clockRequest
 
+export const clockResponse = z.object({
+  data: clock
+})
 export type ClockResponse = z.infer<typeof clockResponse>
 
-export async function createClock(clock: ClockRequest): Promise<ClockResponse> {
+export const clockBulkResponse = z.object({
+  data: z.array(clock)
+})
+export type ClockBulkResponse = z.infer<typeof clockBulkResponse>
+
+export async function createClock(userId: number, clock: ClockRequest): Promise<ClockResponse> {
   try {
-    const userId = clock.clock.user_id
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/clocks/${userId}`, {
       method: "POST",
       headers: {
@@ -37,7 +46,8 @@ export async function createClock(clock: ClockRequest): Promise<ClockResponse> {
     throw new Error("Error when creating clock")
   }
 }
-export async function getClocks(userId: number): Promise<ClockResponse> {
+
+export async function getClocks(userId: number): Promise<ClockBulkResponse> {
   try {
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/clocks/${userId}`, {
       method: "GET",

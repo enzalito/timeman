@@ -10,7 +10,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { ref, onMounted, onBeforeUnmount, computed } from "vue"
 
-import { createClock } from "@/api/clockManager"
+import { createClock, getClocks } from "@/api/clockManager"
+import { workingTimeRequestPartial, createWorkingTime } from "@/api/workingTime"
+import { z } from "zod"
+
+import { useUserStore } from "@/stores/user"
+const user = useUserStore()
+const id = user.$id
 
 import { useRoute } from "vue-router"
 const route = useRoute()
@@ -22,15 +28,16 @@ const currentTime = ref("")
 let timer: ReturnType<typeof setInterval>
 
 onMounted(() => {
+  refresh()
   updateTime()
   timer = setInterval(updateTime, 1000)
 })
 
 const clockIn = ref(false)
+let startDateTime = ref<string | undefined>()
 
 const updateTime = () => {
   const now = new Date()
-
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, "0")
   const day = String(now.getDate()).padStart(2, "0")
@@ -41,16 +48,43 @@ const updateTime = () => {
   currentTime.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
+const refresh = async () => {
+  try {
+    const userClocks = await getClocks(userId)
+    const clockArray = userClocks.data.map((clock: { status: any; time: any }) => ({
+      status: clock.status,
+      time: clock.time
+    }))
+    if (clockArray[clockArray.length - 1].status == true) {
+      clockIn.value = true
+    } else {
+      clockIn.value = false
+    }
+  } catch (error) {
+    throw new Error("Error when getting clock")
+  }
+}
 const handleClick = () => {
+  clockIn.value = !clockIn.value
   const clockData = {
     clock: {
       status: clockIn.value,
-      time: currentTime.value,
-      user_id: userId
+      time: currentTime.value
     }
   }
-  clockIn.value = !clockIn.value
-  createClock(clockData)
+  createClock(userId, clockData)
+  if (clockIn.value == true) {
+    startDateTime.value = currentTime.value
+  } else {
+    const newWorkingTime: z.infer<typeof workingTimeRequestPartial> = {
+      working_time: {
+        start: startDateTime.value,
+        end: currentTime.value
+      }
+    }
+    createWorkingTime(newWorkingTime, userId)
+  }
+  startDateTime.value = undefined
 }
 
 const colorStyle = computed(() => {
@@ -62,9 +96,6 @@ const colorStyle = computed(() => {
 onBeforeUnmount(() => {
   clearInterval(timer)
 })
-
-// TODO: StartDateTime
-// TODO: Refresh
 </script>
 
 <template>
