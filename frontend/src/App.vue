@@ -5,6 +5,7 @@ import UnauthUser from "@/components/UnauthUser.vue"
 import WorkingTime from "@/components/WorkingTime/WorkingTime.vue";
 
 import { useUserStore } from "@/stores/user"
+import { Suspense } from "vue";
 
 const userStore = useUserStore()
 const isAuthenticated = () => {
@@ -16,7 +17,9 @@ import WorkingTimes from "./components/workingTimes.vue";
 <template>
   <AuthUser v-if="isAuthenticated()" />
   <UnauthUser v-else />
-  <WorkingTime v-if="isAuthenticated()" />
+  <Suspense v-if="isAuthenticated()">
+    <WorkingTime  />
+  </Suspense>
   <RouterView />
   <WorkingTimes v-if="isAuthenticated()"/>
 </template>

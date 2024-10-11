@@ -29,6 +29,7 @@ const value = computed({
 
 const placeholder = ref()
 
+
 </script>
 
 <template>
@@ -52,6 +53,7 @@ const placeholder = ref()
           </PopoverTrigger>
           <PopoverContent class="w-auto p-0">
             <Calendar
+
               v-model="value"
               calendar-label="Date of birth"
               initial-focus

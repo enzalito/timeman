@@ -49,7 +49,7 @@ export async function updateWorkingTime(
   workingTime: WorkingTimeRequestPartial,
   id: number
 ): Promise<WorkingTimeResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingTime/${id}`, {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(workingTime)
@@ -58,7 +58,7 @@ export async function updateWorkingTime(
 }
 
 export async function deleteWorkingTime(id: number) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingTime/${id}`, {
+  await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${id}`, {
     method: "DELETE"
   })
 }
