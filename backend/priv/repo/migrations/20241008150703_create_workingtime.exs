@@ -5,11 +5,9 @@ defmodule Timeman.Repo.Migrations.CreateWorkingtime do
     create table(:workingtime) do
       add :start, :naive_datetime
       add :end, :naive_datetime
-      add :user, references(:users, on_delete: :nothing)
-
-      timestamps(type: :utc_datetime)
+      add :user_id, references(:users, on_delete: :nothing)
     end
 
-    create index(:workingtime, [:user])
+    create index(:workingtime, [:user_id])
   end
 end

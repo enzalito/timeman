@@ -35,9 +35,9 @@ defmodule Timeman.Work do
 
   """
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
-
-  def get_working_time_by_Id_UserId!(userId) do
-    Repo.all(from w in WorkingTime, where: w.user == ^userId)
+  
+  def get_working_time_by_Id_UserId!(user_id) do
+    Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
   end
 
   def get_working_time_for_user!(user, start_time, end_time) do

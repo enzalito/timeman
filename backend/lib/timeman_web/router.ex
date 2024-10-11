@@ -25,11 +25,11 @@ defmodule TimemanWeb.Router do
 
     resources "/workingtime", WorkingTimeController, except: [:index, :edit, :new, :show, :create]
 
-    post "/workingtime/:userId", WorkingTimeController, :createWithUserRelation
+    post "/workingtime/:user_id", WorkingTimeController, :createWithUserRelation
 
-    get "/workingtime/:userId/:id", WorkingTimeController, :getWorkingTime
+    get "/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime
 
-    get "/workingtime/:userId", WorkingTimeController, :showTimeForOneUser
+    get "/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser
   end
 
   scope "/", TimemanWeb do

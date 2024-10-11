@@ -16,20 +16,19 @@ defmodule TimemanWeb.WorkingTimeController do
   #   end
   # end
 
-  def createWithUserRelation(conn, %{"userId" => userId, "working_time" => working_time_params}) do
-    workingTimeObject = Map.put(working_time_params, "user", userId)
-
-    with {:ok, %WorkingTime{} = workingTime} <-
-           Work.create_working_time(workingTimeObject) do
+  def createWithUserRelation(conn, %{"user_id" => user_id, "working_time" => working_time}) do
+    working_time = Map.put(working_time, "user_id", user_id)
+    with {:ok, %WorkingTime{} = res} <-
+           Work.create_working_time(working_time) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/workingtime/#{userId}")
-      |> render(:show, working_time: workingTime)
+      |> put_resp_header("location", ~p"/api/workingtime/#{res.user_id}")
+      |> render(:show, working_time: res)
     end
   end
 
-  def getWorkingTime(conn, %{"userId" => userId, "id" => id}) do
-    working_time_by_user = Work.get_working_time_by_Id_UserId!(userId)
+  def getWorkingTime(conn, %{"user_id" => user_id, "id" => id}) do
+    working_time_by_user = Work.get_working_time_by_Id_UserId!(user_id)
 
     result = Enum.find(working_time_by_user, fn wt -> wt.id == String.to_integer(id) end)
 
@@ -45,7 +44,7 @@ defmodule TimemanWeb.WorkingTimeController do
 
   def showTimeForOneUser(conn, params) do
     # Accessing the path parameter
-    userId = conn.params["userId"]
+    user_id = params["user_Id"]
 
     # Accessing query parameters
     start = Map.get(params, "start")
@@ -61,7 +60,7 @@ defmodule TimemanWeb.WorkingTimeController do
         json(conn, %{error: "Missing required query parameter: end"}) |> put_status(:bad_request)
 
       true ->
-        working_time = Work.get_working_time_for_user!(userId, start, end_time)
+        working_time = Work.get_working_time_for_user!(user_id, start, end_time)
         render(conn, :show, working_time: working_time)
     end
   end
@@ -100,17 +99,11 @@ defmodule TimemanWeb.WorkingTimeController do
                   description: "end of the period",
                   format: :email,
                   required: true
-                },
-                user: %{
-                  type: :string,
-                  description: "user id",
-                  required: false
                 }
               },
               example: %{
                 start: "2024-07-29 12:28:29",
                 end: "2024-08-30 12:28:29",
-                user: 1
               }
             },
             "The working time details"
@@ -127,21 +120,22 @@ defmodule TimemanWeb.WorkingTimeController do
               properties: %{
                 start: %{type: :string, description: "start of the period", required: true},
                 end: %{
-                  type: :string,
+                  type: :number,
                   description: "end of the period",
                   format: :email,
                   required: true
                 },
-                user: %{
-                  type: :string,
+                user_id: %{
+                  type: :number,
                   description: "user id",
                   required: true
                 }
               },
               example: %{
+                id: 1,
+                user_id: 1,
                 start: "2024-07-29 12:28:29",
                 end: "2024-08-30 12:28:29",
-                user: 1
               }
             },
             "The working details details"
@@ -151,18 +145,18 @@ defmodule TimemanWeb.WorkingTimeController do
   end
 
   swagger_path :getWorkingTime do
-    get("/api/workingtime/{userId}/{id}")
-    summary("Get working time by userId and id")
+    get("/api/workingtime/{user_id}/{id}")
+    summary("Get working time by user_id and id")
     produces("application/json")
     deprecated(false)
-    parameter(:userId, :path, :string, "user id", example: "1")
+    parameter(:user_id, :path, :string, "user id", example: "1")
     parameter(:id, :path, :string, "id", example: "1")
 
     response(200, "OK", Schema.ref(:WorkingTimeResponse),
       example: %{
         data: %{
-          user: 1,
           id: 1,
+          user_id: 1,
           start: "2024-07-29 12:28:29",
           end: "2024-08-30 12:28:29"
         }
@@ -171,11 +165,11 @@ defmodule TimemanWeb.WorkingTimeController do
   end
 
   swagger_path :showTimeForOneUser do
-    get("/api/workingtime/{userId}")
+    get("/api/workingtime/{user_id}")
     summary("Show working times for a specific user within specified ")
     produces("application/json")
     deprecated(false)
-    parameter(:userId, :path, :string, "User ID", required: true, example: 1)
+    parameter(:user_id, :path, :string, "User ID", required: true, example: 1)
 
     parameter(:start, :query, :string, "start period",
       required: true,
@@ -187,7 +181,7 @@ defmodule TimemanWeb.WorkingTimeController do
     response(200, "OK", Schema.ref(:WorkingTimeResponse),
       example: %{
         data: %{
-          user: 1,
+          user_id: 1,
           id: 1,
           start: "2024-07-29 12:28:29",
           end: "2024-08-30 12:28:29"
@@ -197,12 +191,12 @@ defmodule TimemanWeb.WorkingTimeController do
   end
 
   swagger_path :createWithUserRelation do
-    post("/api/workingtime/{userId}")
+    post("/api/workingtime/{user_id}")
     summary("Create working time")
     produces("application/json")
     deprecated(false)
 
-    parameter(:userId, :path, :string, "user id", required: true, example: 1)
+    parameter(:user_id, :path, :string, "user id", required: true, example: 1)
 
     parameter(:working_time, :body, Schema.ref(:WorkingTimeRequest), "The user details",
       example: %{
@@ -213,7 +207,7 @@ defmodule TimemanWeb.WorkingTimeController do
     response(201, "OK", Schema.ref(:WorkingTimeResponse),
       example: %{
         data: %{
-          user: 1,
+          user_id: 1,
           id: 1,
           start: "2024-07-29T12:28:29",
           end: "2024-08-30T12:28:29"
@@ -238,7 +232,7 @@ defmodule TimemanWeb.WorkingTimeController do
     response(200, "OK", Schema.ref(:WorkingTimeResponse),
       example: %{
         data: %{
-          user: 1,
+          user_id: 1,
           id: 1,
           start: "2024-07-29T12:28:29",
           end: "2024-08-30T12:28:29"

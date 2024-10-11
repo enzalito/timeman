@@ -33,7 +33,7 @@ defmodule TimemanWeb.ClockController do
             %Schema{
               properties: %{
                 status: %{type: :boolean, description: "Status of the clock (true when click'in)", default: true, required: true},
-                time: %{type: :naive_datetime, description: "Timestamp of the clock", required: true},
+                time: %{type: :string , description: "Timestamp of the clock", required: true},
               },
               example:
               %{
@@ -51,8 +51,8 @@ defmodule TimemanWeb.ClockController do
               %Schema{
                 properties: %{
                   status: %{type: :boolean, description: "Status", required: true},
-                  time: %{type: :naive_datetime, description: "Timestamp of the clock", required: true},
-                  user_id: %{type: :id, description: "ID", required: true},
+                  time: %{type: :string, description: "Timestamp of the clock", required: true},
+                  user_id: %{type: :number, description: "ID", required: true},
                 },
                 example: %{
                   status: true,
