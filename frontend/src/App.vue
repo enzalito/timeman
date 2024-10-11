@@ -15,6 +15,6 @@ const isAuthenticated = () => {
 <template>
   <AuthUser v-if="isAuthenticated()" />
   <UnauthUser v-else />
-  <WorkingTime />
+  <WorkingTime v-if="isAuthenticated()" />
   <RouterView />
 </template>

@@ -5,7 +5,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Edit2 as Edit, Trash, ArrowRight, Check, X } from 'lucide-vue-next'
 import DatePicker from './DatePicker.vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import {
   parseDate,
@@ -19,34 +19,46 @@ import { FormField } from '../ui/form';
 
 import Input from '../ui/input/Input.vue';
 import FormItem from '../ui/form/FormItem.vue';
-
-
-
-
-  const {id} = defineProps({id: Number})
-
-
-  const data = [{id: 1, start: "2024-07-29T12:28:29", end: "2024-08-30T12:28:29", user: 1}]
-
-
-  const isEditing = ref<boolean>(false)
-  const isCreating = ref<boolean>(true)
-
-
-  function toggleEditMode() {
-    isCreating.value = false
-    isEditing.value = !isEditing.value
-  }
-  function toggleCreateMode() {
-    isEditing.value = false
-    isCreating.value = !isCreating.value
-  }
+import { useUserStore } from '@/stores/user';
+import { getWorkingTime } from '@/api/workingTime';
 
 
 
 
 
-  const row = data.find((obj) => obj.id === Number(id))
+
+
+
+const userStore = useUserStore()
+const userId = userStore.user?.id
+
+const routeWorkingTimeId = 3
+
+console.log(userId, userStore.user);
+
+
+const data = await getWorkingTime(userId!, routeWorkingTimeId)
+
+console.log(data);
+
+const isEditing = ref<boolean>(false)
+const isCreating = ref<boolean>(true)
+
+
+function toggleEditMode() {
+  isCreating.value = false
+  isEditing.value = !isEditing.value
+}
+function toggleCreateMode() {
+  isEditing.value = false
+  isCreating.value = !isCreating.value
+}
+
+
+
+
+
+  const row = data.data
 
   if (row) {
     isCreating.value = false
