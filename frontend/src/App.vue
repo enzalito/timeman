@@ -10,6 +10,7 @@ const userStore = useUserStore()
 const isAuthenticated = () => {
   return userStore.user !== undefined
 }
+import WorkingTimes from "./components/workingTimes.vue";
 </script>
 
 <template>
@@ -17,4 +18,5 @@ const isAuthenticated = () => {
   <UnauthUser v-else />
   <WorkingTime v-if="isAuthenticated()" />
   <RouterView />
+  <WorkingTimes v-if="isAuthenticated()"/>
 </template>
