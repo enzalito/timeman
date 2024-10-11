@@ -14,9 +14,9 @@ import { createClock, getClocks } from "@/api/clockManager"
 import { workingTimeRequestPartial, createWorkingTime } from "@/api/workingTime"
 import { z } from "zod"
 
-import { useUserStore } from "@/stores/user"
-const user = useUserStore()
-const id = user.$id
+// import { useUserStore } from "@/stores/user"
+// const user = useUserStore()
+// const id = user.$id
 
 import { useRoute } from "vue-router"
 const route = useRoute()
@@ -83,8 +83,8 @@ const handleClick = () => {
       }
     }
     createWorkingTime(newWorkingTime, userId)
+    startDateTime.value = undefined
   }
-  startDateTime.value = undefined
 }
 
 const colorStyle = computed(() => {
