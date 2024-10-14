@@ -3,6 +3,7 @@ name: Create and publish a Docker image
 
 # Configures this workflow to run every time new tag is created.
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
