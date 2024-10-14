@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    ports:
+      4443:443
+    environment:
+      - SERVER_NAME=${SERVER_NAME}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - CERTBOT_EMAIL=${CERTBOT_EMAIL}

@@ -1,0 +1,18 @@
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name ${SERVER_NAME};
+
+    root /var/www/timeman;
+    index index.html;
+
+    ssl_certificate         /etc/letsencrypt/live/timeman/fullchain.pem;
+    ssl_certificate_key     /etc/letsencrypt/live/timeman/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/timeman/chain.pem;
+
+    ssl_dhparam /etc/letsencrypt/dhparams/dhparam.pem;
+
+    return 200 'Let\'s Encrypt certificate successfully installed!';
+    add_header Content-Type text/plain;
+}

@@ -1,0 +1,14 @@
+FROM node:lts-alpine as builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+FROM jonasal/nginx-certbot:5-alpine as runner
+
+COPY ./timeman.conf.template /etc/nginx/templates/
+COPY --from=builder /app/dist /var/www/timeman
