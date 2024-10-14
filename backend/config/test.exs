@@ -8,7 +8,7 @@ import Config
 config :timeman, Timeman.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
+  hostname: "db",
   database: "timeman_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
@@ -16,7 +16,7 @@ config :timeman, Timeman.Repo,
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :timeman, TimemanWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
+  http: [ip: {0, 0, 0, 0}, port: 4002],
   secret_key_base: "U9kmqGPbl1VjTAHMEuWb0mpiLX5GCT4uIZcFZbFtp4SE4uDNFzRD42T1gmLRUyoA",
   server: false
 
