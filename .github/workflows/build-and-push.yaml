@@ -7,9 +7,12 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
-# Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
+# Defines custom environment variables.
 env:
   REGISTRY: ghcr.io/enzalito
+  SERVER_NAME: "timeman.epicgamer.org"
+  VITE_BACKEND_URL: "http://localhost:4000/api"
+  CERTBOT_EMAIL: "enzezette@gmail.com"
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
