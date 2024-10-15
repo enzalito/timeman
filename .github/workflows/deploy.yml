@@ -1,0 +1,28 @@
+name: Deploy the app to Digital Ocean
+
+on:
+  workflow_run:
+    workflows: [Create and publish a Docker image]
+    types:
+      - completed
+      
+env:
+  VM_HOST: "timeman.epicgamer.org"
+  VM_USER: "root"
+  CERTBOT_EMAIL: "enzo.einhorn@epitech.eu"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ env.VM_HOST }}
+          username: ${{ env.VM_USER }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          envs: CERTBOT_EMAIL
+          script: |
+            docker network create backend
+            docker run -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} ghcr.io/enzalito/timeman-frontend
+            docker run --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db ghcr.io/enzalito/timeman-backend
+            docker run --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:16
