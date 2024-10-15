@@ -8,27 +8,27 @@ on:
       - completed
       
 env:
-  VM_HOST: "timeman.epicgamer.org"
-  VM_USER: "root"
-  CERTBOT_EMAIL: "enzo.einhorn@epitech.eu"
+  VM_HOST: timeman.epicgamer.org
+  VM_USER: root
+  BACKEND_IMAGE: ghcr.io/enzalito/timeman-frontend:${{ github.ref_name }}
+  FRONTEND_IMAGE: ghcr.io/enzalito/timeman-backend:${{ github.ref_name }}
+  CERTBOT_EMAIL: enzo.einhorn@epitech.eu
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ matrix.image }}
       - uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ env.VM_HOST }}
           username: ${{ env.VM_USER }}
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          envs: CERTBOT_EMAIL
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,CERTBOT_EMAIL
           script: |
+            docker stop $(docker ps -a -q)
+            docker system prune
             docker network create backend
-            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} ghcr.io/enzalito/timeman-frontend:${{ steps.meta.outputs.tags }}
-            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db ghcr.io/enzalito/timeman-backend:${{ steps.meta.outputs.tags }}
-            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:16
+            docker volume create -d local postgres
+            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data postgres:16
+            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db ${BACKEND_IMAGE}
+            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} ${FRONTEND_IMAGE}
