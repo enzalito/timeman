@@ -10,7 +10,6 @@ on:
 
 # Defines custom environment variables.
 env:
-  REGISTRY: ghcr.io/enzalito
   SERVER_NAME: "timeman.epicgamer.org"
   VITE_BACKEND_URL: "http://localhost:4000/api"
   CERTBOT_EMAIL: "enzezette@gmail.com"
@@ -25,10 +24,10 @@ jobs:
         include:
           - context: ./backend
             dockerfile: ./backend/dockerfile
-            image: ${{ env.REGISTRY }}/timeman-backend
+            image: ghcr.io/enzalito/timeman-backend
           - context: ./frontend
             dockerfile: ./frontend/dockerfile
-            image: ${{ env.REGISTRY }}/timeman-backend
+            image: ghcr.io/enzalito/timeman-backend
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
