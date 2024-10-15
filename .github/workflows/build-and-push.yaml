@@ -17,7 +17,7 @@ jobs:
           - context: ./backend
             dockerfile: ./backend/dockerfile
             image: ghcr.io/enzalito/timeman-backend
-            buildargs: VITE_BACKEND_URL=https://timeman.epicgamer.org/api
+            buildargs: VITE_BACKEND_URL=https://timeman.chickenkiller.com/api
           - context: ./frontend
             dockerfile: ./frontend/dockerfile
             image: ghcr.io/enzalito/timeman-frontend
