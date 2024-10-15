@@ -29,7 +29,7 @@ jobs:
             docker system prune
             docker network create backend
             docker volume create -d local postgres
-            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name timeman_db postgres:16
-            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db --name timeman_backend ${BACKEND_IMAGE}
-            docker exec -it timeman_backend bash -c "mix ecto.create && mix ecto.migrate"
-            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} --name timeman_frontend ${FRONTEND_IMAGE}
+            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name db postgres:16
+            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db --name backend ${BACKEND_IMAGE}
+            docker exec -it backend bash -c "mix ecto.create && mix ecto.migrate"
+            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} --name frontend ${FRONTEND_IMAGE}
