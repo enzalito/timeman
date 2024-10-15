@@ -7,7 +7,6 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  SERVER_NAME: "timeman.epicgamer.org"
   VITE_BACKEND_URL: "https://timeman.epicgamer.org/api"
 
 jobs:

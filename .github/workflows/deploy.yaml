@@ -12,6 +12,7 @@ env:
   VM_USER: root
   BACKEND_IMAGE: ghcr.io/enzalito/timeman-backend:${{ github.ref_name }}
   FRONTEND_IMAGE: ghcr.io/enzalito/timeman-frontend:${{ github.ref_name }}
+  SERVER_NAME: timeman.epicgamer.org
   CERTBOT_EMAIL: enzo.einhorn@epitech.eu
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
           host: ${{ env.VM_HOST }}
           username: ${{ env.VM_USER }}
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          envs: BACKEND_IMAGE,FRONTEND_IMAGE,CERTBOT_EMAIL
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,SERVER_NAME,CERTBOT_EMAIL
           script: |
             docker stop $(docker ps -a -q)
             docker system prune
@@ -32,4 +33,4 @@ jobs:
             docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name db postgres:16
             docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db --name backend ${BACKEND_IMAGE}
             docker exec -it backend bash -c "mix ecto.create && mix ecto.migrate"
-            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} --name frontend ${FRONTEND_IMAGE}
+            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} -e SERVER_NAME=${SERVER_NAME} --name frontend ${FRONTEND_IMAGE}
