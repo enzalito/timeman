@@ -17,11 +17,11 @@ jobs:
           - context: ./backend
             dockerfile: ./backend/dockerfile
             image: ghcr.io/enzalito/timeman-backend
-            buildargs: VITE_BACKEND_URL=https://timeman.chickenkiller.com/api
+            buildargs: ""
           - context: ./frontend
             dockerfile: ./frontend/dockerfile
             image: ghcr.io/enzalito/timeman-frontend
-            buildargs: ""
+            buildargs: VITE_BACKEND_URL=https://timeman.chickenkiller.com/api
             
     permissions:
       contents: read
