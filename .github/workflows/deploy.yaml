@@ -10,8 +10,8 @@ on:
 env:
   VM_HOST: timeman.epicgamer.org
   VM_USER: root
-  BACKEND_IMAGE: ghcr.io/enzalito/timeman-frontend:${{ github.ref_name }}
-  FRONTEND_IMAGE: ghcr.io/enzalito/timeman-backend:${{ github.ref_name }}
+  BACKEND_IMAGE: ghcr.io/enzalito/timeman-backend:${{ github.ref_name }}
+  FRONTEND_IMAGE: ghcr.io/enzalito/timeman-frontend:${{ github.ref_name }}
   CERTBOT_EMAIL: enzo.einhorn@epitech.eu
 
 jobs:
@@ -29,6 +29,7 @@ jobs:
             docker system prune
             docker network create backend
             docker volume create -d local postgres
-            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data postgres:16
-            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db ${BACKEND_IMAGE}
-            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} ${FRONTEND_IMAGE}
+            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name timeman_db postgres:16
+            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db --name timeman_backend ${BACKEND_IMAGE}
+            docker exec -it timeman_backend bash -c "mix ecto.create && mix ecto.migrate"
+            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} --name timeman_frontend ${FRONTEND_IMAGE}
