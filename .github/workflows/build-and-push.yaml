@@ -20,7 +20,7 @@ jobs:
             buildargs: VITE_BACKEND_URL=https://timeman.epicgamer.org/api
           - context: ./frontend
             dockerfile: ./frontend/dockerfile
-            image: ghcr.io/enzalito/timeman-frontend*
+            image: ghcr.io/enzalito/timeman-frontend
             buildargs: ""
             
     permissions:
