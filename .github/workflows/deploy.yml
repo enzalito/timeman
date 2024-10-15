@@ -16,6 +16,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ matrix.image }}
       - uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ env.VM_HOST }}
@@ -24,6 +29,6 @@ jobs:
           envs: CERTBOT_EMAIL
           script: |
             docker network create backend
-            docker run -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} ghcr.io/enzalito/timeman-frontend
-            docker run --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db ghcr.io/enzalito/timeman-backend
-            docker run --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:16
+            docker run -d -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} ghcr.io/enzalito/timeman-frontend:${{ steps.meta.outputs.tags }}
+            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db ghcr.io/enzalito/timeman-backend:${{ steps.meta.outputs.tags }}
+            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:16
