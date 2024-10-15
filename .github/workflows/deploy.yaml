@@ -8,11 +8,11 @@ on:
       - completed
       
 env:
-  VM_HOST: timeman.epicgamer.org
+  VM_HOST: timeman.chickenkiller.com
   VM_USER: root
   BACKEND_IMAGE: ghcr.io/enzalito/timeman-backend:${{ github.ref_name }}
   FRONTEND_IMAGE: ghcr.io/enzalito/timeman-frontend:${{ github.ref_name }}
-  SERVER_NAME: timeman.epicgamer.org
+  SERVER_NAME: timeman.chickenkiller.com
   CERTBOT_EMAIL: enzo.einhorn@epitech.eu
 
 jobs:
