@@ -23,7 +23,7 @@ jobs:
             image: ghcr.io/enzalito/timeman-backend
           - context: ./frontend
             dockerfile: ./frontend/dockerfile
-            image: ghcr.io/enzalito/timeman-backend
+            image: ghcr.io/enzalito/timeman-frontend
             
     permissions:
       contents: read
