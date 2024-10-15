@@ -27,7 +27,7 @@ jobs:
           envs: BACKEND_IMAGE,FRONTEND_IMAGE,SERVER_NAME,CERTBOT_EMAIL
           script: |
             docker stop $(docker ps -a -q)
-            docker system prune
+            docker system prune -f
             docker network create backend
             docker volume create -d local postgres
             docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name db postgres:16
