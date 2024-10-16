@@ -17,7 +17,7 @@ jobs:
           - context: ./backend
             dockerfile: ./backend/dockerfile
             image: ghcr.io/enzalito/timeman-backend
-            buildargs: ""
+            buildargs: "MIX_ENV=prod"
           - context: ./frontend
             dockerfile: ./frontend/dockerfile
             image: ghcr.io/enzalito/timeman-frontend
