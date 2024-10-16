@@ -17,7 +17,7 @@ env:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
   POSTGRES_DB: timeman
-  POSTGRES_HOST: 172.17.0.1:5432
+  POSTGRES_HOST: 172.17.0.1
   CERTBOT_EMAIL: enzo.einhorn@epitech.eu
 
 jobs:
