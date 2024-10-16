@@ -30,7 +30,8 @@ jobs:
             docker system prune -af
             docker network create backend
             docker volume create -d local postgres
+            docker volume create -d local cert
             docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name db postgres:16
             docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db --name backend ${BACKEND_IMAGE}
             docker exec -it backend bash -c "mix ecto.create && mix ecto.migrate"
-            docker run -d -p 80:80 -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} -e SERVER_NAME=${SERVER_NAME} --name frontend ${FRONTEND_IMAGE}
+            docker run -d -p 80:80 -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} -e SERVER_NAME=${SERVER_NAME} -v cert:/etc/letsencrypt --name frontend ${FRONTEND_IMAGE}
