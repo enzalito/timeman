@@ -71,6 +71,7 @@ defmodule TimemanWeb.WorkingTimeController do
     end
   end
 
+  # TODO: Rectifier swagger pour nouveau schéma, est-ce qu'on affiche l'id ?
   def swagger_definitions do
     %{
       WorkingTimeRequest:

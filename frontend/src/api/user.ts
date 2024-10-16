@@ -3,7 +3,8 @@ import { z } from "zod"
 export const user = z.object({
   id: z.number().min(1),
   username: z.string(),
-  email: z.string().email()
+  email: z.string().email(),
+  type: z.enum(["employee", "manager"])
 })
 export type User = z.infer<typeof user>
 

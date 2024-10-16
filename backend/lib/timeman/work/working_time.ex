@@ -6,12 +6,15 @@ defmodule Timeman.Work.WorkingTime do
     field :start, :naive_datetime
     field :end, :naive_datetime
     field :user_id, :id
+    field :description, :string
+    field :type, :string
+
   end
 
   @doc false
   def changeset(working_time, attrs) do
     working_time
-    |> cast(attrs, [:start, :end, :user_id])
+    |> cast(attrs, [:start, :end, :user_id, :description, :type])
     |> validate_required([:start, :end, :user_id])
   end
 end

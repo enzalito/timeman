@@ -4,15 +4,14 @@ import AuthUser from "@/components/AuthUser.vue"
 import UnauthUser from "@/components/UnauthUser.vue"
 import ChartManager from "@/components/ChartManager.vue"
 import WorkingTime from "@/components/WorkingTime/WorkingTime.vue"
-
+import WorkingTimes from "./components/WorkingTimes.vue";
 import { useUserStore } from "@/stores/user"
-import { Suspense, onBeforeMount } from "vue"
+import { Suspense } from "vue"
 
 const userStore = useUserStore()
 const isAuthenticated = () => {
   return userStore.user !== undefined
 }
-import WorkingTimes from "./components/workingTimes.vue"
 </script>
 
 <template>

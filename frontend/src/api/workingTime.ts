@@ -4,7 +4,9 @@ export const workingTime = z.object({
   id: z.number().min(1),
   user_id: z.string(),
   start: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
-  end: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)
+  end: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
+  description: z.string(),
+  type: z.enum(["day", "night"])
 })
 export type WorkingTime = z.infer<typeof workingTime>
 

@@ -6,7 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CollapsibleTrigger } from "@/components/ui/collapsible"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import User from "@/components/User.vue"
 import { useUserStore } from "@/stores/user"
 import {
@@ -94,6 +101,29 @@ const formSchema = computed(() => {
           <FormControl>
             <Input type="text" placeholder="user@mail.com" v-bind="componentField" />
           </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+      <FormField
+        v-if="collapsibleState === 'register'"
+        v-slot="{ componentField }"
+        name="user.type"
+      >
+        <FormItem>
+          <FormLabel>company role</FormLabel>
+          <Select v-bind="componentField">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select your company role" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="employee"> Employee </SelectItem>
+                <SelectItem value="manager"> Manager </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       </FormField>

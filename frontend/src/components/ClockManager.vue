@@ -24,6 +24,7 @@ const userIdParam = route.params.userid
 const userId = parseInt(Array.isArray(userIdParam) ? userIdParam[0] : userIdParam)
 
 const currentTime = ref("")
+const description = ref<string>("")
 
 let timer: ReturnType<typeof setInterval>
 
@@ -48,6 +49,14 @@ const updateTime = () => {
   currentTime.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
+const getType = (hour: string) => {
+  if (parseInt(hour) <= 18) {
+    return "day"
+  } else {
+    return "night"
+  }
+}
+
 const refresh = async () => {
   try {
     const userClocks = await getClocks(userId)
@@ -64,6 +73,7 @@ const refresh = async () => {
     throw new Error("Error when getting clock")
   }
 }
+
 const handleClick = () => {
   clockIn.value = !clockIn.value
   const clockData = {
@@ -76,10 +86,13 @@ const handleClick = () => {
   if (clockIn.value == true) {
     startDateTime.value = currentTime.value
   } else {
+    const type = getType(currentTime.value.substring(11, 13))
     const newWorkingTime: z.infer<typeof workingTimeRequestPartial> = {
       working_time: {
         start: startDateTime.value,
-        end: currentTime.value
+        end: currentTime.value,
+        description: description.value,
+        type: type
       }
     }
     createWorkingTime(newWorkingTime, userId)
@@ -108,7 +121,13 @@ onBeforeUnmount(() => {
     </CardHeader>
     <CardContent>
       <p class="mb-8 mt-0 text-l font-semibold" :style="colorStyle">{{ currentTime }}</p>
-      <Button @click="handleClick">{{ clockIn ? "Stop" : "Start" }}</Button>
+      <div v-if="clockIn!">
+        <CardDescription class="mt-8">Working time started at {{ startDateTime }}</CardDescription>
+        <CardDescription class="mt-4">Add description to your working time</CardDescription>
+        <!--  TODO: insert de description -->
+        <textarea id="descriptionField" v-model="description" />
+      </div>
+      <Button @click="handleClick">{{ clockIn ? "Send working time" : "Start" }}</Button>
     </CardContent>
     <CardFooter class="flex justify-between px-6 pb-6"> </CardFooter>
   </Card>

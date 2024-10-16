@@ -20,22 +20,22 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## Populate the db
 
 ```sql
-INSERT INTO "users" (id, username, email, inserted_at, updated_at)
+INSERT INTO "users" ("id", "username", "email")
 VALUES
-  (1, 'John Doe', 'johndoe@example.com', NOW(), NOW()),
-  (2, 'James', 'james@example.com', NOW(), NOW()),
-  (3, 'Jane Smith', 'janesmith@example.com', NOW(), NOW());
+  (1, 'John Doe', 'johndoe@example.com'),
+  (2, 'James', 'james@example.com'),
+  (3, 'Jane Smith', 'janesmith@example.com');
 
 ```
 
 ```sql
-INSERT INTO workingtime (start, "end", "user", inserted_at, updated_at)
+INSERT INTO workingtime (start, "end", "user_id")
 VALUES
-('2024-10-08 08:00:00', '2024-10-08 12:00:00', 1, NOW(), NOW()),
-('2024-10-08 14:00:00', '2024-10-08 17:00:00', 1, NOW(), NOW()),
-('2024-10-09 08:00:00', '2024-10-09 12:00:00', 1, NOW(), NOW()),
-('2024-10-09 14:00:00', '2024-10-09 17:00:00', 1, NOW(), NOW()),
+('2024-10-08 08:00:00', '2024-10-08 12:00:00', 1),
+('2024-10-08 14:00:00', '2024-10-08 17:00:00', 1),
+('2024-10-09 08:00:00', '2024-10-09 12:00:00', 1),
+('2024-10-09 14:00:00', '2024-10-09 17:00:00', 1),
 
-('2024-10-08 07:00:00', '2024-10-08 13:00:00', 3, NOW(), NOW()),
-('2024-10-08 15:00:00', '2024-10-08 19:00:00', 3, NOW(), NOW());
+('2024-10-08 07:00:00', '2024-10-08 13:00:00', 3),
+('2024-10-08 15:00:00', '2024-10-08 19:00:00', 3);
 ```

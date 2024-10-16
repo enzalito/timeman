@@ -23,7 +23,7 @@ defmodule TimemanWeb.UserController do
 
   @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
-    user = Account.get_user!(id)
+    user = Account.get_user!(String.to_integer(id))
     render(conn, :show, user: user)
   end
 
@@ -43,6 +43,7 @@ defmodule TimemanWeb.UserController do
     end
   end
 
+  # TODO: Modifier schéma swagger
   def swagger_definitions do
     %{
       UserRequest:
@@ -89,8 +90,8 @@ defmodule TimemanWeb.UserController do
     summary "Get user by email and / or username"
     produces "application/json"
     deprecated false
-    parameter :email, :query, :string, "Email address", example: "joe@mail.com" 
-    parameter :username, :query, :string, "User name", example: "Joe" 
+    parameter :email, :query, :string, "Email address", example: "joe@mail.com"
+    parameter :username, :query, :string, "User name", example: "Joe"
 
     response 200, "OK", Schema.ref(:UserResponse),
       example: %{
@@ -107,7 +108,7 @@ defmodule TimemanWeb.UserController do
     summary "Get user by id"
     produces "application/json"
     deprecated false
-    parameter :user_id, :path, :number, "User ID", required: true, example: 1 
+    parameter :user_id, :path, :number, "User ID", required: true, example: 1
 
     response 200, "OK", Schema.ref(:UserResponse),
       example: %{
@@ -144,7 +145,7 @@ defmodule TimemanWeb.UserController do
     summary "Update user"
     produces "application/json"
     deprecated false
-    parameter :user_id, :path, :number, "User ID", required: true, example: 1 
+    parameter :user_id, :path, :number, "User ID", required: true, example: 1
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
         user: %{username: "Joe", email: "joe@mail.com"}
@@ -165,7 +166,7 @@ defmodule TimemanWeb.UserController do
     summary "Delete user"
     produces "application/json"
     deprecated false
-    parameter :user_id, :path, :number, "User ID", required: true, example: 1 
+    parameter :user_id, :path, :number, "User ID", required: true, example: 1
 
     response 204, "OK"
   end
