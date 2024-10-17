@@ -11,7 +11,7 @@ import { Suspense } from "vue"
 
 
 import Header from "./components/layout/Header.vue"
-import Layout from "./components/layout/layout.vue"
+import Layout from "./components/layout/Layout.vue"
 
 
 const userStore = useUserStore()
