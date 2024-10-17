@@ -22,7 +22,7 @@ const initial = username?.charAt(0).toUpperCase()
         {{ currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }}
       </div>
       <div class="date text-gray-400 text-md">
-        {{ currentTime.toLocaleDateString() }}
+        {{ currentTime.toDateString() }}
       </div>
     </div>
     <Popover v-if="username !== undefined">
