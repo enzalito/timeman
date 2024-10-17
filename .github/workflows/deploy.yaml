@@ -12,7 +12,12 @@ env:
   VM_USER: root
   BACKEND_IMAGE: ghcr.io/enzalito/timeman-backend:${{ github.ref_name }}
   FRONTEND_IMAGE: ghcr.io/enzalito/timeman-frontend:${{ github.ref_name }}
+  BACKEND_URL: http://172.17.0.1:4000
   SERVER_NAME: timeman.chickenkiller.com
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_DB: timeman
+  POSTGRES_HOST: 172.17.0.1
   CERTBOT_EMAIL: enzo.einhorn@epitech.eu
 
 jobs:
@@ -24,14 +29,13 @@ jobs:
           host: ${{ env.VM_HOST }}
           username: ${{ env.VM_USER }}
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          envs: BACKEND_IMAGE,FRONTEND_IMAGE,SERVER_NAME,CERTBOT_EMAIL
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,BACKEND_URL,SERVER_NAME,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_HOST,CERTBOT_EMAIL
           script: |
-            docker stop $(docker ps -a -q)
+            docker stop $(docker ps -aq)
             docker system prune -af
-            docker network create backend
             docker volume create -d local postgres
             docker volume create -d local cert
-            docker run -d --net backend -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e PGDATA=/data -v postgres:/data --name db postgres:16
-            docker run -d --net backend -p 4000:4000 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_HOST=db --name backend ${BACKEND_IMAGE}
-            docker exec -it backend bash -c "mix ecto.create && mix ecto.migrate"
-            docker run -d -p 80:80 -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} -e SERVER_NAME=${SERVER_NAME} -v cert:/etc/letsencrypt --name frontend ${FRONTEND_IMAGE}
+            docker run -d -p 5432:5432 -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -e PGDATA=/data -v postgres:/data --name db postgres:16
+            docker run -d -p 4000:4000 -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -e POSTGRES_DB=${POSTGRES_DB} -e POSTGRES_HOST=${POSTGRES_HOST} --name backend ${BACKEND_IMAGE}
+            docker exec backend bash -c "mix ecto.create && mix ecto.migrate"
+            docker run -d -p 80:80 -p 443:443 -e CERTBOT_EMAIL=${CERTBOT_EMAIL} -e BACKEND_URL=${BACKEND_URL} -e SERVER_NAME=${SERVER_NAME} -v cert:/etc/letsencrypt --name frontend ${FRONTEND_IMAGE}
