@@ -11,7 +11,7 @@ import { Suspense } from "vue"
 import SideBar from "./components/layout/NavBar.vue"
 import MobileSidebar from "./components/layout/MobileNavBar.vue"
 
-import Header from "./components/Header.vue"
+import Header from "./components/layout/Header.vue"
 
 
 const userStore = useUserStore()
@@ -24,7 +24,7 @@ const isAuthenticated = () => {
   <div class="flex flex-nowrap">
     <SideBar/>
     <MobileSidebar/>
-    <main>
+    <main class="w-full">
       <Header />
       <AuthUser v-if="isAuthenticated()" />
       <UnauthUser v-else />
