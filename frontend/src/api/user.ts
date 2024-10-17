@@ -1,10 +1,13 @@
 import { z } from "zod"
 
+export const roles = ["employee", "manager"] as const
+export const role = z.enum(roles)
+
 export const user = z.object({
   id: z.number().min(1),
   username: z.string(),
   email: z.string().email(),
-  type: z.enum(["employee", "manager"])
+  type: role
 })
 export type User = z.infer<typeof user>
 
