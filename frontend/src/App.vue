@@ -4,9 +4,10 @@ import AuthUser from "@/components/AuthUser.vue"
 import UnauthUser from "@/components/UnauthUser.vue"
 import ChartManager from "@/components/ChartManager.vue"
 import WorkingTime from "@/components/WorkingTime/WorkingTime.vue"
-import WorkingTimes from "./components/WorkingTimes.vue";
+import WorkingTimes from "./components/WorkingTimes.vue"
 import { useUserStore } from "@/stores/user"
 import { Suspense } from "vue"
+import Header from "./components/Header.vue"
 
 const userStore = useUserStore()
 const isAuthenticated = () => {
@@ -15,6 +16,7 @@ const isAuthenticated = () => {
 </script>
 
 <template>
+  <Header />
   <AuthUser v-if="isAuthenticated()" />
   <UnauthUser v-else />
   <!-- TODO: use onBeforeMount instead of Suspense -->
