@@ -4,7 +4,7 @@ import Link from './Link/Link.vue';
 
 <template>
   <div class="p-4 h-[100vh] left-0 w-60 border-r border-slate-200 hidden md:block">
-    <h1 class="pb-8 text-2xl">Timeman</h1>
+    <img class="pb-8 w-[90%]" src="../../assets/Logo.png" alt="timeman logo">
 
 
 
