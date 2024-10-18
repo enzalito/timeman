@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ref, onMounted, onBeforeUnmount, computed } from "vue"
 
-import { createClock, getClocks } from "@/api/clockManager"
+import { createClock, getClocks } from "@/api/clock"
 import { workingTimeRequestPartial, createWorkingTime } from "@/api/workingTime"
 import { z } from "zod"
 

@@ -20,15 +20,13 @@ export const workingTimeRequestPartial = z.object({
 })
 export type WorkingTimeRequestPartial = z.infer<typeof workingTimeRequestPartial>
 
-export const workingTimeResponse = z.object({
-  data: workingTime
-})
-export type WorkingTimeResponse = z.infer<typeof workingTimeResponse>
+export type WorkingTimeResponse = {
+  data: WorkingTime
+}
 
-export const workingTimeBulkResponse = z.object({
-  data: z.array(workingTime)
-})
-export type WorkingTimeBulkResponse = z.infer<typeof workingTimeBulkResponse>
+export type WorkingTimeBulkResponse = {
+  data: WorkingTime[]
+}
 
 export async function getWorkingTimes(userId: number): Promise<WorkingTimeBulkResponse> {
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}`, {
