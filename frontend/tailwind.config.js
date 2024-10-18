@@ -14,6 +14,9 @@ module.exports = {
   ],
 
   theme: {
+    fontFamily: {
+      sans: ['Inter']
+    },
     container: {
       center: true,
       padding: "2rem",
