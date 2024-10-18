@@ -9,7 +9,13 @@ const { mode = "desktop" } = defineProps<{
 </script>
 
 <template>
-  <Link link="/" text="Home" :icon="HomeIcon" :mode="mode" />
-  <Link link="/stats" text="Stats" :icon="ChartColumn" :mode="mode" />
-  <Link link="/users" text="Users" :icon="Users" :mode="mode" />
+  <Link link="/" text="Home" :mode="mode">
+    <HomeIcon />
+  </Link>
+  <Link link="/stats" text="Stats" :mode="mode">
+    <ChartColumn />
+  </Link>
+  <Link link="/users" text="Users" :mode="mode">
+    <Users />
+  </Link>
 </template>

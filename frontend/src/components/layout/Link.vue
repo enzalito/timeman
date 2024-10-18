@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import type { FunctionalComponent } from "vue"
 import { Button } from "@/components/ui/button"
 
 const {
-  icon,
   text,
   link,
   mode = "desktop"
 } = defineProps<{
-  icon: FunctionalComponent
   text: string
   link: string
   mode?: "desktop" | "mobile"
@@ -32,7 +29,7 @@ const {
         mode === 'mobile' ? 'flex-col gap-2 text-sm h-full' : ''
       ]"
     >
-      <icon class="h-5 w-5" />
+      <slot class="h-5 w-5" />
       <p class="text-xs font-medium">{{ text }}</p>
     </Button>
   </router-link>
