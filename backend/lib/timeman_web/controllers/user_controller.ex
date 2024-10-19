@@ -7,8 +7,8 @@ defmodule TimemanWeb.UserController do
 
   action_fallback TimemanWeb.FallbackController
 
-  def index(conn, params) do
-    user = Account.get_user!(params)
+  def index(conn, %{"query" => query}) do
+    user = Account.list_users(%{"query" => query})
     render(conn, :show, user: user)
   end
 
@@ -23,7 +23,7 @@ defmodule TimemanWeb.UserController do
 
   @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
-    user = Account.get_user!(String.to_integer(id))
+    user = Account.get_user!(id)
     render(conn, :show, user: user)
   end
 

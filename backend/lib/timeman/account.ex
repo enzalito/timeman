@@ -17,8 +17,12 @@ defmodule Timeman.Account do
       [%User{}, ...]
 
   """
-  def list_users do
-    Repo.all(User)
+  # TODO: gérer le cas où il n'y a pas de query ?
+  def list_users(%{"query" => query}) do
+    from(u in User,
+    where: ilike(u.username, ^"%#{query}%"),
+    select: u)
+    |> Repo.all()
   end
 
   @doc """
