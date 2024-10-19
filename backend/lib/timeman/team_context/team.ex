@@ -4,6 +4,7 @@ defmodule Timeman.TeamContext.Team do
 
   schema "teams" do
     field :name, :string
+    many_to_many :users, Timeman.Account.User, join_through: "users_teams"
   end
 
   @doc false

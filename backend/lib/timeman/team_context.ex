@@ -17,8 +17,11 @@ defmodule Timeman.TeamContext do
       [%Team{}, ...]
 
   """
-  def list_teams do
-    Repo.all(Team)
+  def list_teams(%{"name" => name}) do
+    from(t in Team,
+    where: ilike(t.name, ^"%#{name}%"),
+    select: t)
+    |>Repo.all()
   end
 
   @doc """

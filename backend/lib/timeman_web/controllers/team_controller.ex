@@ -6,8 +6,8 @@ defmodule TimemanWeb.TeamController do
 
   action_fallback TimemanWeb.FallbackController
 
-  def index(conn, _params) do
-    teams = TeamContext.list_teams()
+  def index(conn, %{"name" => name}) do
+    teams = TeamContext.list_teams(%{"name" => name})
     render(conn, :index, teams: teams)
   end
 
@@ -20,6 +20,7 @@ defmodule TimemanWeb.TeamController do
     end
   end
 
+  # TODO: delete ?
   def show(conn, %{"id" => id}) do
     team = TeamContext.get_team!(id)
     render(conn, :show, team: team)

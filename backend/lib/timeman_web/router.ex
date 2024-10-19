@@ -22,6 +22,8 @@ defmodule TimemanWeb.Router do
     get "/clocks/:user_id", ClockController, :clocks_by_user
 
     resources "/users", UserController, except: [:new, :edit]
+      post "/users/add_team", UserController, :add_team
+      post "/users/remove_team", UserController, :remove_team
 
     resources "/workingtime", WorkingTimeController, except: [:index, :edit, :new, :show, :create]
       post "/workingtime/:user_id", WorkingTimeController, :createWithUserRelation

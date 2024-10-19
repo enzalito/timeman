@@ -5,8 +5,12 @@ defmodule TimemanWeb.UserController do
   alias Timeman.Account
   alias Timeman.Account.User
 
+  alias Timeman.TeamContext.Team
+  alias Timeman.Repo
+
   action_fallback TimemanWeb.FallbackController
 
+  #TODO: mettre au clair problème de query entre index et show
   def index(conn, %{"query" => query}) do
     user = Account.list_users(%{"query" => query})
     render(conn, :show, user: user)
@@ -21,9 +25,19 @@ defmodule TimemanWeb.UserController do
     end
   end
 
+  #TODO : vérifier les autres routes que id
+  # def show(conn, %{"username" => username}) do
+  #   user = Accounts.get_user!(%{"username" => username})
+  #   render(conn, "show.json", user: user)
+  # end
+
+  # def show(conn, %{"email" => email}) do
+  #   user = Accounts.get_user!(%{"email" => email})
+  #   render(conn, "show.json", user: user)
+  # end
   @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
-    user = Account.get_user!(id)
+    user = Account.get_user!(String.to_integer(id))
     render(conn, :show, user: user)
   end
 
@@ -40,6 +54,56 @@ defmodule TimemanWeb.UserController do
 
     with {:ok, %User{}} <- Account.delete_user(user) do
       send_resp(conn, :no_content, "")
+    end
+  end
+
+  def add_team(conn, %{"user_id" => user_id, "team_id" => team_id}) do
+    user = Repo.get!(User, user_id)
+    |> Repo.preload(:teams)
+
+    team = Repo.get!(Team, team_id)
+
+    changeset =
+      user
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:teams, [team | user.teams])
+
+
+    case Repo.update(changeset) do
+      {:ok, _user} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{message: "Team added successfully."})
+
+        {:error, changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: "Failed to add team", details: changeset.errors})
+      end
+  end
+
+  def remove_team(conn, %{"user_id" => user_id, "team_id" => team_id}) do
+    user = Repo.get!(User, user_id)
+    |> Repo.preload(:teams)
+
+    team_to_delete = Repo.get!(Team, team_id)
+    teams_to_keep = Enum.filter(user.teams, fn team -> team.id != team_to_delete end)
+
+    changeset =
+      user
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:teams, teams_to_keep)
+
+    case Repo.update(changeset) do
+      {:ok, _user} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{message: "Team deleted from user successfully."})
+
+        {:error, changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: "Failed to delete team from user", details: changeset.errors})
     end
   end
 

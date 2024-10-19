@@ -6,6 +6,7 @@ defmodule Timeman.Account.User do
     field :username, :string
     field :email, :string
     field :type, :string
+    many_to_many :teams, Timeman.TeamContext.Team, join_through: "users_teams"
   end
 
   @doc false
