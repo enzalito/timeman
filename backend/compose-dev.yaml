@@ -8,4 +8,4 @@ services:
     command: bash -c "mix deps.get && mix phx.server"
   db:
     ports:
-      4532:4532
+      - 4532:4532
