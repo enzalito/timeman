@@ -15,11 +15,11 @@ defmodule TimemanWeb.UserJSON do
     %{data: data(user)}
   end
 
-  defp data(users) when is_list(users) do
+  def data(users) when is_list(users) do
     Enum.map(users, &data/1)
   end
 
-  defp data(%User{} = user) do
+  def data(%User{} = user) do
     %{
       id: user.id,
       username: user.username,
@@ -27,4 +27,5 @@ defmodule TimemanWeb.UserJSON do
       type: user.type
     }
   end
+
 end

@@ -7,7 +7,7 @@ defmodule Timeman.TeamContext do
   alias Timeman.Repo
 
   alias Timeman.TeamContext.Team
-
+  alias Timeman.Account.User
   @doc """
   Returns the list of teams.
 
@@ -38,9 +38,24 @@ defmodule Timeman.TeamContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_team!(id), do: Repo.get!(Team, id)
+  def get_team!(id) when is_integer(id) do
+    Repo.get!(Team, id)
+  end
+def get_team!(id, %{"with_users" => true}) do
+  team = Repo.get!(Team, id)
+  |> Repo.preload(:users)
+  IO.inspect(label: "users")
+  {team, team.users}
+end
+def get_team!(id, %{"with_workingtimes" => true}) do
+  team = Repo.get!(Team, id)
+  |> Repo.preload(:users)
+  IO.inspect(label: "working_times")
 
-  @doc """
+  {team, team.users}
+end
+
+    @doc """
   Creates a team.
 
   ## Examples

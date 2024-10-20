@@ -6,7 +6,7 @@ defmodule TimemanWeb.TeamController do
 
   action_fallback TimemanWeb.FallbackController
 
-  def index(conn, %{"name" => name}) do
+  def index(conn, %{"name" => name} = params) do
     teams = TeamContext.list_teams(%{"name" => name})
     render(conn, :index, teams: teams)
   end
@@ -20,11 +20,27 @@ defmodule TimemanWeb.TeamController do
     end
   end
 
-  # TODO: delete ?
-  def show(conn, %{"id" => id}) do
-    team = TeamContext.get_team!(id)
-    render(conn, :show, team: team)
+  #TODO : vérifier si c'est nécessaire la double fonction
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def show(conn, %{"id" => id} = params) do
+    team_id = String.to_integer(id)
+
+    case Map.get(params, "with_users") do
+      "true" ->
+        {team, team_members} = TeamContext.get_team!(String.to_integer(id), %{"with_users" => true})
+        render(conn, :show, team: team, members: team_members)
+      _ ->
+        team = TeamContext.get_team!(team_id)
+        render(conn, :show, team: team)
+    end
+
   end
+
+  # def show(conn, %{"id" => id}) do
+  #   team = TeamContext.get_team!(id)
+  #   render(conn, :show, team: team)
+  # end
+
 
   def update(conn, %{"id" => id, "team" => team_params}) do
     team = TeamContext.get_team!(id)
