@@ -15,7 +15,7 @@ defmodule TimemanWeb.WorkingTimeJSON do
     %{data: data(working_time)}
   end
 
-  defp data(working_times) when is_list(working_times) do
+  def data(working_times) when is_list(working_times) do
     Enum.map(working_times, fn working_time ->
       %{
         id: working_time.id,
@@ -27,7 +27,7 @@ defmodule TimemanWeb.WorkingTimeJSON do
     end)
   end
 
-  defp data(%WorkingTime{} = working_time) do
+  def data(%WorkingTime{} = working_time) do
     %{
       id: working_time.id,
       start: working_time.start,

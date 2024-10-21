@@ -38,24 +38,52 @@ defmodule Timeman.TeamContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_team!(id) when is_integer(id) do
-    Repo.get!(Team, id)
+  def get_team!(id, %{"with_users" => "query", "with_workingtimes" => "query", "with_clock" => "query"}) do
+    query = from t in Team,
+            where: t.id == ^id,
+            join: ut in "users_teams", on: ut.team_id == t.id,
+            join: u in User, on: u.id == ut.user_id,
+            left_join: wt in assoc(u, :working_times),
+            left_join: c in assoc(u, :clock),
+            preload: [users: {u, working_times: wt, clock: c}],
+            select: t
+
+    team = Repo.one!(query)
+    IO.inspect(label: "users and wt and clock")
+    team
   end
-def get_team!(id, %{"with_users" => true}) do
-  team = Repo.get!(Team, id)
-  |> Repo.preload(:users)
-  IO.inspect(label: "users")
-  {team, team.users}
-end
-def get_team!(id, %{"with_workingtimes" => true}) do
-  team = Repo.get!(Team, id)
-  |> Repo.preload(:users)
-  IO.inspect(label: "working_times")
+  def get_team!(id, %{"with_users" => "query", "with_workingtimes" => "query"}) do
+    query = from t in Team,
+            where: t.id == ^id,
+            join: ut in "users_teams", on: ut.team_id == t.id,
+            join: u in User, on: u.id == ut.user_id,
+            left_join: wt in assoc(u, :working_times),
+            preload: [users: {u, working_times: wt}],
+            select: t
 
-  {team, team.users}
-end
-
-    @doc """
+    team = Repo.one!(query)
+    IO.inspect(team, label: "users and wt")
+    team
+  end
+  def get_team!(id, %{"with_users" => "query", "with_clock" => "query"}) do
+    team = Repo.get!(Team, id)
+    |> Repo.preload(users: [:clock])
+    IO.inspect(label: "users and clock")
+    team
+  end
+  def get_team!(id, %{"with_users" => "query"}) do
+    team = Repo.get!(Team, id)
+    |> Repo.preload(:users)
+    IO.inspect(label: "users")
+    team
+  end
+  def get_team!(id, %{}) when is_integer(id) do
+    team = Repo.get!(Team, id)
+    IO.inspect(team, label: "team")
+    IO.inspect(label: "user")
+    team
+  end
+@doc """
   Creates a team.
 
   ## Examples

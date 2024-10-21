@@ -13,18 +13,24 @@ defmodule TimemanWeb.TeamJSON do
   Renders a single team.
   """
 
-  def show(%{team: team, members: members}) do
-    %{data: data(team, members)}
-  end
+
   def show(%{team: team}) do
-    %{data: data(team, [])}
+    %{data: data(team)}
   end
 
-  defp data(%Team{} = team, members \\ []) do
+  #TODO : gérer les champs vides
+  defp data(%Team{} = team) do
+
     %{
       id: team.id,
       name: team.name,
-      members: UserJSON.data(members)
+      members: case team.users do
+        %Ecto.Association.NotLoaded{} -> nil
+        [] -> nil
+        users -> UserJSON.data(users)
+      end
     }
+
+
   end
 end

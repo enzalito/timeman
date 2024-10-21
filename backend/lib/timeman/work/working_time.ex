@@ -5,9 +5,9 @@ defmodule Timeman.Work.WorkingTime do
   schema "workingtime" do
     field :start, :naive_datetime
     field :end, :naive_datetime
-    field :user_id, :id
     field :description, :string
     field :type, :string
+    belongs_to :user, Timeman.Account.User
 
   end
 

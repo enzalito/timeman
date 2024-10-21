@@ -7,6 +7,8 @@ defmodule Timeman.Account.User do
     field :email, :string
     field :type, :string
     many_to_many :teams, Timeman.TeamContext.Team, join_through: "users_teams"
+    has_many :working_times, Timeman.Work.WorkingTime
+    has_many :clock, Timeman.Clocks.Clock
   end
 
   @doc false

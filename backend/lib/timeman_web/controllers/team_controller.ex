@@ -25,15 +25,18 @@ defmodule TimemanWeb.TeamController do
   def show(conn, %{"id" => id} = params) do
     team_id = String.to_integer(id)
 
-    case Map.get(params, "with_users") do
-      "true" ->
-        {team, team_members} = TeamContext.get_team!(String.to_integer(id), %{"with_users" => true})
-        render(conn, :show, team: team, members: team_members)
-      _ ->
-        team = TeamContext.get_team!(team_id)
-        render(conn, :show, team: team)
+    check_key = fn key ->
+      if Map.has_key?(params, key), do: "query", else: nil
     end
 
+    query_params = %{
+    "with_users" => check_key.("with_users"),
+    "with_workingtimes" => check_key.("with_workingtimes"),
+    "with_clock" => check_key.("with_clock")
+    }
+
+    team = TeamContext.get_team!(team_id, query_params)
+    render(conn, :show, team: team)
   end
 
   # def show(conn, %{"id" => id}) do
