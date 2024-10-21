@@ -23,61 +23,14 @@ const data = ref([
   { name: 'left for the week', total: 6 }
 ])
 
-const setToday = computed({
-  get: () => data,
-  set: (val: number) => {
-    data.value[1].total = val
-  }})
-const setWeek = computed({
-  get: () => data,
-  set: (val: number) => {
-      data.value[0].total = val
-  }})
-
-
-
-
-
-
 onBeforeMount(async () => {
   const {start, end} = getCurrentWeekRange()
   const weekWorkingTimes = await getWorkingTimes(userId, start, end)
-
-
-  const mockData = [{
-    start: "2024-07-17T12:28:29",
-    end: "2024-07-17T16:28:29",
-    type: "day",
-    id: 1,
-    user_id: 1,
-    description: "description",
-  }, {
-    start: "2024-10-18T12:28:29",
-    end: "2024-10-18T14:28:29",
-    type: "day",
-    id: 2,
-    user_id: 1,
-    description: "description",
-  }, {
-    start: "2024-10-17T22:28:29",
-    end: "2024-10-18T01:28:29",
-    type: "day",
-    id: 3,
-    user_id: 1,
-    description: "description",
-  }]
-
 
   const {hoursToday, hoursOtherEvents} = getTodayWorkingTimesHours(weekWorkingTimes.data)
 
   data.value[1].total = hoursToday
   data.value[0].total = hoursOtherEvents
-
-
-
-
-
-
 })
 
 
