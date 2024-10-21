@@ -17,7 +17,6 @@ import {
 import User from "@/components/User.vue"
 import { useUserStore } from "@/stores/user"
 import {
-  getUser,
   createUser,
   userRequest,
   userRequestPartial,
@@ -44,8 +43,6 @@ const onSubmit = computed(() => {
   switch (collapsibleState.value) {
     case "login": {
       return async (data: UserRequestPartial) => {
-        console.log(data);
-
         userStore.set((await getUsers(data)).data)
       }
     }
@@ -110,7 +107,7 @@ const formSchema = computed(() => {
       <FormField
         v-if="collapsibleState === 'register'"
         v-slot="{ componentField }"
-        name="user.type"
+        name="user.role"
       >
         <FormItem>
           <FormLabel>company role</FormLabel>

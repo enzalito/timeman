@@ -22,7 +22,7 @@ export type UserWithWorkingTimes = Omit<UserWithRelations, "clock">
 export type GenericUser = User | UserWithClock | UserWithWorkingTimes | UserWithRelations
 
 export const userRequest = z.object({
-  user: user.omit({ id: true, role: true })
+  user: user.omit({ id: true })
 })
 export type UserRequest = z.infer<typeof userRequest>
 

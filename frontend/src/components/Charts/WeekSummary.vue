@@ -8,9 +8,6 @@ import WeekSummaryTooltip from './WeekSummaryTooltip.vue';
 import { getWorkingTimes } from '@/api/workingTime';
 
 
-
-console.log('dd');
-
 const {userId} = defineProps<{userId: number}>()
 
 
