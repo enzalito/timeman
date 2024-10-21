@@ -8,6 +8,7 @@ import PopoverTrigger from "@/components/ui/popover/PopoverTrigger.vue"
 import PopoverContent from "@/components/ui/popover/PopoverContent.vue"
 import Button from "@/components/ui/button/Button.vue"
 import Logo from "@/components/layout/Logo.vue"
+import Avatar from "@/components/Avatar.vue"
 
 const { currentTime } = useCurrentTime()
 
@@ -34,9 +35,7 @@ const initial = username?.charAt(0).toUpperCase()
 
     <Popover v-if="username !== undefined">
       <PopoverTrigger>
-        <div class="rounded-full w-10 h-10 bg-blue-100 flex justify-center items-center">
-          <p>{{ initial }}</p>
-        </div>
+        <Avatar>{{ initial }}</Avatar>
       </PopoverTrigger>
       <PopoverContent class="w-32 grid p-1 mr-4">
         <router-link to="/profile" class="w-full">

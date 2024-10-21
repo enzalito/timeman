@@ -26,10 +26,10 @@ export const userRequest = z.object({
 })
 export type UserRequest = z.infer<typeof userRequest>
 
-export const userRequestPartial = z.object({
-  user: user.omit({ id: true, role: true }).partial()
+export const userRequestSearch = z.object({
+  user: user.omit({ id: true, email: true, role: true }).partial()
 })
-export type UserRequestPartial = z.infer<typeof userRequestPartial>
+export type UserRequestSearch = z.infer<typeof userRequestSearch>
 
 export type UserResponse = {
   data: User
@@ -39,14 +39,14 @@ export type UserBulkResponse = {
   data: User[]
 }
 
-export async function getUser(id: number): Promise<UserResponse | UserBulkResponse> {
+export async function getUser(id: number): Promise<UserResponse> {
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${id}`, {
     method: "GET"
   })
   return await response.json()
 }
 
-export async function getUsers(user: UserRequestPartial): Promise<UserBulkResponse> {
+export async function getUsers(user: UserRequestSearch): Promise<UserBulkResponse> {
   const params = new URLSearchParams(user.user)
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users?${params}`, {
     method: "GET"
