@@ -1,11 +1,11 @@
 services:
-  app:
-    volumes:
-      - ./:/opt/app
-      - /opt/app/_build
-      - /opt/app/deps
-      - /opt/app/assets/node_modules
-    command: bash -c "mix deps.get && mix phx.server"
+  # app:
+  #   volumes:
+  #     - ./:/opt/app
+  #     - /opt/app/_build
+  #     - /opt/app/deps
+  #     - /opt/app/assets/node_modules
+  #   command: bash -c "mix deps.get && mix phx.server"
   db:
     ports:
-      4532:4532
+      - 5432:5432

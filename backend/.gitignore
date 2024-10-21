@@ -11,3 +11,5 @@ erl_crash.dump
 .cache/
 .ignore
 /priv/static/swagger.json
+env.sh
+env.sh.save
