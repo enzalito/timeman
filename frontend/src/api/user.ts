@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { type Clock } from "./clockManager"
+import { type Clock } from "./clock"
 import { type WorkingTime } from "./workingTime"
 
 export const roles = ["employee", "manager"] as const

@@ -1,12 +1,32 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router"
-import Layout from "@/components/layout/Layout.vue"
+import AuthUser from "@/components/AuthUser.vue"
+import UnauthUser from "@/components/UnauthUser.vue"
+import ChartManager from "@/components/ChartManager.vue"
+import WorkingTime from "@/components/WorkingTime/WorkingTime.vue"
+import WorkingTimes from "./components/WorkingTimes.vue"
+import { useUserStore } from "@/stores/user"
 
-//document.body.style.zoom = "120%"
+
+
+
+import Layout from "./components/layout/Layout.vue"
+
+
+const userStore = useUserStore()
+const isAuthenticated = () => {
+  return userStore.user !== undefined
+}
 </script>
 
 <template>
   <Layout>
+    <AuthUser v-if="isAuthenticated()" />
+    <UnauthUser v-else />
+    <!-- TODO: use onBeforeMount instead of Suspense -->
+    <Suspense><WorkingTime v-if="isAuthenticated()" /></Suspense>
+    <WorkingTimes v-if="isAuthenticated()" />
+    <ChartManager v-if="isAuthenticated()" />
     <RouterView />
   </Layout>
 </template>

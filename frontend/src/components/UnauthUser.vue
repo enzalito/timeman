@@ -22,7 +22,8 @@ import {
   userRequest,
   userRequestPartial,
   type UserRequest,
-  type UserRequestPartial
+  type UserRequestPartial,
+  getUsers
 } from "@/api/user"
 
 const userStore = useUserStore()
@@ -43,7 +44,9 @@ const onSubmit = computed(() => {
   switch (collapsibleState.value) {
     case "login": {
       return async (data: UserRequestPartial) => {
-        userStore.set((await getUser(data)).data)
+        console.log(data);
+
+        userStore.set((await getUsers(data)).data)
       }
     }
     case "register": {
