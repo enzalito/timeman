@@ -31,7 +31,7 @@ defmodule TimemanWeb.UserJSON do
       id: user.id,
       username: user.username,
       email: user.email,
-      type: user.type,
+      role: user.role,
       working_time: case user.working_times do
         %Ecto.Association.NotLoaded{} -> nil
         [] -> nil

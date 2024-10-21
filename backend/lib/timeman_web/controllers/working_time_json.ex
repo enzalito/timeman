@@ -22,7 +22,7 @@ defmodule TimemanWeb.WorkingTimeJSON do
         start: working_time.start,
         end: working_time.end,
         description: working_time.description,
-        type: working_time.type
+        period: working_time.period
       }
     end)
   end
@@ -34,7 +34,7 @@ defmodule TimemanWeb.WorkingTimeJSON do
       end: working_time.end,
       user_id: working_time.user_id,
       description: working_time.description,
-      type: working_time.type
+      period: working_time.period
     }
   end
 

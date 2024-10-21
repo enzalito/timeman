@@ -7,7 +7,7 @@ defmodule Timeman.Repo.Migrations.CreateWorkingtime do
       add :end, :naive_datetime
       add :user_id, references(:users, on_delete: :nothing)
       add :description, :string
-      add :type, :string
+      add :period, :string
     end
 
     create index(:workingtime, [:user_id])
