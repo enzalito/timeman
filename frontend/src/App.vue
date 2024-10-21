@@ -28,5 +28,6 @@ const isAuthenticated = () => {
     <WorkingTimes v-if="isAuthenticated()" />
     <ChartManager v-if="isAuthenticated()" />
     <RouterView />
+
   </Layout>
 </template>

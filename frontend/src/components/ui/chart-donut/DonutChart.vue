@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<Pick<BaseChartProps<T>, 'data' | 'colors'
    * Render custom tooltip component.
    */
   customTooltip?: Component
+  centerLabel: string
 }>(), {
   margin: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   sortFunction: () => undefined,
@@ -57,10 +58,12 @@ const legendItems = computed(() => props.data.map((item, i) => ({
 const totalValue = computed(() => props.data.reduce((prev, curr) => {
   return prev + curr[props.category]
 }, 0))
+
+
 </script>
 
 <template>
-  <div :class="cn('w-full h-48 flex flex-col items-end', $attrs.class ?? '')">
+  <div :class="cn('w-fit h-48 flex flex-col items-end', $attrs.class ?? '')">
     <VisSingleContainer :style="{ height: isMounted ? '100%' : 'auto' }" :margin="{ left: 20, right: 20 }" :data="data">
       <ChartSingleTooltip
         :selector="Donut.selectors.segment"
@@ -71,12 +74,15 @@ const totalValue = computed(() => props.data.reduce((prev, curr) => {
       />
 
       <VisDonut
+        class="w-fit"
+        :cornerRadius="22"
+        :radius="96"
         :value="(d: Data) => d[category]"
         :sort-function="sortFunction"
         :color="colors"
-        :arc-width="type === 'donut' ? 20 : 0"
+        :arc-width="type === 'donut' ? 16 : 0"
         :show-background="false"
-        :central-label="type === 'donut' ? valueFormatter(totalValue) : ''"
+        :central-label="props.centerLabel"
         :events="{
           [Donut.selectors.segment]: {
             click: (d: Data, ev: PointerEvent, i: number, elements: HTMLElement[]) => {
@@ -92,6 +98,7 @@ const totalValue = computed(() => props.data.reduce((prev, curr) => {
             },
           },
         }"
+
       />
 
       <slot />

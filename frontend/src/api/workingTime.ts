@@ -28,10 +28,19 @@ export type WorkingTimeBulkResponse = {
   data: WorkingTime[]
 }
 
-export async function getWorkingTimes(userId: number): Promise<WorkingTimeBulkResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}`, {
-    method: "GET"
-  })
+export async function getWorkingTimes(
+  userId: number,
+  startDate?: string,
+  endDate?: string
+): Promise<WorkingTimeBulkResponse> {
+  const queryParams = startDate && endDate ? `?start=${startDate}&end=${endDate}` : ""
+
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}${queryParams}`,
+    {
+      method: "GET"
+    }
+  )
   return await response.json()
 }
 
