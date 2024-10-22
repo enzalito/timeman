@@ -5,13 +5,16 @@ defmodule Timeman.Account.User do
   schema "users" do
     field :username, :string
     field :email, :string
-    field :type, :string
+    field :role, :string
+    many_to_many :teams, Timeman.TeamContext.Team, join_through: "users_teams"
+    has_many :working_times, Timeman.Work.WorkingTime
+    has_many :clock, Timeman.Clocks.Clock
   end
 
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :email, :type])
+    |> cast(attrs, [:username, :email, :role])
     |> validate_required([:username, :email])
     |> unique_constraint(:username)
     |> unique_constraint(:email)

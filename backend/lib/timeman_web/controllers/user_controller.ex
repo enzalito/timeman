@@ -5,10 +5,15 @@ defmodule TimemanWeb.UserController do
   alias Timeman.Account
   alias Timeman.Account.User
 
+
   action_fallback TimemanWeb.FallbackController
 
-  def index(conn, params) do
-    user = Account.get_user!(params)
+  def index(conn, %{"username" => username}) do
+    user = Account.list_users(%{"username" => username})
+    render(conn, :show, user: user)
+  end
+  def index(conn, _param) do
+    user = Account.list_users()
     render(conn, :show, user: user)
   end
 
@@ -43,7 +48,7 @@ defmodule TimemanWeb.UserController do
     end
   end
 
-  # TODO: Modifier schéma swagger
+
   def swagger_definitions do
     %{
       UserRequest:
@@ -55,10 +60,12 @@ defmodule TimemanWeb.UserController do
               properties: %{
                 username: %{type: :string, description: "User name", required: true},
                 email: %{type: :string, description: "Email address", format: :email, required: true},
+                role: %{type: :string, description: "User Role", required: false},
               },
               example: %{
                 username: "Joe",
                 email: "joe@mail.com",
+                role: "employee",
               }
             },
             "The user details"
@@ -73,11 +80,13 @@ defmodule TimemanWeb.UserController do
                 id: %{type: :string, description: "ID", required: true},
                 username: %{type: :string, description: "User name", required: true},
                 email: %{type: :string, description: "Email address", format: :email, required: true},
+                role: %{type: :string, description: "User Role", required: false},
               },
               example: %{
                 id: 1,
                 username: "Joe",
                 email: "joe@mail.com",
+                role: "employee",
               }
             },
             "The user details"
@@ -87,11 +96,10 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :index do
     get "/api/users"
-    summary "Get user by email and / or username"
+    summary "Get all users with fuzzy search"
     produces "application/json"
     deprecated false
-    parameter :email, :query, :string, "Email address", example: "joe@mail.com"
-    parameter :username, :query, :string, "User name", example: "Joe"
+    parameter :username, :query, :string, "fuzzy name search", required: false, example: "Jo"
 
     response 200, "OK", Schema.ref(:UserResponse),
       example: %{
@@ -99,9 +107,11 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end
+
 
   swagger_path :show do
     get "/api/users/{user_id}"
@@ -116,6 +126,7 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end
@@ -127,7 +138,7 @@ defmodule TimemanWeb.UserController do
     deprecated false
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com"}
+        user: %{username: "Joe", email: "joe@mail.com", role: "employee"}
       }
 
     response 201, "OK", Schema.ref(:UserResponse),
@@ -136,6 +147,7 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end
@@ -148,7 +160,7 @@ defmodule TimemanWeb.UserController do
     parameter :user_id, :path, :number, "User ID", required: true, example: 1
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com"}
+        user: %{username: "Joe", email: "joe@mail.com", role: "employee"}
       }
 
     response 200, "OK", Schema.ref(:UserResponse),
@@ -157,6 +169,7 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe Mama",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end

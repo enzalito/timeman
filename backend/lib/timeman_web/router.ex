@@ -24,12 +24,14 @@ defmodule TimemanWeb.Router do
     resources "/users", UserController, except: [:new, :edit]
 
     resources "/workingtime", WorkingTimeController, except: [:index, :edit, :new, :show, :create]
-
     post "/workingtime/:user_id", WorkingTimeController, :createWithUserRelation
-
     get "/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime
-
     get "/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser
+
+    resources "/teams", TeamController
+      post "/teams/:team_id/user/:user_id", TeamController, :add_team
+      delete "/teams/:team_id/user/:user_id", TeamController, :remove_team
+
   end
 
   scope "/", TimemanWeb do
