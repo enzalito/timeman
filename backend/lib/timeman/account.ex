@@ -17,14 +17,15 @@ defmodule Timeman.Account do
       [%User{}, ...]
 
   """
-  # TODO: gérer le cas où il n'y a pas de query ?
-  def list_users(%{"query" => query}) do
+  def list_users(%{"username" => username}) do
     from(u in User,
-    where: ilike(u.username, ^"%#{query}%"),
+    where: ilike(u.username, ^"%#{username}%"),
     select: u)
     |> Repo.all()
   end
-
+  def list_users() do
+    Repo.all(User)
+  end
   @doc """
   Gets a single user.
 
@@ -40,12 +41,6 @@ defmodule Timeman.Account do
 
   """
   def get_user!(id) when is_number(id), do: Repo.get!(User, id)
-
-  def get_user!(%{"email" => email}), do: Repo.one!(from u in User, where: u.email == ^email)
-
-  def get_user!(%{"username" => username}), do: Repo.one!(from u in User, where: u.username == ^username)
-
-  def get_user!(%{"email" => email, "username" => username}), do: Repo.one!(from u in User, where: u.email == ^email and u.username == ^username)
 
   @doc """
   Creates a user.

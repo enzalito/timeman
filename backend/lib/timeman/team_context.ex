@@ -49,7 +49,6 @@ defmodule Timeman.TeamContext do
             select: t
 
     team = Repo.one!(query)
-    IO.inspect(label: "users and wt and clock")
     team
   end
   def get_team!(id, %{"with_users" => "query", "with_workingtimes" => "query"}) do
@@ -62,25 +61,25 @@ defmodule Timeman.TeamContext do
             select: t
 
     team = Repo.one!(query)
-    IO.inspect(team, label: "users and wt")
     team
   end
   def get_team!(id, %{"with_users" => "query", "with_clock" => "query"}) do
     team = Repo.get!(Team, id)
     |> Repo.preload(users: [:clock])
-    IO.inspect(label: "users and clock")
     team
   end
   def get_team!(id, %{"with_users" => "query"}) do
     team = Repo.get!(Team, id)
     |> Repo.preload(:users)
-    IO.inspect(label: "users")
     team
   end
   def get_team!(id, %{}) when is_integer(id) do
     team = Repo.get!(Team, id)
-    IO.inspect(team, label: "team")
-    IO.inspect(label: "user")
+    team
+  end
+  # TODO: Résoudre doublon get_team_by_id!
+  def get_team_by_id!(id) do
+    team = Repo.get!(Team, id)
     team
   end
 @doc """

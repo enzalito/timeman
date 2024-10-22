@@ -5,5 +5,7 @@ defmodule Timeman.Repo.Migrations.CreateTeams do
     create table(:teams) do
       add :name, :string
     end
+
+    create unique_index(:teams, [:name])
   end
 end

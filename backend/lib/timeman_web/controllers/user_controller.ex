@@ -5,14 +5,15 @@ defmodule TimemanWeb.UserController do
   alias Timeman.Account
   alias Timeman.Account.User
 
-  alias Timeman.TeamContext.Team
-  alias Timeman.Repo
 
   action_fallback TimemanWeb.FallbackController
 
-  #TODO: mettre au clair problème de query entre index et show
-  def index(conn, %{"query" => query}) do
-    user = Account.list_users(%{"query" => query})
+  def index(conn, %{"username" => username}) do
+    user = Account.list_users(%{"username" => username})
+    render(conn, :show, user: user)
+  end
+  def index(conn, _param) do
+    user = Account.list_users()
     render(conn, :show, user: user)
   end
 
@@ -25,16 +26,6 @@ defmodule TimemanWeb.UserController do
     end
   end
 
-  #TODO : vérifier les autres routes que id
-  # def show(conn, %{"username" => username}) do
-  #   user = Accounts.get_user!(%{"username" => username})
-  #   render(conn, "show.json", user: user)
-  # end
-
-  # def show(conn, %{"email" => email}) do
-  #   user = Accounts.get_user!(%{"email" => email})
-  #   render(conn, "show.json", user: user)
-  # end
   @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     user = Account.get_user!(String.to_integer(id))
@@ -57,57 +48,7 @@ defmodule TimemanWeb.UserController do
     end
   end
 
-  def add_team(conn, %{"user_id" => user_id, "team_id" => team_id}) do
-    user = Repo.get!(User, user_id)
-    |> Repo.preload(:teams)
 
-    team = Repo.get!(Team, team_id)
-
-    changeset =
-      user
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:teams, [team | user.teams])
-
-
-    case Repo.update(changeset) do
-      {:ok, _user} ->
-        conn
-        |> put_status(:ok)
-        |> json(%{message: "Team added successfully."})
-
-        {:error, changeset} ->
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{error: "Failed to add team", details: changeset.errors})
-      end
-  end
-
-  def remove_team(conn, %{"user_id" => user_id, "team_id" => team_id}) do
-    user = Repo.get!(User, user_id)
-    |> Repo.preload(:teams)
-
-    team_to_delete = Repo.get!(Team, team_id)
-    teams_to_keep = Enum.filter(user.teams, fn team -> team.id != team_to_delete end)
-
-    changeset =
-      user
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(:teams, teams_to_keep)
-
-    case Repo.update(changeset) do
-      {:ok, _user} ->
-        conn
-        |> put_status(:ok)
-        |> json(%{message: "Team deleted from user successfully."})
-
-        {:error, changeset} ->
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{error: "Failed to delete team from user", details: changeset.errors})
-    end
-  end
-
-  # TODO: Modifier schéma swagger
   def swagger_definitions do
     %{
       UserRequest:
@@ -119,10 +60,12 @@ defmodule TimemanWeb.UserController do
               properties: %{
                 username: %{type: :string, description: "User name", required: true},
                 email: %{type: :string, description: "Email address", format: :email, required: true},
+                role: %{type: :string, description: "User Role", required: false},
               },
               example: %{
                 username: "Joe",
                 email: "joe@mail.com",
+                role: "employee",
               }
             },
             "The user details"
@@ -137,11 +80,13 @@ defmodule TimemanWeb.UserController do
                 id: %{type: :string, description: "ID", required: true},
                 username: %{type: :string, description: "User name", required: true},
                 email: %{type: :string, description: "Email address", format: :email, required: true},
+                role: %{type: :string, description: "User Role", required: false},
               },
               example: %{
                 id: 1,
                 username: "Joe",
                 email: "joe@mail.com",
+                role: "employee",
               }
             },
             "The user details"
@@ -151,11 +96,10 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :index do
     get "/api/users"
-    summary "Get user by email and / or username"
+    summary "Get all users with fuzzy search"
     produces "application/json"
     deprecated false
-    parameter :email, :query, :string, "Email address", example: "joe@mail.com"
-    parameter :username, :query, :string, "User name", example: "Joe"
+    parameter :username, :query, :string, "fuzzy name search", required: false, example: "Jo"
 
     response 200, "OK", Schema.ref(:UserResponse),
       example: %{
@@ -163,9 +107,11 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end
+
 
   swagger_path :show do
     get "/api/users/{user_id}"
@@ -180,6 +126,7 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end
@@ -191,7 +138,7 @@ defmodule TimemanWeb.UserController do
     deprecated false
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com"}
+        user: %{username: "Joe", email: "joe@mail.com", role: "employee"}
       }
 
     response 201, "OK", Schema.ref(:UserResponse),
@@ -200,6 +147,7 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end
@@ -212,7 +160,7 @@ defmodule TimemanWeb.UserController do
     parameter :user_id, :path, :number, "User ID", required: true, example: 1
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com"}
+        user: %{username: "Joe", email: "joe@mail.com", role: "employee"}
       }
 
     response 200, "OK", Schema.ref(:UserResponse),
@@ -221,6 +169,7 @@ defmodule TimemanWeb.UserController do
           id: 1,
           username: "Joe Mama",
           email: "joe@mail.com",
+          role: "employee",
         }
       }
   end

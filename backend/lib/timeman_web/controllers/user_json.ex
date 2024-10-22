@@ -16,34 +16,70 @@ defmodule TimemanWeb.UserJSON do
   def show(%{user: user}) do
     %{data: data(user)}
   end
-  def show(%{user: user}) do
-    %{data: data(user)}
-  end
 
   def data(users) when is_list(users) do
     Enum.map(users, &data/1)
   end
 
-  # TODO: gérer les champs vides
   def data(%User{} = user) do
 
-    %{
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
+    # TODO: Revoir syntaxe
+
+    working_time =
+      if Ecto.assoc_loaded?(user.working_times) do
+      %{
       working_time: case user.working_times do
-        %Ecto.Association.NotLoaded{} -> nil
         [] -> nil
-        WorkingTimeJSON.index(user.working_times)
         working_times when is_list(working_times) -> Enum.map(working_times, &WorkingTimeJSON.data/1)
-      end,
+      end
+    }
+    end
+
+    clock =
+      if Ecto.assoc_loaded?(user.clock) do
+        %{
       clock: case user.clock do
-        %Ecto.Association.NotLoaded{} -> nil
         [] -> nil
         clocks when is_list(clocks) -> Enum.map(clocks, &ClockJSON.data/1)
       end
     }
   end
 
+    case {Ecto.assoc_loaded?(user.working_times), Ecto.assoc_loaded?(user.clock)} do
+      {true, true} ->
+        %{
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          working_time: working_time,
+          clock: clock
+        }
+      {true, false} ->
+        %{
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          working_time: working_time,
+        }
+      {false, true} ->
+        %{
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          clock: clock
+        }
+      {false, false} ->
+        %{
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        }
+
+    end
+
+    end
 end

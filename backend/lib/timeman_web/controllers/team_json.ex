@@ -18,18 +18,25 @@ defmodule TimemanWeb.TeamJSON do
     %{data: data(team)}
   end
 
-  #TODO : gérer les champs vides
   defp data(%Team{} = team) do
 
-    %{
-      id: team.id,
-      name: team.name,
-      members: case team.users do
-        %Ecto.Association.NotLoaded{} -> nil
-        [] -> nil
-        users -> UserJSON.data(users)
-      end
-    }
+    if Ecto.assoc_loaded?(team.users) do
+      %{
+        id: team.id,
+        name: team.name,
+        users: case team.users do
+          %Ecto.Association.NotLoaded{} -> nil
+          [] -> nil
+          users -> UserJSON.data(users)
+        end
+      }
+    else
+      %{
+        id: team.id,
+        name: team.name
+      }
+
+    end
 
 
   end

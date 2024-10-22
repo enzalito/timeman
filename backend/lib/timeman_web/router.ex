@@ -22,16 +22,16 @@ defmodule TimemanWeb.Router do
     get "/clocks/:user_id", ClockController, :clocks_by_user
 
     resources "/users", UserController, except: [:new, :edit]
-      post "/users/add_team", UserController, :add_team
-      post "/users/remove_team", UserController, :remove_team
 
     resources "/workingtime", WorkingTimeController, except: [:index, :edit, :new, :show, :create]
-      post "/workingtime/:user_id", WorkingTimeController, :createWithUserRelation
-      get "/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime
-      get "/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser
+    post "/workingtime/:user_id", WorkingTimeController, :createWithUserRelation
+    get "/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime
+    get "/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser
 
-      # TODO : gérer les except
     resources "/teams", TeamController
+      post "/teams/:team_id/user/:user_id", TeamController, :add_team
+      delete "/teams/:team_id/user/:user_id", TeamController, :remove_team
+
   end
 
   scope "/", TimemanWeb do
