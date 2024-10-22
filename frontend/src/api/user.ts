@@ -1,4 +1,6 @@
 import { z } from "zod"
+import { type Clock } from "./clock"
+import { type WorkingTime } from "./workingTime"
 
 export const roles = ["employee", "manager"] as const
 export const role = z.enum(roles)
@@ -7,41 +9,44 @@ export const user = z.object({
   id: z.number().min(1),
   username: z.string(),
   email: z.string().email(),
-  type: role
+  role: role
 })
 export type User = z.infer<typeof user>
+
+export type UserWithRelations = User & {
+  clock: Clock
+  workingTimes: WorkingTime[]
+}
+export type UserWithClock = Omit<UserWithRelations, "workingTimes">
+export type UserWithWorkingTimes = Omit<UserWithRelations, "clock">
+export type GenericUser = User | UserWithClock | UserWithWorkingTimes | UserWithRelations
 
 export const userRequest = z.object({
   user: user.omit({ id: true })
 })
 export type UserRequest = z.infer<typeof userRequest>
 
-export const userRequestPartial = z.object({
-  user: user.omit({ id: true }).partial()
+export const userRequestSearch = z.object({
+  user: user.omit({ id: true, email: true, role: true }).partial()
 })
-export type UserRequestPartial = z.infer<typeof userRequestPartial>
+export type UserRequestSearch = z.infer<typeof userRequestSearch>
 
-export const userResponse = z.object({
-  data: user
-})
-export type UserResponse = z.infer<typeof userResponse>
+export type UserResponse = {
+  data: User
+}
 
-export async function getUser(user: UserRequestPartial): Promise<UserResponse>
-export async function getUser(userId: number): Promise<UserResponse>
-export async function getUser(user: number | UserRequestPartial): Promise<UserResponse> {
-  if (typeof user === "number") {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${user}`, {
-      method: "GET"
-    })
-    return await response.json()
-  }
+export type UserBulkResponse = {
+  data: User[]
+}
 
-  for (let param in user.user) {
-    let key = param as keyof typeof user.user
-    if (user.user[key] === undefined) {
-      delete user.user[key]
-    }
-  }
+export async function getUser(id: number): Promise<UserResponse> {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${id}`, {
+    method: "GET"
+  })
+  return await response.json()
+}
+
+export async function getUsers(user: UserRequestSearch): Promise<UserBulkResponse> {
   const params = new URLSearchParams(user.user)
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users?${params}`, {
     method: "GET"

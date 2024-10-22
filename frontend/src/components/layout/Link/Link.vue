@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '../../ui/button';
-import {  ChartColumn, HomeIcon, Settings, Users } from 'lucide-vue-next';
+import {  ChartColumn, HomeIcon, Users } from 'lucide-vue-next';
 
 const {element, mode = "desktop"} = defineProps<{element: keyof typeof links, mode?: "desktop" | "mobile"}>()
 
@@ -17,8 +17,8 @@ const links = {
   },
   "Settings": {
     Icon: Users,
-    text: "Teams",
-    link: "/teams"
+    text: "Users",
+    link: "/users"
   },
 
 

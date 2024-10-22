@@ -1,3 +1,4 @@
 <template>
-  TeamsPage
+    UsersPage
 </template>
+  
