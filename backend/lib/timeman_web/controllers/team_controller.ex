@@ -154,24 +154,10 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :index do
     get "/api/teams"
-    summary "Get all teams"
+    summary "Get all teams with fuzzy search"
     produces "application/json"
     deprecated false
-    response 200, "OK", Schema.ref(:TeamResponse),
-      example: %{
-        data: %{
-          id: 1,
-          name: "Marketing",
-        }
-      }
-  end
-
-  swagger_path :fuzzy_search do
-    get "/api/teams"
-    summary "Get teams by fuzzy search"
-    produces "application/json"
-    deprecated false
-    parameter :name, :query, :string, "fuzzy name search", example: "Ma"
+    parameter :name, :query, :string, "fuzzy name search", required: false, example: "Ma"
 
     response 200, "OK", Schema.ref(:TeamResponse),
       example: %{
@@ -181,6 +167,7 @@ defmodule TimemanWeb.TeamController do
         }
       }
   end
+
 
   #TODO: spécifier les 3 exemples possibles
   swagger_path :show do
