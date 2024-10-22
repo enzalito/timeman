@@ -45,6 +45,16 @@ export function getCurrentWeekText(todayDate?: Date) {
   }
 }
 
+export function formatDateTime(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0") // Months are 0-based
+  const day = String(date.getDate()).padStart(2, "0")
+  const hours = String(date.getHours()).padStart(2, "0")
+  const minutes = String(date.getMinutes()).padStart(2, "0")
+  const seconds = String(date.getSeconds()).padStart(2, "0")
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
 export function getCurrentWeekRange() {
   // Get today's date
   const today = new Date()
@@ -59,22 +69,16 @@ export function getCurrentWeekRange() {
   endOfWeek.setDate(startOfWeek.getDate() + 4) // Move to Friday
   endOfWeek.setHours(23, 59, 59, 999) // Set time to 23:59:59
 
-  // Format the dates as "YYYY-MM-DD HH:mm:ss"
-  const formatDateTime = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0") // Months are 0-based
-    const day = String(date.getDate()).padStart(2, "0")
-    const hours = String(date.getHours()).padStart(2, "0")
-    const minutes = String(date.getMinutes()).padStart(2, "0")
-    const seconds = String(date.getSeconds()).padStart(2, "0")
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
-  }
-
-  const formattedStart = formatDateTime(startOfWeek)
-  const formattedEnd = formatDateTime(endOfWeek)
+  
 
   // Return the formatted week range
-  return { start: formattedStart, end: formattedEnd }
+  return { start: startOfWeek, end: endOfWeek }
+  
+}
+
+export function getCurrentWeekRangeStr() {
+  const {start, end} = getCurrentWeekRange()
+  return {start: formatDateTime(start), end: formatDateTime(end)}
 }
 
 const msToHrs = (ms: number) => ms / (1000 * 60 * 60)
