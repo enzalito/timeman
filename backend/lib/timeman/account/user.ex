@@ -5,7 +5,7 @@ defmodule Timeman.Account.User do
   schema "users" do
     field :username, :string
     field :email, :string
-    field :role, :string
+    field :role, :string, default: "employee"
     many_to_many :teams, Timeman.TeamContext.Team, join_through: "users_teams"
     has_many :working_times, Timeman.Work.WorkingTime
     has_many :clock, Timeman.Clocks.Clock
@@ -18,5 +18,6 @@ defmodule Timeman.Account.User do
     |> validate_required([:username, :email])
     |> unique_constraint(:username)
     |> unique_constraint(:email)
+    |> unique_constraint(:role)
   end
 end

@@ -78,6 +78,12 @@ defmodule Timeman.Account do
     |> Repo.update()
   end
 
+  # def update_role(%User{} = user, attrs) do
+  #   user
+  #   |> User.changeset(attrs)
+  #   |> Repo.update()
+  # end
+
   @doc """
   Deletes a user.
 

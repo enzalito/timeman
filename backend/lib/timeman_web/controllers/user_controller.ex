@@ -33,9 +33,18 @@ defmodule TimemanWeb.UserController do
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Account.get_user!(id)
+    user = Account.get_user!(String.to_integer(id))
 
     with {:ok, %User{} = user} <- Account.update_user(user, user_params) do
+      render(conn, :show, user: user)
+    end
+  end
+
+  def set_role(conn, %{"id" => id,"user" => %{"role" => role}}) do
+    user = Account.get_user!(String.to_integer(id))
+
+    changeset = User.changeset(user, %{"role" => role})
+    with {:ok, %User{} = user} <- Account.update_user(user, %{"role" => role}) do
       render(conn, :show, user: user)
     end
   end
@@ -48,7 +57,6 @@ defmodule TimemanWeb.UserController do
     end
   end
 
-
   def swagger_definitions do
     %{
       UserRequest:
@@ -60,12 +68,10 @@ defmodule TimemanWeb.UserController do
               properties: %{
                 username: %{type: :string, description: "User name", required: true},
                 email: %{type: :string, description: "Email address", format: :email, required: true},
-                role: %{type: :string, description: "User Role", required: false},
               },
               example: %{
                 username: "Joe",
                 email: "joe@mail.com",
-                role: "employee",
               }
             },
             "The user details"
@@ -91,6 +97,21 @@ defmodule TimemanWeb.UserController do
             },
             "The user details"
         end,
+        UserRoleRequest:
+          swagger_schema do
+            title "UserRoleRequest"
+            description "request schema to set new role"
+            property :user,
+              %Schema{
+                properties: %{
+                  role: %{type: :string, description: "role", required: true}
+              },
+              example: %{
+                role: "manager"
+                }
+            },
+          "The user role"
+          end
     }
   end
 
@@ -138,7 +159,7 @@ defmodule TimemanWeb.UserController do
     deprecated false
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com", role: "employee"}
+        user: %{username: "Joe", email: "joe@mail.com"}
       }
 
     response 201, "OK", Schema.ref(:UserResponse),
@@ -160,7 +181,7 @@ defmodule TimemanWeb.UserController do
     parameter :user_id, :path, :number, "User ID", required: true, example: 1
     parameter :user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com", role: "employee"}
+        user: %{username: "Joe", email: "joe@mail.com"}
       }
 
     response 200, "OK", Schema.ref(:UserResponse),
@@ -173,7 +194,27 @@ defmodule TimemanWeb.UserController do
         }
       }
   end
+  swagger_path :set_role do
+    put "/api/users/set_role/{user_id}"
+    summary "Update role from user"
+    produces "application/json"
+    deprecated false
+    parameter :user_id, :path, :number, "User ID", required: true, example: 1
+    parameter :user, :body, Schema.ref(:UserRoleRequest), "The user new role",
+      example: %{
+        role: "manager"
+      }
 
+    response 200, "OK", Schema.ref(:UserResponse),
+      example: %{
+        user: %{
+          id: 1,
+          username: "Joe Mama",
+          email: "joe@mail.com",
+          role: "manager",
+        }
+      }
+  end
   swagger_path :delete do
     PhoenixSwagger.Path.delete "/api/users/{user_id}"
     summary "Delete user"
