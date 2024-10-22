@@ -1,6 +1,6 @@
 type QueryParams = Record<string, string | number | boolean>
 
-function toQueryParams(params?: QueryParams): string {
+export function toQueryParams(params?: QueryParams): string {
   const paramsStr: string[] = []
   for (let key in params) {
     if (params[key] === undefined) {

@@ -33,6 +33,10 @@
 
     --ring: 215 20.22% 65.1%;
     --radius: 0.5rem;
+
+    ::placeholder {
+      opacity: 0.5;
+    }
   }
 
   .dark {
@@ -64,6 +68,10 @@
     --destructive-foreground: 60 9.1% 97.8%;
 
     --ring: 24 5.7% 82.9%;
+
+    ::placeholder {
+      opacity: 0.5;
+    }
   }
 }
 

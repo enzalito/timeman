@@ -6,6 +6,7 @@ import {
   type UserWithWorkingTimes,
   type UserWithRelations
 } from "@/api/user"
+import { toQueryParams } from "@/api/lib/utils"
 
 export const team = z.object({
   id: z.number().min(1),
@@ -91,8 +92,8 @@ export async function createTeam(team: TeamRequest): Promise<TeamResponse> {
   return await response.json()
 }
 
-export async function updateTeam(team: TeamRequest): Promise<TeamResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams`, {
+export async function updateTeam(id: number, team: TeamRequest): Promise<TeamResponse> {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(team)
