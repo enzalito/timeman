@@ -24,38 +24,10 @@ const unfocus = () => {
 const suggestedUsers = ref<User[] | undefined>()
 const suggestedTeams = ref<Team[] | undefined>()
 const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
-  // FIXME
   const { value } = event.target as HTMLInputElement
-  //  suggestedUsers.value = await getUsers({user: {username: value}})
+  suggestedUsers.value = (await getUsers({ user: { username: value } })).data
   if (searchTeams) {
-    //  suggestedTeams.value = await getTeams({team: {name: value}})
-  }
-
-  if (value === "u") {
-    suggestedUsers.value = [
-      { id: 1, username: "test", email: "test@tos.mail", role: "employee" },
-      { id: 2, username: "testi", email: "testi@tos.mail", role: "employee" },
-      { id: 3, username: "testo", email: "testo@tos.mail", role: "employee" }
-    ]
-    suggestedTeams.value = undefined
-  }
-  if (value === "t") {
-    suggestedTeams.value = [
-      { id: 1, name: "testeam" },
-      { id: 2, name: "testeam2" }
-    ]
-    suggestedUsers.value = undefined
-  }
-  if (value === "tu") {
-    suggestedUsers.value = [
-      { id: 1, username: "test", email: "test@tos.mail", role: "employee" },
-      { id: 2, username: "testi", email: "testi@tos.mail", role: "employee" },
-      { id: 3, username: "testo", email: "testo@tos.mail", role: "employee" }
-    ]
-    suggestedTeams.value = [
-      { id: 1, name: "testeam" },
-      { id: 2, name: "testeam2" }
-    ]
+    suggestedTeams.value = (await getTeams({ team: { name: value } })).data
   }
 }, 500)
 </script>
@@ -71,7 +43,7 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
         @blur="unfocus"
         @input="updateSearchSuggestions"
       />
-      <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <Search class="absolute left-2.5 top-2.5 h-4 w-4 opacity-50" />
     </div>
     <div
       v-show="isFocused"
@@ -104,7 +76,7 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
             <li v-for="team in suggestedTeams">
               <div
                 class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
-                @click="$emit('teamSelected', user)"
+                @click="$emit('teamSelected', team)"
               >
                 <Avatar class="h-8 w-8"><Users class="h-4 w-4 stroke-current" /></Avatar>
                 {{ team.name }}
