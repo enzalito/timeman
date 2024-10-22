@@ -17,6 +17,10 @@ defmodule TimemanWeb.TeamController do
     teams = TeamContext.list_teams(%{"name" => name})
     render(conn, :index, teams: teams)
   end
+  def index(conn, _param) do
+    teams = TeamContext.list_teams()
+    render(conn, :index, teams: teams)
+  end
 
   def create(conn, %{"team" => team_params}) do
     with {:ok, %Team{} = team} <- TeamContext.create_team(team_params) do
