@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
 import Card from '../Card.vue';
-import { getCurrentWeekRange } from '@/lib/utils';
-import { getWorkingTimes, type WorkingTimeResponse } from '@/api/workingTime';
-import { onBeforeMount, onMounted, ref } from 'vue';
-import type { UserResponse, UserWithWorkingTimes } from '@/api/user';
-import { getTeam, type TeamWithUsersResponse } from '@/api/team';
+import { getCurrentWeekRangeStr } from '@/lib/utils';
+import { type WorkingTimeResponse } from '@/api/workingTime';
+import { onBeforeMount, ref } from 'vue';
+import type { UserWithWorkingTimes } from '@/api/user';
+import { getTeam } from '@/api/team';
 
 function calculateTotalHours<Data extends {start: string, end: string}>(data: Data[]) {
     let totalHours = 0;
@@ -25,11 +25,7 @@ function calculateTotalHours<Data extends {start: string, end: string}>(data: Da
     return totalHours;
 }
 
-
-const {teamId} = defineProps<{teamId: number}>()
-
-
-const {start, end} = getCurrentWeekRange()
+const {start, end} = getCurrentWeekRangeStr()
 
 
 function filterWorkingTimes(workingTimes: WorkingTimeResponse['data'][], start: string, end: string) {

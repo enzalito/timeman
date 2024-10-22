@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DonutChart } from '@/components/ui/chart-donut'
 import Card from '../Card.vue';
-import { getCurrentWeekRange, getCurrentWeekText, getTodayWorkingTimesHours} from '@/lib/utils';
+import { getCurrentWeekRangeStr, getCurrentWeekText, getTodayWorkingTimesHours} from '@/lib/utils';
 import { ArrowRight } from 'lucide-vue-next';
 import { computed, onBeforeMount, ref } from 'vue';
 import WeekSummaryTooltip from './WeekSummaryTooltip.vue';
@@ -21,7 +21,7 @@ const data = ref([
 ])
 
 onBeforeMount(async () => {
-  const {start, end} = getCurrentWeekRange()
+  const {start, end} = getCurrentWeekRangeStr()
   const weekWorkingTimes = await getWorkingTimes(userId, start, end)
 
   const {hoursToday, hoursOtherEvents} = getTodayWorkingTimesHours(weekWorkingTimes.data)
