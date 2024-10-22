@@ -9,6 +9,7 @@ defmodule TimemanWeb.TeamController do
   alias Timeman.TeamContext
   alias Timeman.TeamContext.Team
   alias Timeman.Repo
+  import Ecto.Query
 
 
   action_fallback TimemanWeb.FallbackController
@@ -91,28 +92,26 @@ defmodule TimemanWeb.TeamController do
   end
 
   def remove_team(conn, %{"user_id" => user_id, "team_id" => team_id}) do
+    #TODO: set les query en integer  et bouger la logique dans le contexte
+    user_id = String.to_integer(user_id)
+    team_id = String.to_integer(team_id)
+
     user = Repo.get!(User, user_id)
     |> Repo.preload(:teams)
 
-    team_to_delete = Repo.get!(Team, team_id)
-    teams_to_keep = Enum.filter(user.teams, fn team -> team.id != team_to_delete end)
+    team = Repo.get!(Team, team_id)
+    if team in user.teams do
+      Repo.delete_all(from ut in "users_teams",
+      where: ut.user_id == ^user_id and ut.team_id == ^team_id)
 
-    changeset =
-      user
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(:teams, teams_to_keep)
-
-      case Repo.update(changeset) do
-        {:ok, _user} ->
-          conn
-          |> put_status(:ok)
-          |> send_resp(:ok, "")
-
-          {:error, changeset} ->
-            conn
-            |> put_status(:unprocessable_entity)
-            |> send_resp(:unprocessable_entity, "")
-        end
+      conn
+      |> put_status(:ok)
+      |> send_resp(:ok, "")
+    else
+      conn
+      |> put_status(:unprocessable_entity)
+      |> send_resp(:unprocessable_entity, "")
+    end
   end
 
 
