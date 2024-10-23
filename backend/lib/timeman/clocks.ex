@@ -8,6 +8,7 @@ defmodule Timeman.Clocks do
 
   alias Timeman.Clocks.Clock
 
+  alias Timeman.Work
   @doc """
   Returns the list of clocks.
 
@@ -54,7 +55,34 @@ defmodule Timeman.Clocks do
     |> Clock.changeset(attrs)
     |> Repo.insert()
   end
+  def create_or_update_clock(attrs \\ %{}) do
+    changeset = Clock.changeset(%Clock{}, attrs)
 
+    Repo.insert!(
+      changeset,
+      on_conflict: :replace_all,
+      conflict_target: [:user_id]
+    )
+  end
+  def create_working_time(clock) do
+    user_id = String.to_integer(Map.get(clock, "user_id"))
+
+    description = Map.get(clock, "description")
+    query = from c in Clock,
+                where: c.user_id == ^user_id,
+                select: c
+    old_clock = Repo.one(query)
+    start_time = old_clock.time
+    end_time = Map.get(clock, "time")
+    working_time = %{
+      start: start_time,
+      end: end_time,
+      description: description,
+      period: "day",
+      user_id: user_id
+    }
+    Work.create_working_time(working_time)
+  end
   @doc """
   Updates a clock.
 
@@ -105,6 +133,7 @@ defmodule Timeman.Clocks do
   def list_clocks_from_user(user_id) do
     Repo.all(from c in Clock, where: c.user_id == ^user_id)
   end
+
 
   # def get_clock_by_user_id!(user_id) do
   #   Repo.get_by!(Clock, user_id: user_id)

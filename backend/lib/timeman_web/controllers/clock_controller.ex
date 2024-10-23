@@ -11,16 +11,27 @@ defmodule TimemanWeb.ClockController do
     clocks = Clocks.list_clocks_from_user(user_id)
     render(conn, "index.json", clocks: clocks)
   end
+  # TODO: delete
+  # def create_clock_for_user(conn, %{"user_id" => user_id, "clock" => clock}) do
+  #   clock = Map.put(clock, "user_id", user_id)
 
-  def create_clock_for_user(conn, %{"user_id" => user_id, "clock" => clock}) do
+  #   with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock) do
+  #     conn
+  #     |> put_status(:created)
+  #     |> put_resp_header("location", ~p"/api/clocks/#{user_id}")
+  #     |> render(:show, clock: clock)
+  #   end
+  # end
+  # TODO : rename
+  def create_or_update_clock(conn, %{"user_id" => user_id, "data" => clock}) do
     clock = Map.put(clock, "user_id", user_id)
-
-    with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/clocks/#{user_id}")
-      |> render(:show, clock: clock)
+    status = Map.get(clock, "status")
+    if status == false do
+      IO.inspect("yep")
+      Clocks.create_working_time(clock)
     end
+    clock = Clocks.create_or_update_clock(clock)
+    render(conn, :show, clock: clock)
   end
 
   def swagger_definitions do

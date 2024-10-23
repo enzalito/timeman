@@ -20,6 +20,7 @@ defmodule TimemanWeb.Router do
 
     post "/clocks/:user_id", ClockController, :create_clock_for_user
     get "/clocks/:user_id", ClockController, :clocks_by_user
+    post "/clocks/upsert/:user_id", ClockController, :create_or_update_clock
 
     resources "/users", UserController, except: [:new, :edit]
     put "/users/set_role/:id", UserController, :set_role

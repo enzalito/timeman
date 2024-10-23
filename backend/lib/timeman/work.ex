@@ -35,7 +35,7 @@ defmodule Timeman.Work do
 
   """
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
-  
+
   def get_working_time_by_Id_UserId!(user_id) do
     Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
   end
@@ -89,6 +89,7 @@ defmodule Timeman.Work do
 
   """
   def create_working_time(attrs \\ %{}) do
+    IO.inspect(attrs, label: "in create")
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
     |> Repo.insert()
