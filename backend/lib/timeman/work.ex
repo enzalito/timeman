@@ -37,41 +37,46 @@ defmodule Timeman.Work do
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
 
   def get_working_time_by_Id_UserId!(user_id) do
-    Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
+    Repo.all(from(w in WorkingTime, where: w.user_id == ^user_id))
   end
 
-  def get_working_time_for_user!(user_id, start_time, end_time) when is_nil(end_time) and is_nil(start_time) do
+  def get_working_time_for_user!(user_id, start_time, end_time)
+      when is_nil(end_time) and is_nil(start_time) do
     query =
-      from wt in WorkingTime,
+      from(wt in WorkingTime,
         where: wt.user_id == ^user_id,
         select: wt
+      )
 
     Repo.all(query)
   end
 
   def get_working_time_for_user!(user_id, start_time, end_time) when is_nil(end_time) do
     query =
-      from wt in WorkingTime,
+      from(wt in WorkingTime,
         where: wt.user_id == ^user_id and wt.start >= ^start_time,
         select: wt
+      )
 
     Repo.all(query)
   end
 
   def get_working_time_for_user!(user_id, start_time, end_time) when is_nil(start_time) do
     query =
-      from wt in WorkingTime,
+      from(wt in WorkingTime,
         where: wt.user_id == ^user_id and wt.end >= ^end_time,
         select: wt
+      )
 
     Repo.all(query)
   end
 
   def get_working_time_for_user!(user_id, start_time, end_time) do
     query =
-      from wt in WorkingTime,
+      from(wt in WorkingTime,
         where: wt.user_id == ^user_id and wt.start >= ^start_time and wt.end <= ^end_time,
         select: wt
+      )
 
     Repo.all(query)
   end
@@ -90,6 +95,7 @@ defmodule Timeman.Work do
   """
   def create_working_time(attrs \\ %{}) do
     IO.inspect(attrs, label: "in create")
+
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
     |> Repo.insert()

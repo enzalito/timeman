@@ -9,6 +9,7 @@ defmodule Timeman.Clocks do
   alias Timeman.Clocks.Clock
 
   alias Timeman.Work
+
   @doc """
   Returns the list of clocks.
 
@@ -55,6 +56,7 @@ defmodule Timeman.Clocks do
     |> Clock.changeset(attrs)
     |> Repo.insert()
   end
+
   def create_or_update_clock(attrs \\ %{}) do
     changeset = Clock.changeset(%Clock{}, attrs)
 
@@ -64,16 +66,27 @@ defmodule Timeman.Clocks do
       conflict_target: [:user_id]
     )
   end
+
   def create_working_time(clock) do
     user_id = String.to_integer(Map.get(clock, "user_id"))
 
     description = Map.get(clock, "description")
-    query = from c in Clock,
-                where: c.user_id == ^user_id,
-                select: c
+
+    query =
+      from(c in Clock,
+        where: c.user_id == ^user_id,
+        select: c
+      )
+
     old_clock = Repo.one(query)
     start_time = old_clock.time
     end_time = Map.get(clock, "time")
+    start_hour = start_time.hour
+    IO.inspect(start_hour, label: "start hour")
+    {:ok, end_time} = NaiveDateTime.from_iso8601(end_time)
+    end_hour = end_time.hour
+    IO.inspect(end_hour, label: "end hour")
+
     working_time = %{
       start: start_time,
       end: end_time,
@@ -81,8 +94,57 @@ defmodule Timeman.Clocks do
       period: "day",
       user_id: user_id
     }
-    Work.create_working_time(working_time)
+
+    add_working_time(working_time)
   end
+
+  defp add_working_time(working_time) do
+    start_time = working_time.start
+    end_time = working_time.end
+    start_hour = start_time.hour
+    nightHoursEnd = %NaiveDateTime{end_time | hour: 22, minute: 00, second: 00}
+    nightHoursStart = %NaiveDateTime{start_time | hour: 6, minute: 00, second: 00}
+    end_hour = end_time.hour
+    wt1 = working_time
+    wt2 = working_time
+
+    # TODO: cas de minute: 0
+    cond do
+      start_time < nightHoursStart && end_time >= nightHoursStart ->
+        new_end_time = %NaiveDateTime{end_time | hour: 5, minute: 59}
+        new_start_time = %NaiveDateTime{start_time | hour: 6, minute: 00}
+        wt1 = %{working_time | end: new_end_time}
+        wt2 = %{working_time | start: new_start_time}
+        Work.create_working_time(wt1)
+        add_working_time(wt2)
+
+      end_time >= nightHoursEnd && start_time < nightHoursEnd ->
+        new_end_time = %NaiveDateTime{end_time | hour: 21, minute: 59}
+        new_start_time = %NaiveDateTime{start_time | hour: 22, minute: 00}
+        wt1 = %{working_time | end: new_end_time}
+        wt2 = %{working_time | start: new_start_time}
+        Work.create_working_time(wt1)
+        add_working_time(wt2)
+
+      true ->
+        Work.create_working_time(working_time)
+        :ok
+    end
+  end
+
+  # func addWorkingTime(workingTime) {
+  #   var wt1, wt2
+  #   if nightHoursEnd in workingTime {
+  #      wt1, wt2 = split(workingTime, nightHoursEnd)
+  #   } else if nightHoursStart in workingTime {
+  #       wt1, wt2 = split(workingTime, nightHoursStart)
+  #   } else {
+  #     insert(workingTime)
+  #     return
+  #   }
+  #   insert(wt1)
+  #   addWorkingTime(w2)
+  #   }
   @doc """
   Updates a clock.
 
@@ -131,9 +193,8 @@ defmodule Timeman.Clocks do
   end
 
   def list_clocks_from_user(user_id) do
-    Repo.all(from c in Clock, where: c.user_id == ^user_id)
+    Repo.all(from(c in Clock, where: c.user_id == ^user_id))
   end
-
 
   # def get_clock_by_user_id!(user_id) do
   #   Repo.get_by!(Clock, user_id: user_id)
