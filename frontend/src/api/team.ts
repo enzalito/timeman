@@ -58,11 +58,11 @@ export async function getTeam(
 ): Promise<TeamWithUsersResponse<UserWithClock>>
 export async function getTeam(
   id: number,
-  options: { withUsers: true; withWorkingTime: true }
+  options: { withUsers: true; withWorkingTimes: true }
 ): Promise<TeamWithUsersResponse<UserWithWorkingTimes>>
 export async function getTeam(
   id: number,
-  options: { withUsers: true; withClock: true; withWorkingTime: true }
+  options: { withUsers: true; withClock: true; withWorkingTimes: true }
 ): Promise<TeamWithUsersResponse<UserWithRelations>>
 export async function getTeam(
   id: number,
