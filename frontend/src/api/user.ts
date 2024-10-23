@@ -4,6 +4,7 @@ import { type WorkingTime } from "./workingTime"
 
 export const roles = ["employee", "manager"] as const
 export const role = z.enum(roles)
+export type Role = z.infer<typeof role>
 
 export const user = z.object({
   id: z.number().min(1),
@@ -26,10 +27,15 @@ export const userRequest = z.object({
 })
 export type UserRequest = z.infer<typeof userRequest>
 
-export const userRequestSearch = z.object({
-  user: user.omit({ id: true, email: true, role: true }).partial()
+export const userSearchRequest = z.object({
+  user: z.object({ username: z.string().optional() })
 })
-export type UserRequestSearch = z.infer<typeof userRequestSearch>
+export type UserSearchRequest = z.infer<typeof userSearchRequest>
+
+export const userRoleRequest = z.object({
+  user: z.object({ role: role })
+})
+export type UserRoleRequest = z.infer<typeof userRoleRequest>
 
 export type UserResponse = {
   data: User
@@ -46,7 +52,7 @@ export async function getUser(id: number): Promise<UserResponse> {
   return await response.json()
 }
 
-export async function getUsers(user: UserRequestSearch): Promise<UserBulkResponse> {
+export async function getUsers(user: UserSearchRequest): Promise<UserBulkResponse> {
   const params = new URLSearchParams(user.user)
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users?${params}`, {
     method: "GET"
@@ -75,5 +81,13 @@ export async function updateUser(user: UserRequest): Promise<UserResponse> {
 export async function deleteUser(userId: number) {
   await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`, {
     method: "DELETE"
+  })
+}
+
+export async function setRole(userId: number, role: UserRoleRequest) {
+  await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/set_role/${userId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(role)
   })
 }

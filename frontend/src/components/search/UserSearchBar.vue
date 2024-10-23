@@ -4,9 +4,9 @@ import { useDebounceFn } from "@vueuse/core"
 import { getUsers, type User } from "@/api/user"
 import { getTeams, type Team } from "@/api/team"
 
-import { Search, Users } from "lucide-vue-next"
-import Input from "@/components/ui/input/Input.vue"
+import { Users } from "lucide-vue-next"
 import Avatar from "@/components/Avatar.vue"
+import SearchBar from "@/components/search/SearchBar.vue"
 
 const { searchTeams } = defineProps<{ searchTeams?: boolean }>()
 
@@ -34,17 +34,7 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
 
 <template>
   <div class="relative w-full max-w-md">
-    <div class="relative">
-      <Input
-        type="search"
-        placeholder="Search..."
-        class="pr-10 pl-8 rounded-md border border-muted focus:border-primary focus:ring-primary"
-        @focus="focus"
-        @blur="unfocus"
-        @input="updateSearchSuggestions"
-      />
-      <Search class="absolute left-2.5 top-2.5 h-4 w-4 opacity-50" />
-    </div>
+    <SearchBar @focus="focus" @blur="unfocus" @input="updateSearchSuggestions" />
     <div
       v-show="isFocused"
       class="absolute z-10 w-full mt-2 overflow-auto max-h-[300px] rounded-md border border-muted bg-background shadow-lg"
