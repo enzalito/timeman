@@ -25,8 +25,7 @@ defmodule TimemanWeb.Router do
     resources "/users", UserController, except: [:new, :edit]
     put "/users/set_role/:id", UserController, :set_role
 
-    resources "/workingtime", WorkingTimeController, except: [:index, :edit, :new, :show, :create]
-    post "/workingtime/:user_id", WorkingTimeController, :createWithUserRelation
+    resources "/workingtime", WorkingTimeController, except: [:index, :delete, :edit, :new, :show, :create]
     get "/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime
     get "/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser
 
