@@ -95,10 +95,30 @@ defmodule Timeman.Work do
   """
   def create_working_time(attrs \\ %{}) do
     IO.inspect(attrs, label: "in create")
+    result = get_period(attrs)
 
     %WorkingTime{}
-    |> WorkingTime.changeset(attrs)
+    |> WorkingTime.changeset(result)
     |> Repo.insert()
+  end
+
+  def get_period(attrs) do
+    IO.inspect(attrs, label: "attrs")
+
+    start_time = Map.get(attrs, :start)
+    IO.inspect(start_time)
+    end_time = Map.get(attrs, :end)
+    start_hour = start_time.hour
+    end_hour = end_time.hour
+
+    period =
+      if start_hour >= 6 && end_hour < 22 do
+        "day"
+      else
+        "night"
+      end
+
+    Map.put(attrs, :period, period)
   end
 
   @doc """

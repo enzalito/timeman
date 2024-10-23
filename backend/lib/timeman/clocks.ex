@@ -91,7 +91,6 @@ defmodule Timeman.Clocks do
       start: start_time,
       end: end_time,
       description: description,
-      period: "day",
       user_id: user_id
     }
 
