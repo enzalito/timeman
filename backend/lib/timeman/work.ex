@@ -94,7 +94,6 @@ defmodule Timeman.Work do
 
   """
   def create_working_time(attrs \\ %{}) do
-    IO.inspect(attrs, label: "in create")
     result = get_period(attrs)
 
     %WorkingTime{}
@@ -103,10 +102,7 @@ defmodule Timeman.Work do
   end
 
   def get_period(attrs) do
-    IO.inspect(attrs, label: "attrs")
-
     start_time = Map.get(attrs, :start)
-    IO.inspect(start_time)
     end_time = Map.get(attrs, :end)
     start_hour = start_time.hour
     end_hour = end_time.hour
