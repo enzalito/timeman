@@ -22,9 +22,11 @@ defmodule Timeman.Account do
     where: ilike(u.username, ^"%#{username}%"),
     select: u)
     |> Repo.all()
+    |> Repo.preload(:teams)
   end
   def list_users() do
     Repo.all(User)
+    |> Repo.preload(:teams)
   end
   @doc """
   Gets a single user.
@@ -40,7 +42,9 @@ defmodule Timeman.Account do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id) when is_number(id), do: Repo.get!(User, id)
+  def get_user!(id) when is_number(id) do
+    Repo.get!(User, id)
+  end
 
   @doc """
   Creates a user.
@@ -58,8 +62,7 @@ defmodule Timeman.Account do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
-  end
-
+    end
   @doc """
   Updates a user.
 
