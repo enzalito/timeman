@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Avatar from "@/components/Avatar.vue"
 import Card from "@/components/Card.vue"
-import SearchBar from "@/components/SearchBar.vue"
+import UserSearchBar from "@/components/search/UserSearchBar.vue"
 
 const teams = ref<Team[]>([])
 
@@ -164,7 +164,7 @@ const handleRemoveUser = async (user: User) => {
           </TableRow>
         </TableBody>
       </Table>
-      <SearchBar class="mt-4" @user-selected="handleAddUser" />
+      <UserSearchBar class="mt-4" @user-selected="handleAddUser" />
     </Card>
   </div>
 </template>

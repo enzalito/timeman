@@ -8,6 +8,7 @@ defmodule Timeman.TeamContext do
 
   alias Timeman.TeamContext.Team
   alias Timeman.Account.User
+
   @doc """
   Returns the list of teams.
 
@@ -19,10 +20,12 @@ defmodule Timeman.TeamContext do
   """
   def list_teams(%{"name" => name}) do
     from(t in Team,
-    where: ilike(t.name, ^"%#{name}%"),
-    select: t)
-    |>Repo.all()
+      where: ilike(t.name, ^"%#{name}%"),
+      select: t
+    )
+    |> Repo.all()
   end
+
   def list_teams() do
     Repo.all(Team)
   end
@@ -41,51 +44,73 @@ defmodule Timeman.TeamContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_team!(id, %{"with_users" => "query", "with_workingtimes" => "query", "with_clock" => "query"}) do
-    query = from t in Team,
-            where: t.id == ^id,
-            join: ut in "users_teams", on: ut.team_id == t.id,
-            join: u in User, on: u.id == ut.user_id,
-            left_join: wt in assoc(u, :working_times),
-            left_join: c in assoc(u, :clock),
-            preload: [users: {u, working_times: wt, clock: c}],
-            select: t
+  def get_team!(id, %{
+        "with_users" => "query",
+        "with_working_times" => "query",
+        "with_clock" => "query"
+      }) do
+    query =
+      from(t in Team,
+        where: t.id == ^id,
+        join: ut in "users_teams",
+        on: ut.team_id == t.id,
+        join: u in User,
+        on: u.id == ut.user_id,
+        left_join: wt in assoc(u, :working_times),
+        left_join: c in assoc(u, :clock),
+        preload: [users: {u, working_times: wt, clock: c}],
+        select: t
+      )
 
     team = Repo.one!(query)
     team
   end
-  def get_team!(id, %{"with_users" => "query", "with_workingtimes" => "query"}) do
-    query = from t in Team,
-            where: t.id == ^id,
-            join: ut in "users_teams", on: ut.team_id == t.id,
-            join: u in User, on: u.id == ut.user_id,
-            left_join: wt in assoc(u, :working_times),
-            preload: [users: {u, working_times: wt}],
-            select: t
+
+  def get_team!(id, %{"with_users" => "query", "with_working_times" => "query"}) do
+    query =
+      from(t in Team,
+        where: t.id == ^id,
+        join: ut in "users_teams",
+        on: ut.team_id == t.id,
+        join: u in User,
+        on: u.id == ut.user_id,
+        left_join: wt in assoc(u, :working_times),
+        preload: [users: {u, working_times: wt}],
+        select: t
+      )
 
     team = Repo.one!(query)
     team
   end
+
   def get_team!(id, %{"with_users" => "query", "with_clock" => "query"}) do
-    team = Repo.get!(Team, id)
-    |> Repo.preload(users: [:clock])
+    team =
+      Repo.get!(Team, id)
+      |> Repo.preload(users: [:clock])
+
     team
   end
+
   def get_team!(id, %{"with_users" => "query"}) do
-    team = Repo.get!(Team, id)
-    |> Repo.preload(:users)
+    team =
+      Repo.get!(Team, id)
+      |> Repo.preload(:users)
+
     team
   end
+
   def get_team!(id, %{}) when is_integer(id) do
     team = Repo.get!(Team, id)
     team
   end
+
   # TODO: Résoudre doublon get_team_by_id!
   def get_team_by_id!(id) do
     team = Repo.get!(Team, id)
     team
   end
-@doc """
+
+  @doc """
   Creates a team.
 
   ## Examples

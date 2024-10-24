@@ -1,45 +1,55 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
+import { computed } from "vue"
+import { DateFormatter, parseDate } from "@internationalized/date"
+import { toDate } from "radix-vue/date"
+import { Calendar as CalendarIcon } from "lucide-vue-next"
+import { Calendar } from "@/components/ui/calendar"
+import { Button } from "@/components/ui/button"
+import { FormItem, FormMessage, FormControl } from "@/components/ui/form"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { Calendar } from '@/components/ui/v-calendar'
-import { Button } from '@/components/ui/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+const dateFormatter = new DateFormatter("en-US", {
+  dateStyle: "long"
+})
 
-const model = defineModel<{start: Date, end: Date}>()
+const { value } = defineProps<{ value?: string }>()
+
+const parsedValue = computed({
+  get: () => (value ? parseDate(value) : undefined),
+  set: (val) => val
+})
 </script>
 
 <template>
-   <Popover>
+  <FormItem class="flex flex-col">
+    <Popover>
       <PopoverTrigger as-child>
-        <Button
-          id="date"
-          :variant="'outline'"
-          :class="cn(
-            'w-[280px] justify-start text-left font-normal',
-            !model && 'text-muted-foreground',
-          )"
-        >
-          <CalendarIcon class="mr-2 h-4 w-4" />
-
-          <span>
-            {{ model!.start ? (
-              model!.end ? `${format(model!.start, 'LLL dd, y')} - ${format(model!.end, 'LLL dd, y')}`
-              : format(model!.start, 'LLL dd, y')
-            ) : 'Pick a date' }}
-          </span>
-        </Button>
+        <FormControl>
+          <Button
+            variant="outline"
+            :class="['ps-3 text-start font-normal', !parsedValue && 'text-muted-foreground']"
+          >
+            <span>{{
+              parsedValue ? dateFormatter.format(toDate(parsedValue)) : "Pick a date"
+            }}</span>
+            <CalendarIcon class="ms-auto ml-2 h-4 w-4 opacity-50" />
+          </Button>
+          <input hidden />
+        </FormControl>
       </PopoverTrigger>
-      <PopoverContent class="w-auto p-0" align="start">
+      <PopoverContent class="w-auto p-0">
         <Calendar
-          v-model.range="model"
-          :columns="2"
+          v-model="parsedValue"
+          calendar-label="Date of birth"
+          initial-focus
+          @update:model-value="
+            (v) => {
+              $emit('change', v)
+            }
+          "
         />
       </PopoverContent>
     </Popover>
+    <FormMessage />
+  </FormItem>
 </template>
