@@ -23,7 +23,7 @@ defmodule TimemanWeb.UserJSON do
       end)
     else
       []
-  end
+    end
   end
 
   def show(%{user: user}) do
@@ -64,8 +64,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams),
-          working_time: working_time,
-
+          working_time: working_times,
           clock: clock
         }
 
@@ -76,7 +75,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams),
-          working_time: working_time,
+          working_time: working_times
         }
 
       {false, true} ->
@@ -96,10 +95,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams)
-
         }
     end
-
   end
-
 end
