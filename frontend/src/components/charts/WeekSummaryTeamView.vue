@@ -84,7 +84,7 @@ onBeforeMount(async () => {
 
   ]
 
-  data.value = mockData
+  data.value = mockData as { user: UserWithWorkingTimes; workedHours: number; }[]
 })
 
 

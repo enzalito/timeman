@@ -1,3 +1,4 @@
+import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
 import { z } from "zod"
 
 export const clock = z.object({
@@ -21,17 +22,23 @@ export type ClockBulkResponse = {
 }
 
 export async function createClock(userId: number, clock: ClockRequest): Promise<ClockResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/clocks/${userId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(clock)
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/clocks/${userId}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(clock)
+    }
+  )
   return await response.json()
 }
 
 export async function getClocks(userId: number): Promise<ClockBulkResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/clocks/${userId}`, {
-    method: "GET"
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/clocks/${userId}`,
+    {
+      method: "GET"
+    }
+  )
   return await response.json()
 }

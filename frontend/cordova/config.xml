@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.cordova.timeman" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>timeman</name>
+    <description>Sample Apache Cordova App</description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+
+    <content src="index.html" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; connect-src 'self' http://10.0.2.2:4000 https://10.0.2.2:4000"/>
+
+    <platform name="android">
+      <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+          <application android:usesCleartextTraffic="true" />
+      </edit-config>
+      <config-file target="AndroidManifest.xml" parent="/*">
+          <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+      </config-file>
+    </platform>
+
+    <plugin name="cordova-plugin-network-information" spec="~3.0.0" />
+
+    <access origin="*" />
+    <access origin="http://*" />
+    <allow-navigation href="*" />
+    <allow-intent href="*" />
+    <allow-intent href="*" />
+
+</widget>

@@ -7,6 +7,7 @@ import {
   type UserWithRelations
 } from "@/api/user"
 import { toQueryParams } from "@/api/lib/utils"
+import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
 
 export const team = z.object({
   id: z.number().min(1),
@@ -69,22 +70,28 @@ export async function getTeam(
   options?: TeamRequestOptions
 ): Promise<TeamResponse | TeamWithUsersResponse> {
   const params = toQueryParams(options)
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}?${params}`, {
-    method: "GET"
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/teams/${id}?${params}`,
+    {
+      method: "GET"
+    }
+  )
   return await response.json()
 }
 
 export async function getTeams(team: TeamRequestPartial): Promise<TeamBulkResponse> {
   const params = toQueryParams(team.team)
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams?${params}`, {
-    method: "GET"
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/teams?${params}`,
+    {
+      method: "GET"
+    }
+  )
   return await response.json()
 }
 
 export async function createTeam(team: TeamRequest): Promise<TeamResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams`, {
+  const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/teams`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(team)
@@ -93,28 +100,31 @@ export async function createTeam(team: TeamRequest): Promise<TeamResponse> {
 }
 
 export async function updateTeam(id: number, team: TeamRequest): Promise<TeamResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(team)
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/teams/${id}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(team)
+    }
+  )
   return await response.json()
 }
 
 export async function deleteTeam(id: number) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}`, {
+  await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}`, {
     method: "DELETE"
   })
 }
 
 export async function addUser(id: number, userId: number) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}/user/${userId}`, {
+  await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}/user/${userId}`, {
     method: "POST"
   })
 }
 
 export async function removeUser(id: number, userId: number) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}/user/${userId}`, {
+  await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/teams/${id}/user/${userId}`, {
     method: "DELETE"
   })
 }
