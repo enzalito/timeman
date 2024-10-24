@@ -82,10 +82,8 @@ defmodule Timeman.Clocks do
     start_time = old_clock.time
     end_time = Map.get(clock, "time")
     start_hour = start_time.hour
-    IO.inspect(start_hour, label: "start hour")
     {:ok, end_time} = NaiveDateTime.from_iso8601(end_time)
     end_hour = end_time.hour
-    IO.inspect(end_hour, label: "end hour")
 
     working_time = %{
       start: start_time,
@@ -131,19 +129,6 @@ defmodule Timeman.Clocks do
     end
   end
 
-  # func addWorkingTime(workingTime) {
-  #   var wt1, wt2
-  #   if nightHoursEnd in workingTime {
-  #      wt1, wt2 = split(workingTime, nightHoursEnd)
-  #   } else if nightHoursStart in workingTime {
-  #       wt1, wt2 = split(workingTime, nightHoursStart)
-  #   } else {
-  #     insert(workingTime)
-  #     return
-  #   }
-  #   insert(wt1)
-  #   addWorkingTime(w2)
-  #   }
   @doc """
   Updates a clock.
 
@@ -194,8 +179,4 @@ defmodule Timeman.Clocks do
   def list_clocks_from_user(user_id) do
     Repo.all(from(c in Clock, where: c.user_id == ^user_id))
   end
-
-  # def get_clock_by_user_id!(user_id) do
-  #   Repo.get_by!(Clock, user_id: user_id)
-  # end
 end
