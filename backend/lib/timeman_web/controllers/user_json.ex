@@ -13,6 +13,19 @@ defmodule TimemanWeb.UserJSON do
   @doc """
   Renders a single user.
   """
+  defp render_teams(teams) do
+    if Ecto.assoc_loaded?(teams) do
+      Enum.map(teams, fn team ->
+        %{
+          id: team.id,
+          name: team.name
+        }
+      end)
+    else
+      []
+  end
+  end
+
   def show(%{user: user}) do
     %{data: data(user)}
   end
@@ -50,7 +63,9 @@ defmodule TimemanWeb.UserJSON do
           username: user.username,
           email: user.email,
           role: user.role,
-          workingTimes: working_times,
+          teams: render_teams(user.teams),
+          working_time: working_time,
+
           clock: clock
         }
 
@@ -60,7 +75,8 @@ defmodule TimemanWeb.UserJSON do
           username: user.username,
           email: user.email,
           role: user.role,
-          workingTimes: working_times
+          teams: render_teams(user.teams),
+          working_time: working_time,
         }
 
       {false, true} ->
@@ -69,6 +85,7 @@ defmodule TimemanWeb.UserJSON do
           username: user.username,
           email: user.email,
           role: user.role,
+          teams: render_teams(user.teams),
           clock: clock
         }
 
@@ -77,8 +94,12 @@ defmodule TimemanWeb.UserJSON do
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role
+          role: user.role,
+          teams: render_teams(user.teams)
+
         }
     end
+
   end
+
 end
