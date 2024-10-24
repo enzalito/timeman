@@ -3,42 +3,43 @@ defmodule TimemanWeb.Router do
   use TimemanWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, html: {TimemanWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, html: {TimemanWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/api", TimemanWeb do
-    pipe_through :api
+    pipe_through(:api)
 
-    post "/clocks/:user_id", ClockController, :create_clock_for_user
-    get "/clocks/:user_id", ClockController, :clocks_by_user
-    post "/clocks/upsert/:user_id", ClockController, :create_or_update_clock
+    get("/clocks/:user_id", ClockController, :clocks_by_user)
+    post("/clocks/:user_id", ClockController, :upsert_clock)
 
-    resources "/users", UserController, except: [:new, :edit]
-    put "/users/set_role/:id", UserController, :set_role
+    resources("/users", UserController, except: [:new, :edit])
+    put("/users/set_role/:id", UserController, :set_role)
 
-    resources "/workingtime", WorkingTimeController, except: [:index, :delete, :edit, :new, :show, :create]
-    get "/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime
-    get "/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser
+    resources("/workingtime", WorkingTimeController,
+      except: [:index, :delete, :edit, :new, :show, :create]
+    )
 
-    resources "/teams", TeamController
-      post "/teams/:team_id/user/:user_id", TeamController, :add_team
-      delete "/teams/:team_id/user/:user_id", TeamController, :remove_team
+    get("/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime)
+    get("/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser)
 
+    resources("/teams", TeamController)
+    post("/teams/:team_id/user/:user_id", TeamController, :add_team)
+    delete("/teams/:team_id/user/:user_id", TeamController, :remove_team)
   end
 
   scope "/", TimemanWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :home
+    get("/", PageController, :home)
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
@@ -51,14 +52,14 @@ defmodule TimemanWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: TimemanWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard("/dashboard", metrics: TimemanWeb.Telemetry)
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
 
     scope "/api/swagger" do
-      forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :timeman, swagger_file: "swagger.json"
+      forward("/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :timeman, swagger_file: "swagger.json")
     end
 
     def swagger_info do
