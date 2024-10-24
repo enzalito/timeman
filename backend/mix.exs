@@ -10,7 +10,7 @@ defmodule Timeman.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      compilers: Mix.compilers ++ [:phoenix_swagger],
+      compilers: Mix.compilers() ++ [:phoenix_swagger]
     ]
   end
 
@@ -64,6 +64,7 @@ defmodule Timeman.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
