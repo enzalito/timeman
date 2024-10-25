@@ -12,14 +12,6 @@ defmodule TimemanWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  pipeline :auth do
-    plug(Timeman.Account.Pipeline)
-  end
-
-  pipeline :ensure_auth do
-    plug(Guardian.Plug.EnsureAuthenticated)
-  end
-
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -33,12 +25,18 @@ defmodule TimemanWeb.Router do
   end
 
   pipeline :authenticated do
-    plug(Guardian.Plug.VerifyHeader)
+    plug(Guardian.Plug.Pipeline,
+      otp_app: :auth_me,
+      module: Timeman.Account.Guardian,
+      error_handler: Timeman.Account.ErrorHandler
+    )
+
+    plug(Guardian.Plug.VerifyHeader, realm: "Bearer")
     plug(Guardian.Plug.LoadResource)
   end
 
   scope "/api", TimemanWeb do
-    pipe_through([:api, :auth, :ensure_auth])
+    pipe_through([:api, :authenticated])
 
     get("/clocks/:user_id", ClockController, :clocks_by_user)
     post("/clocks/:user_id", ClockController, :upsert_clock)

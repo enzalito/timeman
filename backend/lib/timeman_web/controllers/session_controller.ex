@@ -15,11 +15,12 @@ defmodule TimemanWeb.SessionController do
   # end
 
   def login(conn, %{"user" => %{"username" => username, "password" => password}}) do
-    case Account.authenticate_user(username, password) do
-      {:ok, user} ->
-        conn
-        |> json(%{message: "Login successful"})
-
+    with {:ok, user} <- Account.authenticate_user(username, password),
+         {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
+      conn
+      |> put_status(:ok)
+      |> json(%{message: "Login successful", token: token})
+    else
       {:error, reason} ->
         conn
         |> put_status(:unauthorized)
