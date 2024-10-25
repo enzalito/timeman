@@ -65,7 +65,7 @@ onBeforeMount(async () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem v-for="role in roles" :value="role">{{
+                  <SelectItem v-for="role in roles" :key="role" :value="role">{{
                     roleNames.get(role)
                   }}</SelectItem>
                 </SelectGroup>
