@@ -8,6 +8,9 @@ defmodule Timeman.Account do
 
   alias Timeman.Account.User
 
+  alias Argon2
+  import Ecto.Query, only: [from: 2]
+
   @doc """
   Returns the list of users.
 
@@ -19,15 +22,18 @@ defmodule Timeman.Account do
   """
   def list_users(%{"username" => username}) do
     from(u in User,
-    where: ilike(u.username, ^"%#{username}%"),
-    select: u)
+      where: ilike(u.username, ^"%#{username}%"),
+      select: u
+    )
     |> Repo.all()
     |> Repo.preload(:teams)
   end
+
   def list_users() do
     Repo.all(User)
     |> Repo.preload(:teams)
   end
+
   @doc """
   Gets a single user.
 
@@ -62,7 +68,8 @@ defmodule Timeman.Account do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
-    end
+  end
+
   @doc """
   Updates a user.
 
@@ -114,5 +121,29 @@ defmodule Timeman.Account do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def authenticate_user(username, plain_text_password) do
+    query = from(u in User, where: u.username == ^username)
+
+    case Repo.one(query) do
+      nil ->
+        Argon2.no_user_verify()
+        {:error, :invalid_credentials}
+
+      user ->
+        if Argon2.verify_pass(plain_text_password, user.password) do
+          {:ok, user}
+          # case Guardian.encode_and_sign(user) do
+          #   {:ok, token, claims} ->
+          #     {:ok, token, claims}
+
+          #   {:error, reason} ->
+          #     {:error, reason}
+          # end
+        else
+          {:error, :invalid_credentials}
+        end
+    end
   end
 end

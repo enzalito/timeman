@@ -4,6 +4,7 @@ defmodule TimemanWeb.UserController do
 
   alias Timeman.Account
   alias Timeman.Account.User
+  alias Timeman.Account.Guardian
 
   action_fallback(TimemanWeb.FallbackController)
 

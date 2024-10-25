@@ -2,6 +2,7 @@ defmodule TimemanWeb.Router do
   alias WorkingTimeController
   use TimemanWeb, :router
 
+  # TODO: virer pipeline front
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -11,12 +12,33 @@ defmodule TimemanWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :auth do
+    plug(Timeman.Account.Pipeline)
+  end
+
+  pipeline :ensure_auth do
+    plug(Guardian.Plug.EnsureAuthenticated)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
 
   scope "/api", TimemanWeb do
     pipe_through(:api)
+
+    post("/users", UserController, :create)
+    post("/login", SessionController, :login)
+    get("/logout", SessionController, :logout)
+  end
+
+  pipeline :authenticated do
+    plug(Guardian.Plug.VerifyHeader)
+    plug(Guardian.Plug.LoadResource)
+  end
+
+  scope "/api", TimemanWeb do
+    pipe_through([:api, :auth, :ensure_auth])
 
     get("/clocks/:user_id", ClockController, :clocks_by_user)
     post("/clocks/:user_id", ClockController, :upsert_clock)
