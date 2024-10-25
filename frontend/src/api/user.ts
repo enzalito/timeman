@@ -42,9 +42,14 @@ const hasPassword = z.object({
 })
 
 export const userLogin = z.object({
-  user: user.omit({ id: true, role: true }).merge(hasPassword)
+  user: user.omit({ id: true, role: true, email: true }).merge(hasPassword)
 })
 export type UserLogin = z.infer<typeof userLogin>
+
+export const userSignup = z.object({
+  user: user.omit({ id: true, role: true }).merge(hasPassword)
+})
+export type UserSignup = z.infer<typeof userSignup>
 
 export const userSearchRequest = z.object({
   user: z.object({ username: z.string().optional() })
@@ -96,12 +101,15 @@ export async function createUser(user: UserRequest): Promise<UserResponse> {
   return await response.json()
 }
 
-export async function updateUser(user: UserRequest): Promise<UserResponse> {
-  const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user)
-  })
+export async function updateUser(user: UserRequest, userId: number): Promise<UserResponse> {
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/users/${userId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user)
+    }
+  )
   return await response.json()
 }
 

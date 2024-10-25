@@ -10,7 +10,7 @@ const { title, class: className } = defineProps<{ title?: string; class?: string
   <Card
     :class="
       cn(
-        'border-0 shadow-none p-0 bg-transparent md:bg-white md:border-slate-200 md:p-4 md:drop-shadow-sm',
+        'border-0 shadow-none p-0 bg-transparent md:bg-white md:border-slate-200 md:border-[1px] md:p-4 md:drop-shadow-sm',
         className
       )
     "

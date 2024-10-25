@@ -3,16 +3,16 @@
   import { Form } from "vee-validate";
   import { Button } from "../ui/button";
   import { toTypedSchema } from "@vee-validate/zod";
-  import { getUsers, userLogin, type UserLogin } from "@/api/user";
+  import { getUsers, userSignup, type UserLogin, type UserSignup } from "@/api/user";
   import { useUserStore } from "@/stores/user";
   import AuthFormFields from "../AuthFormFields.vue";
 
   const userStore = useUserStore()
 
-  async function handleSubmit(data: UserLogin) {
+  async function handleSubmit(data: UserSignup) {
     userStore.set((await getUsers(data)).data[0])
   }
-  const formSchema = toTypedSchema(userLogin)
+  const formSchema = toTypedSchema(userSignup)
 </script>
 
 <template>
@@ -20,7 +20,7 @@
     <div class="w-[86%] sm:w-[66%] md:w-[30%] max-w-[460px]">
       <Logo class="mx-auto mb-16 w-[60%]"/>
 
-      <Form class="space-y-6" :validation-schema="formSchema" @submit="(data) => handleSubmit(data as UserLogin)">
+      <Form class="space-y-6" :validation-schema="formSchema" @submit="(data) => handleSubmit(data as UserSignup)">
         <AuthFormFields :include-fields="['email', 'password', 'username']"/>
           <Button type="submit" class="w-full">
             Register
