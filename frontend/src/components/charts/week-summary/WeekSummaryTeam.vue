@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue"
-import { type WorkingTime } from "@/api/workingTime"
 import type { UserWithWorkingTimes } from "@/api/user"
 import { getTeam } from "@/api/team"
-import { getCurrentWeekRangeStr } from "@/lib/utils"
+import { getWeekRange } from "@/lib/utils"
+import { getFilteredTotalHours } from "./lib/utils"
 
 import Card from "@/components/Card.vue"
 
@@ -14,55 +14,12 @@ const users = ref<(UserWithWorkingTimes & { workedHours: number })[]>([])
 onBeforeMount(async () => {
   const team = await getTeam(teamId, { withUsers: true, withWorkingTimes: true })
   users.value = gatherHours(team.data.users)
-  console.log(users.value)
 })
 
-function calculateTotalHours<Data extends { start: string; end: string }>(data: Data[]) {
-  let totalHours = 0
-
-  // Loop through each event and calculate the hours for each
-  data.forEach((row) => {
-    const startDate = new Date(row.start)
-    const endDate = new Date(row.end)
-
-    // Calculate the difference in milliseconds and convert to hours
-    const diffInMs = endDate.getTime() - startDate.getTime()
-    const diffInHours = diffInMs / (1000 * 60 * 60) // Convert milliseconds to hours
-
-    totalHours += diffInHours
-  })
-
-  return totalHours
-}
-
-function filterWorkingTimes(workingTimes: WorkingTime[] | undefined, start: string, end: string) {
-  if (!workingTimes) {
-    return []
-  }
-
-  const rangeStartDate = new Date(start)
-  const rangeEndDate = new Date(end)
-
-  // Filter the events array
-  return workingTimes.filter((wt) => {
-    const workingTimeStartDate = new Date(wt.start)
-    const workingTimeEndDate = new Date(wt.end)
-
-    // Check if the workingTime overlaps with the range
-    if (workingTimeStartDate < rangeStartDate && workingTimeStartDate > rangeStartDate) {
-      wt.start = rangeStartDate.toDateString()
-      return true
-    }
-
-    return workingTimeEndDate >= rangeStartDate && workingTimeStartDate <= rangeEndDate
-  })
-}
-
 function gatherHours(users: UserWithWorkingTimes[]) {
-  const { start, end } = getCurrentWeekRangeStr()
+  const weekRange = getWeekRange()
   const usersWorkingTimes = users.map((user) => {
-    const weekWorkingTimes = filterWorkingTimes(user.workingTimes, start, end)
-    const totalHours = calculateTotalHours(weekWorkingTimes)
+    const totalHours = getFilteredTotalHours(user.workingTimes, weekRange)
     return { workedHours: totalHours, ...user }
   })
 

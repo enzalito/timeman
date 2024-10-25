@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user"
-import WeekSummaryTeamView from "@/components/charts/WeekSummaryTeam.vue"
-import WeekSummary from "@/components/charts/WeekSummary.vue"
+import WeekSummaryTeamView from "@/components/charts/week-summary/WeekSummaryTeam.vue"
+import WeekSummary from "@/components/charts/week-summary/WeekSummary.vue"
 
 const userStore = useUserStore()
 </script>

@@ -1,55 +1,44 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import { DateFormatter, parseDate } from "@internationalized/date"
-import { toDate } from "radix-vue/date"
+import { DateFormatter, getLocalTimeZone, type DateValue } from "@internationalized/date"
+import { cn, type DateRange } from "@/lib/utils"
+
 import { Calendar as CalendarIcon } from "lucide-vue-next"
-import { Calendar } from "@/components/ui/calendar"
-import { Button } from "@/components/ui/button"
-import { FormItem, FormMessage, FormControl } from "@/components/ui/form"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { RangeCalendar } from "@/components/ui/range-calendar"
+import { Button } from "@/components/ui/button"
 
 const dateFormatter = new DateFormatter("en-US", {
-  dateStyle: "long"
+  dateStyle: "medium"
 })
 
-const { value } = defineProps<{ value?: string }>()
-
-const parsedValue = computed({
-  get: () => (value ? parseDate(value) : undefined),
-  set: (val) => val
-})
+const model = defineModel<DateRange>({ required: true })
 </script>
 
 <template>
-  <FormItem class="flex flex-col">
-    <Popover>
-      <PopoverTrigger as-child>
-        <FormControl>
-          <Button
-            variant="outline"
-            :class="['ps-3 text-start font-normal', !parsedValue && 'text-muted-foreground']"
-          >
-            <span>{{
-              parsedValue ? dateFormatter.format(toDate(parsedValue)) : "Pick a date"
-            }}</span>
-            <CalendarIcon class="ms-auto ml-2 h-4 w-4 opacity-50" />
-          </Button>
-          <input hidden />
-        </FormControl>
-      </PopoverTrigger>
-      <PopoverContent class="w-auto p-0">
-        <Calendar
-          v-model="parsedValue"
-          calendar-label="Date of birth"
-          initial-focus
-          @update:model-value="
-            (v) => {
-              $emit('change', v)
-            }
-          "
-        />
-      </PopoverContent>
-    </Popover>
-    <FormMessage />
-  </FormItem>
+  <Popover>
+    <PopoverTrigger as-child>
+      <Button
+        variant="outline"
+        :class="
+          cn('w-[280px] justify-start text-left font-normal', !model && 'text-muted-foreground')
+        "
+      >
+        <CalendarIcon class="mr-2 h-4 w-4" />
+        <template v-if="model.start">
+          <template v-if="model.end">
+            {{ dateFormatter.format(model.start.toDate(getLocalTimeZone())) }}
+            - {{ dateFormatter.format(model.end.toDate(getLocalTimeZone())) }}
+          </template>
+
+          <template v-else>
+            {{ dateFormatter.format(model.start.toDate(getLocalTimeZone())) }}
+          </template>
+        </template>
+        <template v-else> Pick a date </template>
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent class="w-auto p-0">
+      <RangeCalendar v-model="model" initial-focus />
+    </PopoverContent>
+  </Popover>
 </template>
