@@ -10,7 +10,7 @@ import Header from "@/components/layout/Header.vue"
     <MobileNavBar />
     <main class="w-full">
       <Header />
-      <div class="p-6 pb-24 md:pb-26 md:bg-neutral-50">
+      <div class="p-6 pb-24 md:pb-26 md:bg-neutral-50 h-full">
         <slot />
       </div>
     </main>
