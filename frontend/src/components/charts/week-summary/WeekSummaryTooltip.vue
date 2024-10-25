@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { convertNumberToHours } from "@/lib/utils"
+import { formatHours } from "@/lib/utils"
 
 const { data } = defineProps<{
   title?: string
@@ -19,9 +19,7 @@ const { data } = defineProps<{
         :style="{ backgroundColor: row.color }"
       />
       {{ row.name }}
-      <div class="">
-        {{ convertNumberToHours(row.value).hours }}h{{ convertNumberToHours(row.value).minutes }}m
-      </div>
+      <div class="">{{ formatHours(row.value) }}m</div>
     </div>
   </div>
 </template>
