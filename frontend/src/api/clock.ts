@@ -9,16 +9,12 @@ export const clock = z.object({
 export type Clock = z.infer<typeof clock>
 
 export const clockRequest = z.object({
-  clock: clock.omit({ user_id: true })
+  clock: clock.omit({ user_id: true }).extend({ description: z.string().optional() })
 })
 export type ClockRequest = z.infer<typeof clockRequest>
 
 export type ClockResponse = {
   data: Clock
-}
-
-export type ClockBulkResponse = {
-  data: Clock[]
 }
 
 export async function createClock(userId: number, clock: ClockRequest): Promise<ClockResponse> {
@@ -33,7 +29,7 @@ export async function createClock(userId: number, clock: ClockRequest): Promise<
   return await response.json()
 }
 
-export async function getClocks(userId: number): Promise<ClockBulkResponse> {
+export async function getClock(userId: number): Promise<ClockResponse> {
   const response = await fetchWithOfflineSupport(
     `${import.meta.env.VITE_BACKEND_URL}/clocks/${userId}`,
     {
