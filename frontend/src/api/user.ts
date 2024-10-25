@@ -28,6 +28,24 @@ export const userRequest = z.object({
 })
 export type UserRequest = z.infer<typeof userRequest>
 
+// Minimum 8 characters, at least one uppercase letter, one lowercase letter, and one special character
+const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
+
+const hasPassword = z.object({
+  password: z
+    .string()
+    .min(8, "Must have at least 8 characters")
+    .regex(
+      passwordValidation,
+      "Password must contain at least one special character, one uppercase and one lowercase letter"
+    )
+})
+
+export const userLogin = z.object({
+  user: user.omit({ id: true, role: true }).merge(hasPassword)
+})
+export type UserLogin = z.infer<typeof userLogin>
+
 export const userSearchRequest = z.object({
   user: z.object({ username: z.string().optional() })
 })
