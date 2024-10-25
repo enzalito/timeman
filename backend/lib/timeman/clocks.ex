@@ -81,9 +81,7 @@ defmodule Timeman.Clocks do
     old_clock = Repo.one(query)
     start_time = old_clock.time
     end_time = Map.get(clock, "time")
-    start_hour = start_time.hour
     {:ok, end_time} = NaiveDateTime.from_iso8601(end_time)
-    end_hour = end_time.hour
 
     working_time = %{
       start: start_time,
@@ -98,14 +96,12 @@ defmodule Timeman.Clocks do
   defp add_working_time(working_time) do
     start_time = working_time.start
     end_time = working_time.end
-    start_hour = start_time.hour
-    end_hour = end_time.hour
     wt1 = working_time
     wt2 = working_time
     wt3 = working_time
 
     cond do
-      start_hour < 6 && end_hour >= 6 && start_time.day == end_time.day ->
+      start_time.hour < 6 && end_time.hour >= 6 && start_time.day == end_time.day ->
         new_end_time = %NaiveDateTime{end_time | hour: 5, minute: 59}
         wt1 = %{working_time | end: new_end_time}
 
@@ -114,7 +110,7 @@ defmodule Timeman.Clocks do
         Work.create_working_time(wt1)
         add_working_time(wt2)
 
-      end_hour >= 22 && start_hour < 22 && start_time.day == end_time.day ->
+      end_time.hour >= 22 && start_time.hour < 22 && start_time.day == end_time.day ->
         new_end_time = %NaiveDateTime{end_time | hour: 21, minute: 59}
         wt1 = %{working_time | end: new_end_time}
 
@@ -124,7 +120,7 @@ defmodule Timeman.Clocks do
         Work.create_working_time(wt1)
         add_working_time(wt2)
 
-      start_hour < 6 && start_time.day != end_time.day ->
+      start_time.hour < 6 && start_time.day != end_time.day ->
         new_end_time = %NaiveDateTime{end_time | hour: 5, minute: 59}
         wt1 = %{working_time | end: new_end_time}
 
@@ -143,7 +139,7 @@ defmodule Timeman.Clocks do
         add_working_time(wt2)
         add_working_time(wt3)
 
-      start_hour < 22 && start_time.day != end_time.day ->
+      start_time.hour < 22 && start_time.day != end_time.day ->
         new_end_time = %NaiveDateTime{end_time | hour: 21, minute: 59}
         wt1 = %{working_time | end: new_end_time}
 
