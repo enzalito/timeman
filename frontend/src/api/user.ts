@@ -29,7 +29,7 @@ export const userRequest = z.object({
 export type UserRequest = z.infer<typeof userRequest>
 
 // Minimum 8 characters, at least one uppercase letter, one lowercase letter, and one special character
-const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
+export const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
 
 const hasPassword = z.object({
   password: z

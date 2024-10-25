@@ -46,7 +46,7 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <Card title="Account details" class="md:w-[380px] mx-auto md:mx-0">
+  <Card title="Account details" class="md:w-[460px] mx-auto md:mx-0">
     <form class="space-y-6" @submit="onSubmit">
 
       <AuthFormFields :include-fields="['username', 'email']"/>

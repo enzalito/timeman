@@ -15,8 +15,7 @@ const { currentTime } = useCurrentTime()
 // TODO: get username
 const userStore = useUserStore()
 
-const username = userStore.user?.username
-const initial = username?.charAt(0).toUpperCase()
+const initial = userStore.user?.username?.charAt(0).toUpperCase()
 </script>
 
 <template>
@@ -33,7 +32,7 @@ const initial = username?.charAt(0).toUpperCase()
       </div>
     </div>
 
-    <Popover v-if="username !== undefined">
+    <Popover v-if="userStore.user?.username">
       <PopoverTrigger>
         <Avatar>{{ initial }}</Avatar>
       </PopoverTrigger>

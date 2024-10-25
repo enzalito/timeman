@@ -5,12 +5,12 @@ import Header from "@/components/layout/Header.vue"
 </script>
 
 <template>
-  <div class="flex flex-nowrap h-full">
+  <div class="flex flex-nowrap h-full md:pl-60">
     <NavBar />
     <MobileNavBar />
-    <main class="w-full bg-neutral-50">
+    <main class="w-full">
       <Header />
-      <div class="p-6 pb-24 md:pb-26">
+      <div class="p-6 pb-24 md:pb-26 md:bg-neutral-50">
         <slot />
       </div>
     </main>
