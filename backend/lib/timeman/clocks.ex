@@ -117,20 +117,23 @@ defmodule Timeman.Clocks do
         add_working_time(wt2)
 
       start_time.hour < 6 && end_time.hour >= 6 && start_time.day == end_time.day ->
-        new_end_time = %NaiveDateTime{end_time | hour: 5, minute: 59}
-        wt1 = %{working_time | end: new_end_time}
+        wt1 = %{working_time | end: %NaiveDateTime{end_time | hour: 5, minute: 59, second: 59}}
 
-        new_start_time = %NaiveDateTime{start_time | hour: 6, minute: 00}
-        wt2 = %{working_time | start: new_start_time}
+        wt2 = %{
+          working_time
+          | start: %NaiveDateTime{start_time | hour: 6, minute: 00, second: 59}
+        }
+
         Work.create_working_time(wt1)
         add_working_time(wt2)
 
       end_time.hour >= 22 && start_time.hour < 22 && start_time.day == end_time.day ->
-        new_end_time = %NaiveDateTime{end_time | hour: 21, minute: 59}
-        wt1 = %{working_time | end: new_end_time}
+        wt1 = %{working_time | end: %NaiveDateTime{end_time | hour: 21, minute: 59, second: 59}}
 
-        new_start_time = %NaiveDateTime{start_time | hour: 22, minute: 00}
-        wt2 = %{working_time | start: new_start_time}
+        wt2 = %{
+          working_time
+          | start: %NaiveDateTime{start_time | hour: 22, minute: 00, second: 00}
+        }
 
         Work.create_working_time(wt1)
         add_working_time(wt2)
