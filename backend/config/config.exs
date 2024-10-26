@@ -63,7 +63,19 @@ config :phoenix, :json_library, Jason
 
 config :timeman, Timeman.Account.Guardian,
   issuer: "timeman",
-  secret_key: "Jz1jFLspBvN32wTlvidnvwi4cWZiMeeRFGca84ZomLEpfpwkKSOOpctcCcfbViLd"
+  secret_key: "Jz1jFLspBvN32wTlvidnvwi4cWZiMeeRFGca84ZomLEpfpwkKSOOpctcCcfbViLd",
+  token_ttl: %{ttl: {1, :day}},
+  allowed_algos: ["HS512"],
+  verify_module: Guardian.JWT,
+  json_module: Jason
+
+config :guardian, Guardian.Plug.VerifyCookie,
+  # true si HTTPS
+  # TODO: régler pour https
+  secure: true,
+  # 1 jour en secondes
+  max_age: 60 * 60 * 24,
+  same_site: "Strict"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

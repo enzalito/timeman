@@ -20,7 +20,10 @@ defmodule TimemanWeb.UserController do
     render(conn, :show, user: user)
   end
 
-  def create(conn, %{"user" => user_params}) do
+  def register(conn, %{"user" => user_params}) do
+    user_params =
+      user_params |> Map.take(["email", "password", "username"])
+
     with {:ok, %User{} = user} <- Account.create_user(user_params) do
       conn
       |> put_status(:created)
@@ -37,6 +40,9 @@ defmodule TimemanWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Account.get_user!(String.to_integer(id))
+
+    user_params =
+      user_params |> Map.take(["email", "password", "username"])
 
     with {:ok, %User{} = user} <- Account.update_user(user, user_params) do
       render(conn, :show, user: user)
@@ -216,7 +222,7 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :index do
     get("/api/users")
-    summary("Get all users with fuzzy search")
+    summary("Get all users with fuzzy search (manager and administrator)")
     produces("application/json")
     deprecated(false)
     parameter(:username, :query, :string, "fuzzy name search", required: false, example: "Jo")
@@ -260,9 +266,9 @@ defmodule TimemanWeb.UserController do
     )
   end
 
-  swagger_path :create do
+  swagger_path :register do
     post("/api/users")
-    summary("Create user")
+    summary("Register user")
     produces("application/json")
     deprecated(false)
 
@@ -323,7 +329,7 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :set_role do
     put("/api/users/set_role/{user_id}")
-    summary("Update role from user")
+    summary("Update role from user (administrator only)")
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
@@ -374,7 +380,7 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :delete do
     PhoenixSwagger.Path.delete("/api/users/{user_id}")
-    summary("Delete user")
+    summary("Delete user (administrator only)")
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)

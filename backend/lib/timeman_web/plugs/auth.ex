@@ -13,8 +13,9 @@ defmodule TimemanWeb.Plugs.Auth do
         |> put_status(:unauthorized)
         |> halt()
 
-      _user ->
+      user ->
         conn
+        |> assign(:current_user, user)
     end
   end
 end

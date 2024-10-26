@@ -162,7 +162,7 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :index do
     get("/api/teams")
-    summary("Get all teams with fuzzy search")
+    summary("Get all teams with fuzzy search (manager and administrator)")
     produces("application/json")
     deprecated(false)
     parameter(:name, :query, :string, "fuzzy name search", required: false, example: "Ma")
@@ -181,7 +181,7 @@ defmodule TimemanWeb.TeamController do
   # TODO: spécifier les 3 exemples possibles
   swagger_path :show do
     get("/api/teams/{team_id}")
-    summary("Get team by id")
+    summary("Get team by id  (manager and administrator)")
     produces("application/json")
     deprecated(false)
     parameter(:team_id, :path, :number, "Team ID", required: true, example: 1)
@@ -207,7 +207,7 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :create do
     post("/api/teams")
-    summary("Create team")
+    summary("Create team (manager and administrator)")
     produces("application/json")
     deprecated(false)
     security([%{Bearer: []}])
@@ -230,7 +230,7 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :update do
     put("/api/teams/{team_id}")
-    summary("Update team")
+    summary("Update team (manager and administrator)")
     produces("application/json")
     deprecated(false)
     parameter(:team_id, :path, :number, "User ID", required: true, example: 1)
@@ -254,7 +254,7 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :delete do
     PhoenixSwagger.Path.delete("/api/teams/{user_id}")
-    summary("Delete user")
+    summary("Delete team (manager and administrator)")
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
@@ -265,7 +265,7 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :add_team do
     post("/api/teams/{team_id}/user/{user_id}")
-    summary("Add a team to a user")
+    summary("Add a team to a user  (manager and administrator)")
     description("Associates a team to a user.")
     produces("application/json")
 
@@ -278,7 +278,7 @@ defmodule TimemanWeb.TeamController do
 
   swagger_path :remove_team do
     PhoenixSwagger.Path.delete("/api/teams/{team_id}/user/{user_id}")
-    summary("Remove a team from a user")
+    summary("Remove a team from a user (manager and administrator)")
     description("Removes a team from a user.")
     produces("application/json")
 
