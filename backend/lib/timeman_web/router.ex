@@ -16,14 +16,6 @@ defmodule TimemanWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/api", TimemanWeb do
-    pipe_through(:api)
-
-    post("/users", UserController, :create)
-    post("/login", SessionController, :login)
-    post("/logout", SessionController, :logout)
-  end
-
   pipeline :authenticated do
     plug(Guardian.Plug.Pipeline,
       otp_app: :auth_me,
@@ -31,27 +23,58 @@ defmodule TimemanWeb.Router do
       error_handler: Timeman.Account.ErrorHandler
     )
 
+    plug(:fetch_cookies)
     plug(Guardian.Plug.VerifyHeader, realm: "Bearer")
+    plug(Guardian.Plug.VerifyCookie)
     plug(Guardian.Plug.LoadResource)
+    plug(TimemanWeb.Plugs.Auth)
+  end
+
+  pipeline :ensure_admin_role do
+    plug(TimemanWeb.RoleAuthorizationPlug, ["administrator"])
+  end
+
+  pipeline :ensure_manager_role do
+    plug(TimemanWeb.RoleAuthorizationPlug, ["manager", "administrator"])
+  end
+
+  scope "/api", TimemanWeb do
+    pipe_through(:api)
+
+    post("/users", UserController, :register)
+    post("/login", SessionController, :login)
   end
 
   scope "/api", TimemanWeb do
     pipe_through([:api, :authenticated])
 
-    get("/clocks/:user_id", ClockController, :clocks_by_user)
     post("/clocks/:user_id", ClockController, :upsert_clock)
 
-    resources("/users", UserController, except: [:new, :edit])
-    put("/users/set_role/:id", UserController, :set_role)
     post("/users/update_password", UserController, :update_password)
 
-    resources("/workingtime", WorkingTimeController,
-      except: [:index, :delete, :edit, :new, :show, :create]
-    )
+    # Peut avoir ses propres informations ?
+    get("/users/:id", UserController, :show)
+    put("/users/:id", UserController, :update)
 
-    get("/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime)
     get("/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser)
+    put("/workingtime/:id", WorkingTimeController, :update)
+    post("/logout", SessionController, :logout)
+  end
 
+  scope "/api", TimemanWeb do
+    pipe_through([:api, :authenticated, :ensure_admin_role])
+
+    # TODO: remind changement de put à post
+    post("/users/set_role/:id", UserController, :set_role)
+    delete("/users/:user_id", UserController, :delete)
+  end
+
+  scope "/api", TimemanWeb do
+    pipe_through([:api, :authenticated, :ensure_manager_role])
+    get("/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime)
+    get("/users/", UserController, :index)
+    get("/clocks/:user_id", ClockController, :clocks_by_user)
+    put("/users/set_role/:id", UserController, :set_role)
     resources("/teams", TeamController)
     post("/teams/:team_id/user/:user_id", TeamController, :add_team)
     delete("/teams/:team_id/user/:user_id", TeamController, :remove_team)

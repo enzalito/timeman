@@ -20,7 +20,7 @@ defmodule TimemanWeb.UserController do
     render(conn, :show, user: user)
   end
 
-  def create(conn, %{"user" => user_params}) do
+  def register(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Account.create_user(user_params) do
       conn
       |> put_status(:created)
@@ -260,9 +260,9 @@ defmodule TimemanWeb.UserController do
     )
   end
 
-  swagger_path :create do
+  swagger_path :register do
     post("/api/users")
-    summary("Create user")
+    summary("Register user")
     produces("application/json")
     deprecated(false)
 

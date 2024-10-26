@@ -19,7 +19,12 @@ defmodule TimemanWeb.SessionController do
     with {:ok, user} <- Account.authenticate_user(username, password),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
       conn
-      |> put_resp_cookie("auth_token", token, http_only: true, secure: true, same_site: "Strict")
+      |> put_resp_cookie("auth_token", token,
+        http_only: true,
+        secure: true,
+        same_site: "Strict",
+        max_age: 60 * 60 * 24
+      )
       |> render(UserJSON, :show, user: user)
     else
       {:error, reason} ->
@@ -32,6 +37,7 @@ defmodule TimemanWeb.SessionController do
   def logout(conn, _) do
     conn
     |> Guardian.Plug.sign_out()
+    |> delete_resp_cookie("guardian_default_token")
     |> json(%{message: "Logout successful"})
   end
 
