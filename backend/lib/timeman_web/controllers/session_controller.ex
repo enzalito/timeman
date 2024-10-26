@@ -41,6 +41,19 @@ defmodule TimemanWeb.SessionController do
     |> json(%{message: "Logout successful"})
   end
 
+  def current_user(conn, _params) do
+    case Guardian.Plug.current_resource(conn) do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Not authenticated"})
+
+      user ->
+        conn
+        |> render(UserJSON, :show, user: user)
+    end
+  end
+
   def swagger_definitions do
     %{
       SessionRequest:
@@ -145,5 +158,27 @@ defmodule TimemanWeb.SessionController do
     security([%{Bearer: []}])
 
     response(204, "OK")
+  end
+
+  swagger_path :current_user do
+    PhoenixSwagger.Path.post("/api/current_user")
+    summary("Get user info if jwt token is valid")
+    produces("application/json")
+    deprecated(false)
+    security([%{Bearer: []}])
+
+    response(201, "OK", Schema.ref(:UserResponse),
+      example: %{
+        user: %{
+          id: 1,
+          username: "Joe",
+          email: "joe@mail.com",
+          role: "employee",
+          team: [
+            %{name: "Development"}
+          ]
+        }
+      }
+    )
   end
 end

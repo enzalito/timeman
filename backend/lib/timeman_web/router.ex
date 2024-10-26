@@ -66,7 +66,9 @@ defmodule TimemanWeb.Router do
 
     get("/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser)
     put("/workingtime/:id", WorkingTimeController, :update)
+
     post("/logout", SessionController, :logout)
+    post("/current_user", SessionController, :current_user)
   end
 
   scope "/api", TimemanWeb do
