@@ -64,7 +64,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams),
-          working_time: working_times,
+          workingTimes: working_times,
           clock: clock
         }
 
@@ -75,7 +75,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams),
-          working_time: working_times
+          workingTimes: working_times
         }
 
       {false, true} ->
