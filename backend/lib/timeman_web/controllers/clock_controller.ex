@@ -21,6 +21,7 @@ defmodule TimemanWeb.ClockController do
     end
 
     clock = Clocks.create_or_update_clock(clock)
+
     render(conn, :show, clock: clock)
   end
 
@@ -44,7 +45,7 @@ defmodule TimemanWeb.ClockController do
                 time: %{type: :string, description: "Timestamp of the clock", required: true}
               },
               example: %{
-                status: "true",
+                status: true,
                 time: "2024-10-08T14:30:00"
               }
             },
