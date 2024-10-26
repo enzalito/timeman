@@ -21,6 +21,9 @@ defmodule TimemanWeb.UserController do
   end
 
   def register(conn, %{"user" => user_params}) do
+    user_params =
+      user_params |> Map.take(["email", "password", "username"])
+
     with {:ok, %User{} = user} <- Account.create_user(user_params) do
       conn
       |> put_status(:created)
@@ -37,6 +40,9 @@ defmodule TimemanWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Account.get_user!(String.to_integer(id))
+
+    user_params =
+      user_params |> Map.take(["email", "password", "username"])
 
     with {:ok, %User{} = user} <- Account.update_user(user, user_params) do
       render(conn, :show, user: user)
