@@ -8,7 +8,7 @@ import {
   CalendarDate,
   CalendarDateTime
 } from "@internationalized/date"
-import { type WorkingTime } from "@/api/workingTime"
+import { type WorkingTime } from "@/api/working-time"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

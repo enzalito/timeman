@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type WorkingTime } from "@/api/workingTime"
+import { type WorkingTime } from "@/api/working-time"
 
 import { Clock, ArrowRight, SquarePen } from "lucide-vue-next"
 import { Card } from "@/components/ui/card"

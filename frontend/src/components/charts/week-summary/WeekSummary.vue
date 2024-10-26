@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue"
 import { today, getLocalTimeZone } from "@internationalized/date"
-import { getWorkingTimes } from "@/api/workingTime"
-import { getWeekRangeStr, getWeekRange, getFilteredTotalHours } from "@/lib/utils"
+import { getWorkingTimes } from "@/api/working-time"
+import { getWeekRangeStr, getWeekRange } from "@/lib/utils"
+import { getFilteredTotalHours } from "./lib/utils"
 
 import { ArrowRight } from "lucide-vue-next"
 import { DonutChart } from "@/components/ui/chart-donut"

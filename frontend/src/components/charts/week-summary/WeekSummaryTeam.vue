@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue"
-import { getLocalTimeZone } from "@internationalized/date"
 import type { UserWithWorkingTimes } from "@/api/user"
 import { getTeam } from "@/api/team"
-import { type WorkingTime } from "@/api/workingTime"
-import { getWeekRange, filterWorkingHours, type DateRange, type TimeRange } from "@/lib/utils"
+import { getWeekRange } from "@/lib/utils"
+import { getFilteredTotalHours } from "./lib/utils"
 
 import Card from "@/components/Card.vue"
 
@@ -16,23 +15,6 @@ onBeforeMount(async () => {
   const team = await getTeam(teamId, { withUsers: true, withWorkingTimes: true })
   users.value = gatherHours(team.data.users)
 })
-
-function getFilteredTotalHours(workingTimes: WorkingTime[] | undefined, range: DateRange): number {
-  const getHourDuration = (timeRange: TimeRange) => {
-    return (
-      (timeRange.end.toDate(getLocalTimeZone()).getTime() -
-        timeRange.start.toDate(getLocalTimeZone()).getTime()) /
-      3600000
-    )
-  }
-
-  let total = 0
-  filterWorkingHours(workingTimes, range, (_, timeRange) => {
-    total += getHourDuration(timeRange)
-  })
-
-  return total
-}
 
 function gatherHours(users: UserWithWorkingTimes[]) {
   const weekRange = getWeekRange()
