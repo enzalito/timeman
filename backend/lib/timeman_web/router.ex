@@ -50,11 +50,13 @@ defmodule TimemanWeb.Router do
 
     post("/clocks/:user_id", ClockController, :upsert_clock)
 
-    post("/users/update_password", UserController, :update_password)
-
     # Peut avoir ses propres informations ?
     get("/users/:id", UserController, :show)
+    get("/clocks/:user_id", ClockController, :clocks_by_user)
+    get("/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime)
+
     put("/users/:id", UserController, :update)
+    post("/users/update_password", UserController, :update_password)
 
     get("/workingtime/:user_id", WorkingTimeController, :showTimeForOneUser)
     put("/workingtime/:id", WorkingTimeController, :update)
@@ -64,16 +66,13 @@ defmodule TimemanWeb.Router do
   scope "/api", TimemanWeb do
     pipe_through([:api, :authenticated, :ensure_admin_role])
 
-    # TODO: remind changement de put à post
     post("/users/set_role/:id", UserController, :set_role)
     delete("/users/:user_id", UserController, :delete)
   end
 
   scope "/api", TimemanWeb do
     pipe_through([:api, :authenticated, :ensure_manager_role])
-    get("/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime)
     get("/users/", UserController, :index)
-    get("/clocks/:user_id", ClockController, :clocks_by_user)
     put("/users/set_role/:id", UserController, :set_role)
     resources("/teams", TeamController)
     post("/teams/:team_id/user/:user_id", TeamController, :add_team)

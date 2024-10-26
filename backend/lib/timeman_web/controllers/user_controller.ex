@@ -222,7 +222,7 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :index do
     get("/api/users")
-    summary("Get all users with fuzzy search")
+    summary("Get all users with fuzzy search (manager and administrator)")
     produces("application/json")
     deprecated(false)
     parameter(:username, :query, :string, "fuzzy name search", required: false, example: "Jo")
@@ -329,7 +329,7 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :set_role do
     put("/api/users/set_role/{user_id}")
-    summary("Update role from user")
+    summary("Update role from user (administrator only)")
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
@@ -380,7 +380,7 @@ defmodule TimemanWeb.UserController do
 
   swagger_path :delete do
     PhoenixSwagger.Path.delete("/api/users/{user_id}")
-    summary("Delete user")
+    summary("Delete user (administrator only)")
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
