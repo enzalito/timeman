@@ -14,10 +14,7 @@ const { data } = defineProps<{
 <template>
   <div class="p-1">
     <div v-for="row in data" :key="row.name" class="flex items-center gap-4">
-      <div
-        :class="['trait w-1 h-6 rounded-sm', `bg-[${row.color}]`]"
-        :style="{ backgroundColor: row.color }"
-      />
+      <div :class="['trait w-1 h-6 rounded-sm', `bg-[${row.color}]`]" :style="{ backgroundColor: row.color }" />
       {{ row.name }}
       <div class="">{{ formatHours(row.value) }}m</div>
     </div>

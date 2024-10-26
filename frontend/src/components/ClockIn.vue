@@ -14,7 +14,7 @@ const { userId } = defineProps<{ userId: number }>()
 const clock = ref<Clock | undefined>()
 
 onMounted(async () => {
-  clock.value = (await getClock(userId)).data
+  clock.value = (await getClock(userId)).data ?? { status: false, time: "", userId }
 })
 
 const description = ref("")
@@ -32,31 +32,26 @@ const toggleClock = async () => {
 </script>
 
 <template>
-  <Card class="p-2">
+  <Card class="flex flex-col justify-between gap-3">
     <template v-if="clock">
-      <div v-if="!clock.status">
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-row items-center font-medium">
-            <CircleDot class="h-3 stroke-stone-500 fill-stone-500" />
-            <p>Not started yet</p>
-          </div>
-          <Button @click="toggleClock"> Clock in </Button>
+      <template v-if="!clock.status">
+        <div class="flex flex-row items-center font-medium">
+          <CircleDot class="h-3 stroke-stone-500 fill-stone-500" />
+          <p>Not started yet</p>
         </div>
-      </div>
-
-      <div v-else>
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-row items-center font-medium">
-            <CircleDot class="h-3 stroke-green-500 fill-green-500" />
-            <p>Started at {{ clock.time.substring(12) }}</p>
-          </div>
-          <div>
-            <Label for="message">Comment - optionnal</Label>
-            <Textarea v-model="description" placeholder="Type your message here" />
-          </div>
-          <Button @click="toggleClock"> Clock out </Button>
+        <Button @click="toggleClock"> Clock in </Button>
+      </template>
+      <template v-else>
+        <div class="flex flex-row items-center font-medium">
+          <CircleDot class="h-3 stroke-green-500 fill-green-500" />
+          <p>Started at {{ clock.time.substring(12) }}</p>
         </div>
-      </div>
+        <div>
+          <Label for="message">Comment - optionnal</Label>
+          <Textarea v-model="description" placeholder="Type your message here" />
+        </div>
+        <Button @click="toggleClock"> Clock out </Button>
+      </template>
     </template>
   </Card>
 </template>
