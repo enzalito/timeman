@@ -30,3 +30,7 @@ coverage
 *.tsbuildinfo
 
 .env
+
+
+cordova/platforms/*
+cordova/www/*

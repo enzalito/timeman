@@ -8,8 +8,8 @@ defmodule TimemanWeb.ClockController do
   action_fallback(TimemanWeb.FallbackController)
 
   def clocks_by_user(conn, %{"user_id" => user_id}) do
-    clocks = Clocks.list_clocks_from_user(user_id)
-    render(conn, "index.json", clocks: clocks)
+    clock = Clocks.get_from_user(user_id)
+    render(conn, "index.json", clock: clock)
   end
 
   def upsert_clock(conn, %{"user_id" => user_id, "clock" => clock}) do

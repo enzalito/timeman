@@ -209,7 +209,7 @@ defmodule Timeman.Clocks do
     Clock.changeset(clock, attrs)
   end
 
-  def list_clocks_from_user(user_id) do
-    Repo.all(from(c in Clock, where: c.user_id == ^user_id))
+  def get_from_user(user_id) do
+    Repo.one(from(c in Clock, where: c.user_id == ^user_id))
   end
 end

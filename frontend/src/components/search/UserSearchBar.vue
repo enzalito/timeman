@@ -49,7 +49,7 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
         <template v-if="suggestedUsers">
           <div class="px-4 py-2 text-sm font-medium text-gray-400">Users</div>
           <div class="space-y-1">
-            <li v-for="user in suggestedUsers">
+            <li v-for="user in suggestedUsers" :key="user.id">
               <div
                 class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
                 @click="$emit('userSelected', user)"
@@ -63,7 +63,7 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
         <template v-if="suggestedTeams">
           <div class="px-4 py-2 text-sm font-medium text-gray-400">Teams</div>
           <div class="space-y-1">
-            <li v-for="team in suggestedTeams">
+            <li v-for="team in suggestedTeams" :key="team.id">
               <div
                 class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
                 @click="$emit('teamSelected', team)"

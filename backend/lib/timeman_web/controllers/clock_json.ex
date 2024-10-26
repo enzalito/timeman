@@ -4,8 +4,8 @@ defmodule TimemanWeb.ClockJSON do
   @doc """
   Renders a list of clocks.
   """
-  def index(%{clocks: clocks}) do
-    %{data: for(clock <- clocks, do: data(clock))}
+  def index(%{clock: clock}) do
+    %{data: data(clock)}
   end
 
   @doc """

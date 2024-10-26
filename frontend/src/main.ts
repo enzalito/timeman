@@ -4,10 +4,29 @@ import { createPinia } from "pinia"
 import "@/assets/index.css"
 import App from "./App.vue"
 import router from "./router"
+import { offlineQueue } from "./lib/offlineQueue"
 
-const app = createApp(App)
+// Check environment and initialize accordingly
+// @ts-expect-error
+if (window.cordova) {
+  // Mobile - wait for deviceready
+  document.addEventListener("deviceready", launch, false)
+} else {
+  // Desktop - launch immediately
+  launch()
+}
 
-app.use(createPinia())
-app.use(router)
+function launch() {
+  const app = createApp(App)
 
-app.mount("#app")
+  app.use(createPinia())
+  app.use(router)
+
+  app.mount("#app")
+
+  document.addEventListener("online", async () => {
+    await offlineQueue.processQueue()
+  })
+
+  document.addEventListener("offline", () => {})
+}

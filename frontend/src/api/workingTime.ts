@@ -1,3 +1,4 @@
+import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
 import { z } from "zod"
 
 export const workingTime = z.object({
@@ -35,7 +36,7 @@ export async function getWorkingTimes(
 ): Promise<WorkingTimeBulkResponse> {
   const queryParams = startDate && endDate ? `?start=${startDate}&end=${endDate}` : ""
 
-  const response = await fetch(
+  const response = await fetchWithOfflineSupport(
     `${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}${queryParams}`,
     {
       method: "GET"
@@ -45,7 +46,7 @@ export async function getWorkingTimes(
 }
 
 export async function getWorkingTime(userId: number, woId: number): Promise<WorkingTimeResponse> {
-  const response = await fetch(
+  const response = await fetchWithOfflineSupport(
     `${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}/${woId}`,
     {
       method: "GET"
@@ -58,11 +59,14 @@ export async function createWorkingTime(
   workingTime: WorkingTimeRequestPartial,
   userId: number
 ): Promise<WorkingTimeResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(workingTime)
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/workingtime/${userId}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(workingTime)
+    }
+  )
   return await response.json()
 }
 
@@ -70,16 +74,19 @@ export async function updateWorkingTime(
   workingTime: WorkingTimeRequestPartial,
   id: number
 ): Promise<WorkingTimeResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(workingTime)
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/workingtime/${id}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(workingTime)
+    }
+  )
   return await response.json()
 }
 
 export async function deleteWorkingTime(id: number) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${id}`, {
+  await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/workingtime/${id}`, {
     method: "DELETE"
   })
 }

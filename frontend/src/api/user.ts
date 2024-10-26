@@ -1,6 +1,7 @@
 import { z } from "zod"
-import { type Clock } from "./clock"
-import { type WorkingTime } from "./workingTime"
+import { type Clock } from "@/api/clock"
+import { type WorkingTime } from "@/api/workingTime"
+import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
 
 export const roles = ["employee", "manager"] as const
 export const role = z.enum(roles)
@@ -10,7 +11,11 @@ export const user = z.object({
   id: z.number().min(1),
   username: z.string(),
   email: z.string().email(),
-  role: role
+  role: role,
+  teams: z.object({
+    id: z.number().min(1),
+    name: z.string()
+  }).array()
 })
 export type User = z.infer<typeof user>
 
@@ -26,6 +31,24 @@ export const userRequest = z.object({
   user: user.omit({ id: true })
 })
 export type UserRequest = z.infer<typeof userRequest>
+
+// Minimum 8 characters, at least one uppercase letter, one lowercase letter, and one special character
+const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
+
+const hasPassword = z.object({
+  password: z
+    .string()
+    .min(8, "Must have at least 8 characters")
+    .regex(
+      passwordValidation,
+      "Password must contain at least one special character, one uppercase and one lowercase letter"
+    )
+})
+
+export const userLogin = z.object({
+  user: user.omit({ id: true, role: true }).merge(hasPassword)
+})
+export type UserLogin = z.infer<typeof userLogin>
 
 export const userSearchRequest = z.object({
   user: z.object({ username: z.string().optional() })
@@ -46,31 +69,39 @@ export type UserBulkResponse = {
 }
 
 export async function getUser(id: number): Promise<UserResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${id}`, {
-    method: "GET"
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/users/${id}`,
+    {
+      method: "GET"
+    }
+  )
   return await response.json()
 }
 
 export async function getUsers(user: UserSearchRequest): Promise<UserBulkResponse> {
   const params = new URLSearchParams(user.user)
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users?${params}`, {
-    method: "GET"
-  })
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/users?${params}`,
+    {
+      method: "GET"
+    }
+  )
   return await response.json()
 }
 
 export async function createUser(user: UserRequest): Promise<UserResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users`, {
+  const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(user)
   })
   return await response.json()
 }
 
 export async function updateUser(user: UserRequest): Promise<UserResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users`, {
+  const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(user)
@@ -79,13 +110,13 @@ export async function updateUser(user: UserRequest): Promise<UserResponse> {
 }
 
 export async function deleteUser(userId: number) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`, {
+  await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users/${userId}`, {
     method: "DELETE"
   })
 }
 
 export async function setRole(userId: number, role: UserRoleRequest) {
-  await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/set_role/${userId}`, {
+  await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users/set_role/${userId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(role)
