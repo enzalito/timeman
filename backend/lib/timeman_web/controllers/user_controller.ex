@@ -101,6 +101,27 @@ defmodule TimemanWeb.UserController do
     end
   end
 
+  def delete(conn, _params) do
+    case Guardian.Plug.current_resource(conn) do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Not authenticated"})
+
+      user ->
+        case Account.delete_user(user) do
+          {:ok, _} ->
+            Guardian.Plug.sign_out(conn)
+            send_resp(conn, :no_content, "")
+
+          {:error, _} ->
+            conn
+            |> put_status(:internal_server_error)
+            |> json(%{error: "Unable to delete user"})
+        end
+    end
+  end
+
   def swagger_definitions do
     %{
       UserRequest:
@@ -379,11 +400,11 @@ defmodule TimemanWeb.UserController do
   end
 
   swagger_path :delete do
-    PhoenixSwagger.Path.delete("/api/users/{user_id}")
-    summary("Delete user (administrator only)")
+    PhoenixSwagger.Path.delete("/api/users/")
+    summary("Delete current user, or any user if administrator")
     produces("application/json")
     deprecated(false)
-    parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
+    parameter(:user_id, :path, :number, "User ID", required: false, example: 1)
     security([%{Bearer: []}])
 
     response(204, "OK")
