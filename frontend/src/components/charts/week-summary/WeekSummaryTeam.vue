@@ -35,7 +35,6 @@ function getPercentageWorked(hours: number) {
 
 <template>
   <Card
-    title="Week summary"
     class="gap-x-6 items-center justify-between w-full md:w-[66%] lg:w-[50%] xl:[40%] max-w-[580px]"
   >
     <div

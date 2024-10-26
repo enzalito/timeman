@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { type Clock } from "@/api/clock"
-import { type WorkingTime } from "@/api/workingTime"
+import { type WorkingTime } from "@/api/working-time"
 import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
 
 export const roles = ["employee", "manager"] as const

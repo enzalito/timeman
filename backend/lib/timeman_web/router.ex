@@ -56,10 +56,10 @@ defmodule TimemanWeb.Router do
 
     post("/clocks/:user_id", ClockController, :upsert_clock)
 
-    # Peut avoir ses propres informations ?
     get("/users/:id", UserController, :show)
     get("/clocks/:user_id", ClockController, :clocks_by_user)
     get("/workingtime/:user_id/:id", WorkingTimeController, :getWorkingTime)
+    delete("/users/", UserController, :delete)
 
     put("/users/:id", UserController, :update)
     post("/users/update_password", UserController, :update_password)
