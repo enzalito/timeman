@@ -20,7 +20,7 @@ defmodule TimemanWeb.SessionController do
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
       conn
       |> put_resp_cookie("auth_token", token,
-        http_only: true,
+        http_only: false,
         secure: true,
         same_site: "Strict",
         max_age: 60 * 60 * 24

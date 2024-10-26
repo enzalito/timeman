@@ -38,6 +38,9 @@ export type UserRequest = z.infer<typeof userRequest>
 const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
 
 const hasPassword = z.object({
+  password: z.string().min(1)
+})
+const hasPasswordWithRegex = z.object({
   password: z
     .string()
     .min(8, "Must have at least 8 characters")
@@ -48,9 +51,14 @@ const hasPassword = z.object({
 })
 
 export const userLogin = z.object({
-  user: user.omit({ id: true, role: true }).merge(hasPassword)
+  user: user.omit({ id: true, role: true, email: true, teams: true }).merge(hasPassword)
 })
 export type UserLogin = z.infer<typeof userLogin>
+
+export const userSignup = z.object({
+  user: user.omit({ id: true, role: true, teams: true }).merge(hasPasswordWithRegex)
+})
+export type UserSignup = z.infer<typeof userSignup>
 
 export const userSearchRequest = z.object({
   user: z.object({ username: z.string().optional() })
@@ -91,7 +99,7 @@ export async function getUsers(user: UserSearchRequest): Promise<UserBulkRespons
   return await response.json()
 }
 
-export async function createUser(user: UserRequest): Promise<UserResponse> {
+export async function createUser(user: UserSignup): Promise<UserResponse> {
   const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users`, {
     method: "POST",
     headers: {

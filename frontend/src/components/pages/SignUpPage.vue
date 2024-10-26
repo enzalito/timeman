@@ -3,16 +3,28 @@
   import { Form } from "vee-validate";
   import { Button } from "../ui/button";
   import { toTypedSchema } from "@vee-validate/zod";
-  import { getUsers, userLogin, type UserLogin } from "@/api/user";
-  import { useUserStore } from "@/stores/user";
+  import { createUser, userSignup, type UserSignup } from "@/api/user";
   import AuthFormFields from "../AuthFormFields.vue";
+  import router from "@/router";
+import { useToast } from "../ui/toast";
 
-  const userStore = useUserStore()
+  const { toast } = useToast()
 
-  async function handleSubmit(data: UserLogin) {
-    userStore.set((await getUsers(data)).data[0])
+  async function handleSubmit(data: UserSignup) {
+    try {
+      const res = await createUser(data)
+
+      router.push({name: 'login', query: {username: res.data.username}})
+      toast({
+        title: 'Your account has been created ! 💪',
+        description: 'You can now log in to access your dashboard',
+        duration: 5000
+      })
+    } catch (error) {
+      console.log('signup error');
+    }
   }
-  const formSchema = toTypedSchema(userLogin)
+  const formSchema = toTypedSchema(userSignup)
 </script>
 
 <template>
@@ -20,7 +32,7 @@
     <div class="w-[86%] sm:w-[66%] md:w-[30%] max-w-[460px]">
       <Logo class="mx-auto mb-16 w-[60%]"/>
 
-      <Form class="space-y-6" :validation-schema="formSchema" @submit="(data) => handleSubmit(data as UserLogin)">
+      <Form class="space-y-6" :validation-schema="formSchema" @submit="(data) => handleSubmit(data as UserSignup)">
         <AuthFormFields :include-fields="['email', 'password', 'username']"/>
           <Button type="submit" class="w-full">
             Register
