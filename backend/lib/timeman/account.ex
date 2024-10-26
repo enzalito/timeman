@@ -3,13 +3,12 @@ defmodule Timeman.Account do
   The Account context.
   """
 
-  import Ecto.Query, warn: false
   alias Timeman.Repo
 
   alias Timeman.Account.User
 
   alias Argon2
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query
 
   @doc """
   Returns the list of users.

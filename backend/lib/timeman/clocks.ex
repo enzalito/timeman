@@ -57,6 +57,18 @@ defmodule Timeman.Clocks do
     |> Repo.insert()
   end
 
+  def create_default_clock(user_id) do
+    attrs = %{
+      time: "1970-01-01 00:00:00",
+      status: true,
+      user_id: user_id
+    }
+
+    %Clock{}
+    |> Clock.changeset(attrs)
+    |> Repo.insert()
+  end
+
   def create_or_update_clock(attrs \\ %{}) do
     changeset = Clock.changeset(%Clock{}, attrs)
 

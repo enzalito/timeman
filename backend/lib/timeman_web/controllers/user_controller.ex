@@ -8,6 +8,8 @@ defmodule TimemanWeb.UserController do
   alias Timeman.Repo
   import Ecto.Query
 
+  alias Timeman.Clocks
+
   action_fallback(TimemanWeb.FallbackController)
 
   def index(conn, %{"username" => username}) do
@@ -25,6 +27,8 @@ defmodule TimemanWeb.UserController do
       user_params |> Map.take(["email", "password", "username"])
 
     with {:ok, %User{} = user} <- Account.create_user(user_params) do
+      Clocks.create_default_clock(user.id)
+
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{user}")
