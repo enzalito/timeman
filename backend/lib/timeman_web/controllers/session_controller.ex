@@ -29,7 +29,6 @@ defmodule TimemanWeb.SessionController do
     end
   end
 
-  # TODO: tester la route logout
   def logout(conn, _) do
     conn
     |> Guardian.Plug.sign_out()
@@ -44,7 +43,7 @@ defmodule TimemanWeb.SessionController do
           description("POST body for login")
 
           property(
-            :login,
+            :user,
             %Schema{
               properties: %{
                 username: %{type: :string, description: "User name", required: true},
@@ -56,7 +55,7 @@ defmodule TimemanWeb.SessionController do
               },
               example: %{
                 username: "Joe",
-                password: "joesPassword"
+                password: "JoesPassword"
               }
             },
             "The user login informations"
@@ -113,7 +112,7 @@ defmodule TimemanWeb.SessionController do
 
     parameter(:login, :body, Schema.ref(:SessionRequest), "The user login informations",
       example: %{
-        login: %{username: "Joe", password: "joesPassword"}
+        login: %{username: "Joe", password: "JoesPassword"}
       }
     )
 

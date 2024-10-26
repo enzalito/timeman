@@ -122,7 +122,7 @@ defmodule TimemanWeb.UserController do
               example: %{
                 username: "Joe",
                 email: "joe@mail.com",
-                password: "joePassword"
+                password: "JoesPassword"
               }
             },
             "The user details"
