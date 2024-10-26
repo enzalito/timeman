@@ -2,6 +2,7 @@ defmodule TimemanWeb.Router do
   alias WorkingTimeController
   use TimemanWeb, :router
 
+  # TODO: virer pipeline front
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -18,11 +19,31 @@ defmodule TimemanWeb.Router do
   scope "/api", TimemanWeb do
     pipe_through(:api)
 
+    post("/users", UserController, :create)
+    post("/login", SessionController, :login)
+    post("/logout", SessionController, :logout)
+  end
+
+  pipeline :authenticated do
+    plug(Guardian.Plug.Pipeline,
+      otp_app: :auth_me,
+      module: Timeman.Account.Guardian,
+      error_handler: Timeman.Account.ErrorHandler
+    )
+
+    plug(Guardian.Plug.VerifyHeader, realm: "Bearer")
+    plug(Guardian.Plug.LoadResource)
+  end
+
+  scope "/api", TimemanWeb do
+    pipe_through([:api, :authenticated])
+
     get("/clocks/:user_id", ClockController, :clocks_by_user)
     post("/clocks/:user_id", ClockController, :upsert_clock)
 
     resources("/users", UserController, except: [:new, :edit])
     put("/users/set_role/:id", UserController, :set_role)
+    post("/users/update_password", UserController, :update_password)
 
     resources("/workingtime", WorkingTimeController,
       except: [:index, :delete, :edit, :new, :show, :create]
@@ -59,16 +80,19 @@ defmodule TimemanWeb.Router do
     end
 
     scope "/api/swagger" do
-      forward("/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :timeman, swagger_file: "swagger.json")
+      forward("/", PhoenixSwagger.Plug.SwaggerUI,
+        otp_app: :timeman,
+        swagger_file: "swagger.json",
+        swagger_ui_opts: [
+          validatorUrl: nil,
+          oauth2RedirectUrl: nil,
+          displayOperationId: true
+        ]
+      )
     end
 
     def swagger_info do
-      %{
-        info: %{
-          version: "1.0",
-          title: "Timeman"
-        }
-      }
+      TimemanWeb.Swagger.swagger_info()
     end
   end
 end

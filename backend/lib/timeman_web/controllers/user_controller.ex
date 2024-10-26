@@ -4,6 +4,9 @@ defmodule TimemanWeb.UserController do
 
   alias Timeman.Account
   alias Timeman.Account.User
+  alias Timeman.Account.Guardian
+  alias Timeman.Repo
+  import Ecto.Query
 
   action_fallback(TimemanWeb.FallbackController)
 
@@ -50,6 +53,40 @@ defmodule TimemanWeb.UserController do
     end
   end
 
+  def update_password(conn, %{
+        "username" => username,
+        "current_password" => current_password,
+        "new_password" => new_password
+      }) do
+    current_user = Guardian.Plug.current_resource(conn)
+
+    if current_user.username == username do
+      case Account.authenticate_user(username, current_password) do
+        {:ok, user} ->
+          case Account.update_user(user, %{"password" => new_password}) do
+            {:ok, updated_user} ->
+              conn
+              |> put_status(:ok)
+              |> render(:show, user: updated_user)
+
+            {:error, changeset} ->
+              {:error, changeset}
+          end
+
+        {:error, _reason} ->
+          {:error, :unauthorized}
+      end
+    else
+      {:error, :unauthorized}
+    end
+  end
+
+  def update_password(conn, _params) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{error: "Invalid parameters"})
+  end
+
   def delete(conn, %{"id" => id}) do
     user = Account.get_user!(String.to_integer(id))
 
@@ -75,11 +112,17 @@ defmodule TimemanWeb.UserController do
                   description: "Email address",
                   format: :email,
                   required: true
+                },
+                password: %{
+                  type: :string,
+                  description: "password",
+                  required: true
                 }
               },
               example: %{
                 username: "Joe",
-                email: "joe@mail.com"
+                email: "joe@mail.com",
+                password: "JoesPassword"
               }
             },
             "The user details"
@@ -142,6 +185,31 @@ defmodule TimemanWeb.UserController do
             },
             "The user role"
           )
+        end,
+      UserPasswordRequest:
+        swagger_schema do
+          title("UserPasswordRequest")
+          description("request schema to set new password")
+
+          property(
+            :user,
+            %Schema{
+              properties: %{
+                username: %{type: :string, description: "username", required: true},
+                current_password: %{
+                  type: :string,
+                  description: "current password",
+                  required: true
+                },
+                new_password: %{type: :string, description: "new password", required: true}
+              },
+              example: %{
+                username: "Joe",
+                current_password: "JoesCurrentPassword",
+                new_password: "JoesNewPassword"
+              }
+            }
+          )
         end
     }
   end
@@ -152,6 +220,7 @@ defmodule TimemanWeb.UserController do
     produces("application/json")
     deprecated(false)
     parameter(:username, :query, :string, "fuzzy name search", required: false, example: "Jo")
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:UserResponse),
       example: %{
@@ -174,6 +243,7 @@ defmodule TimemanWeb.UserController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:UserResponse),
       example: %{
@@ -198,7 +268,11 @@ defmodule TimemanWeb.UserController do
 
     parameter(:user, :body, Schema.ref(:UserRequest), "The user details",
       example: %{
-        user: %{username: "Joe", email: "joe@mail.com"}
+        user: %{
+          username: "Joe",
+          email: "joe@mail.com",
+          password: "JoesPassword"
+        }
       }
     )
 
@@ -230,6 +304,8 @@ defmodule TimemanWeb.UserController do
       }
     )
 
+    security([%{Bearer: []}])
+
     response(200, "OK", Schema.ref(:UserResponse),
       example: %{
         user: %{
@@ -258,6 +334,8 @@ defmodule TimemanWeb.UserController do
       }
     )
 
+    security([%{Bearer: []}])
+
     response(200, "OK", Schema.ref(:UserResponse),
       example: %{
         user: %{
@@ -273,12 +351,34 @@ defmodule TimemanWeb.UserController do
     )
   end
 
+  swagger_path :update_password do
+    PhoenixSwagger.Path.delete("/api/users/{user_id}")
+    summary("update password")
+    produces("application/json")
+    deprecated(false)
+    parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
+
+    parameter(
+      :user,
+      :body,
+      Schema.ref(:UserPasswordRequest),
+      "User input for setting new password",
+      example: %{
+        username: "Joe",
+        current_password: "JoesCurrentPassword",
+        new_password: "JoesNewPassword"
+      }
+    )
+  end
+
   swagger_path :delete do
     PhoenixSwagger.Path.delete("/api/users/{user_id}")
     summary("Delete user")
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     response(204, "OK")
   end
