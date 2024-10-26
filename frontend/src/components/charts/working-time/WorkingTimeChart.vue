@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect, onBeforeMount } from "vue"
-import { getWorkingTimes, type WorkingTime } from "@/api/workingTime"
+import {
+  today,
+  startOfWeek,
+  endOfWeek,
+  getLocalTimeZone,
+  CalendarDate
+} from "@internationalized/date"
+import { getWorkingTimes, type WorkingTime } from "@/api/working-time"
 import { getTeam } from "@/api/team"
 import { type DateRange } from "@/lib/utils"
+import { useUserStore } from "@/stores/user"
 
 import { Card } from "@/components/ui/card"
 import { BarChart } from "@/components/ui/chart-bar"
@@ -16,16 +24,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import DatePicker from "@/components/DatePicker.vue"
+import DatePicker from "@/components/datepicker/DateRangePicker.vue"
 import CustomTooltip from "@/components/charts/working-time/WorkingTimeTooltip.vue"
-import { useUserStore } from "@/stores/user"
-import {
-  today,
-  startOfWeek,
-  endOfWeek,
-  getLocalTimeZone,
-  CalendarDate
-} from "@internationalized/date"
 
 const { teamId } = defineProps<{ teamId?: number }>()
 
@@ -153,14 +153,8 @@ const chartComponent = computed(() => {
   </div>
 
   <Card class="p-4 w-[85vw] max-w-[750px] min-w-[460px]">
-    <component
-      v-if="datedWorkHours.length !== 0"
-      :is="chartComponent"
-      :data="datedWorkHours"
-      index="dateEpochMs"
-      :categories="chartCategories"
-      :colors="[0, 1, 2, 3, 4, 5].map((n) => `var(--vis-color${n})`)"
-      :custom-tooltip="CustomTooltip"
-    />
+    <component v-if="datedWorkHours.length !== 0" :is="chartComponent" :data="datedWorkHours" index="dateEpochMs"
+      :categories="chartCategories" :colors="[0, 1, 2, 3, 4, 5].map((n) => `var(--vis-color${n})`)"
+      :custom-tooltip="CustomTooltip" />
   </Card>
 </template>

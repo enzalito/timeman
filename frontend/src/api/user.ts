@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { type Clock } from "@/api/clock"
-import { type WorkingTime } from "@/api/workingTime"
+import { type WorkingTime } from "@/api/working-time"
 import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
 
 export const roles = ["employee", "manager"] as const
@@ -12,10 +12,12 @@ export const user = z.object({
   username: z.string(),
   email: z.string().email(),
   role: role,
-  teams: z.object({
-    id: z.number().min(1),
-    name: z.string()
-  }).array()
+  teams: z
+    .object({
+      id: z.number().min(1),
+      name: z.string()
+    })
+    .array()
 })
 export type User = z.infer<typeof user>
 
