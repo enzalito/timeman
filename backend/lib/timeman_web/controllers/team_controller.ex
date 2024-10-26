@@ -166,6 +166,7 @@ defmodule TimemanWeb.TeamController do
     produces("application/json")
     deprecated(false)
     parameter(:name, :query, :string, "fuzzy name search", required: false, example: "Ma")
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:TeamResponse),
       example: %{
@@ -185,6 +186,7 @@ defmodule TimemanWeb.TeamController do
     deprecated(false)
     parameter(:team_id, :path, :number, "Team ID", required: true, example: 1)
     parameter(:with_users, :query, :boolean, "With users", required: false, example: "")
+    security([%{Bearer: []}])
 
     parameter(:with_working_times, :query, :boolean, "With working times",
       required: false,
@@ -208,6 +210,7 @@ defmodule TimemanWeb.TeamController do
     summary("Create team")
     produces("application/json")
     deprecated(false)
+    security([%{Bearer: []}])
 
     parameter(:name, :body, Schema.ref(:TeamRequest), "The team details",
       example: %{
@@ -231,6 +234,7 @@ defmodule TimemanWeb.TeamController do
     produces("application/json")
     deprecated(false)
     parameter(:team_id, :path, :number, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     parameter(:user, :body, Schema.ref(:TeamRequest), "The team details",
       example: %{
@@ -254,6 +258,7 @@ defmodule TimemanWeb.TeamController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :number, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     response(204, "OK")
   end
@@ -266,6 +271,7 @@ defmodule TimemanWeb.TeamController do
 
     parameter(:team_id, :path, :integer, "The ID of the team", required: true, example: 1)
     parameter(:user_id, :path, :integer, "The ID of the user", required: true, example: 1)
+    security([%{Bearer: []}])
 
     response(200, "OK")
   end
@@ -277,6 +283,7 @@ defmodule TimemanWeb.TeamController do
     produces("application/json")
 
     parameter(:user_id, :path, :integer, "The ID of the user", required: true, example: 1)
+    security([%{Bearer: []}])
 
     parameter(:team_id, :path, :integer, "The ID of the team to be removed",
       required: true,

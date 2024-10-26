@@ -65,8 +65,7 @@ defmodule TimemanWeb.UserJSON do
           role: user.role,
           teams: render_teams(user.teams),
           working_time: working_times,
-          clock: clock,
-          password: user.password
+          clock: clock
         }
 
       {true, false} ->
@@ -76,8 +75,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams),
-          working_time: working_times,
-          password: user.password
+          working_time: working_times
         }
 
       {false, true} ->
@@ -87,8 +85,7 @@ defmodule TimemanWeb.UserJSON do
           email: user.email,
           role: user.role,
           teams: render_teams(user.teams),
-          clock: clock,
-          password: user.password
+          clock: clock
         }
 
       {false, false} ->
@@ -97,8 +94,7 @@ defmodule TimemanWeb.UserJSON do
           username: user.username,
           email: user.email,
           role: user.role,
-          teams: render_teams(user.teams),
-          password: user.password
+          teams: render_teams(user.teams)
         }
     end
   end

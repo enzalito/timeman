@@ -134,13 +134,6 @@ defmodule Timeman.Account do
       user ->
         if Argon2.verify_pass(plain_text_password, user.password) do
           {:ok, user}
-          # case Guardian.encode_and_sign(user) do
-          #   {:ok, token, claims} ->
-          #     {:ok, token, claims}
-
-          #   {:error, reason} ->
-          #     {:error, reason}
-          # end
         else
           {:error, :invalid_credentials}
         end

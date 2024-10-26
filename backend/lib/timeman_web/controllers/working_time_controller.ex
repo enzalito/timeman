@@ -120,6 +120,7 @@ defmodule TimemanWeb.WorkingTimeController do
     deprecated(false)
     parameter(:user_id, :path, :string, "user id", example: "1")
     parameter(:id, :path, :string, "id", example: "1")
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:WorkingTimeResponse),
       example: %{
@@ -140,6 +141,7 @@ defmodule TimemanWeb.WorkingTimeController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :string, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     parameter(:start, :query, :string, "start time",
       required: false,
@@ -167,6 +169,7 @@ defmodule TimemanWeb.WorkingTimeController do
     produces("application/json")
     deprecated(false)
     parameter(:id, :path, :number, "working time id", required: true, example: 1)
+    security([%{Bearer: []}])
 
     parameter(:working_time, :body, Schema.ref(:WorkingTimeRequest), "The user details",
       example: %{

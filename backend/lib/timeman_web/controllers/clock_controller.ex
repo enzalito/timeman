@@ -82,6 +82,7 @@ defmodule TimemanWeb.ClockController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :integer, "User ID", required: true)
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:ClockResponse),
       example: %{
@@ -99,6 +100,7 @@ defmodule TimemanWeb.ClockController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :integer, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     parameter(:clock, :body, Schema.ref(:ClockRequest), "The clock details",
       example: %{

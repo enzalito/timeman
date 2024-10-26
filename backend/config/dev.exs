@@ -70,6 +70,21 @@ config :timeman, :phoenix_swagger,
     "priv/static/swagger.json" => [
       router: TimemanWeb.Router
     ]
+  },
+  swagger_default_config: %{
+    info: %{
+      version: "1.0",
+      title: "Timeman API"
+    },
+    # Notez bien : security_definitions et non securityDefinitions
+    security_definitions: %{
+      Bearer: %{
+        type: "apiKey",
+        name: "Authorization",
+        in: "header",
+        description: "JWT token must be provided. Example: Bearer {token}"
+      }
+    }
   }
 
 # Do not include metadata nor timestamps in development logs

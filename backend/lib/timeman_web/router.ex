@@ -21,7 +21,7 @@ defmodule TimemanWeb.Router do
 
     post("/users", UserController, :create)
     post("/login", SessionController, :login)
-    get("/logout", SessionController, :logout)
+    post("/logout", SessionController, :logout)
   end
 
   pipeline :authenticated do
@@ -43,6 +43,7 @@ defmodule TimemanWeb.Router do
 
     resources("/users", UserController, except: [:new, :edit])
     put("/users/set_role/:id", UserController, :set_role)
+    post("/users/update_password", UserController, :update_password)
 
     resources("/workingtime", WorkingTimeController,
       except: [:index, :delete, :edit, :new, :show, :create]
@@ -79,16 +80,19 @@ defmodule TimemanWeb.Router do
     end
 
     scope "/api/swagger" do
-      forward("/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :timeman, swagger_file: "swagger.json")
+      forward("/", PhoenixSwagger.Plug.SwaggerUI,
+        otp_app: :timeman,
+        swagger_file: "swagger.json",
+        swagger_ui_opts: [
+          validatorUrl: nil,
+          oauth2RedirectUrl: nil,
+          displayOperationId: true
+        ]
+      )
     end
 
     def swagger_info do
-      %{
-        info: %{
-          version: "1.0",
-          title: "Timeman"
-        }
-      }
+      TimemanWeb.Swagger.swagger_info()
     end
   end
 end
