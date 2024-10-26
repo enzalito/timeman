@@ -24,8 +24,14 @@ defmodule TimemanWeb.Router do
     )
 
     plug(:fetch_cookies)
-    plug(Guardian.Plug.VerifyHeader, realm: "Bearer")
     plug(Guardian.Plug.VerifyCookie)
+
+    plug(Guardian.Plug.VerifyHeader,
+      realm: "Bearer",
+      max_age: {1, :day},
+      token_storage: :cookie
+    )
+
     plug(Guardian.Plug.LoadResource)
     plug(TimemanWeb.Plugs.Auth)
   end
