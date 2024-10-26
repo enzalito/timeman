@@ -8,12 +8,14 @@ import {
   CalendarDate,
   CalendarDateTime
 } from "@internationalized/date"
+import { type WorkingTime } from "@/api/workingTime"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 export type DateRange = { start: CalendarDate; end: CalendarDate }
+export type TimeRange = { start: CalendarDateTime; end: CalendarDateTime }
 
 export function getWeekRange(date: CalendarDate = today(getLocalTimeZone())): DateRange {
   return {
@@ -65,4 +67,31 @@ export function formatHours(hours: number): string {
   const minutes = Math.round((hours - wholeHours) * 60) // Get the decimal part and convert to minutes
 
   return `${wholeHours}h${minutes}m`
+}
+
+export function filterWorkingHours(
+  workingTimes: WorkingTime[] | undefined,
+  range: DateRange,
+  callback: (wt: WorkingTime, tr: TimeRange) => void
+) {
+  if (!workingTimes) {
+    return 0
+  }
+
+  for (let workingTime of workingTimes) {
+    const timeRange = {
+      start: parseDateTime(workingTime.start),
+      end: parseDateTime(workingTime.end)
+    }
+    // working times spanning over multiple days aren't possible (backend garantee)
+    // so handling this case only should be enought
+    if (
+      timeRange.start.compare(range.start) >= 0 &&
+      timeRange.start.compare(range.end) <= 0 &&
+      timeRange.end.compare(range.start) >= 0 &&
+      timeRange.end.compare(range.end) <= 0
+    ) {
+      callback(workingTime, timeRange)
+    }
+  }
 }

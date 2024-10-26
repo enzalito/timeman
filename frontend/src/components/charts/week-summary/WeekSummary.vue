@@ -2,8 +2,7 @@
 import { computed, onBeforeMount, ref } from "vue"
 import { today, getLocalTimeZone } from "@internationalized/date"
 import { getWorkingTimes } from "@/api/workingTime"
-import { getWeekRangeStr, getWeekRange } from "@/lib/utils"
-import { getFilteredTotalHours } from "./lib/utils"
+import { getWeekRangeStr, getWeekRange, getFilteredTotalHours } from "@/lib/utils"
 
 import { ArrowRight } from "lucide-vue-next"
 import { DonutChart } from "@/components/ui/chart-donut"
@@ -46,7 +45,7 @@ const { start: weekStartDate, end: weekEndDate } = getWeekRange(todayDate)
 </script>
 
 <template>
-  <Card title="Week summary" class="flex items-center justify-between w-fit gap-8">
+  <Card class="flex items-center justify-between w-fit gap-8">
     <div class="w-fit">
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 rounded-sm bg-blue-500" />
@@ -62,15 +61,8 @@ const { start: weekStartDate, end: weekEndDate } = getWeekRange(todayDate)
       </div>
     </div>
 
-    <DonutChart
-      :centerLabel="centerLabel"
-      index="name"
-      :show-legend="true"
-      :category="'total'"
-      :data="data"
-      :colors="['#1E3A8A', '#3B82F6', '#FBFBFB']"
-      :custom-tooltip="WeekSummaryTooltip"
-    >
+    <DonutChart :centerLabel="centerLabel" index="name" :show-legend="true" :category="'total'" :data="data"
+      :colors="['#1E3A8A', '#3B82F6', '#FBFBFB']" :custom-tooltip="WeekSummaryTooltip">
     </DonutChart>
   </Card>
 </template>

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import DatePicker from "@/components/DatePicker.vue"
+import DatePicker from "@/components/datepicker/DateRangePicker.vue"
 import CustomTooltip from "@/components/charts/working-time/WorkingTimeTooltip.vue"
 import { useUserStore } from "@/stores/user"
 import {

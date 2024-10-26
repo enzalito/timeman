@@ -1,20 +1,14 @@
 <script setup lang="ts">
+import { type HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
 import Card from "@/components/ui/card/Card.vue"
 
-const { title, class: className } = defineProps<{ title?: string; class?: string }>()
+const props = defineProps<{ class?: HTMLAttributes['class'] }>()
 </script>
 
 <template>
-  <h3 v-if="title" class="text-xl mb-6 mt-8 font-medium">{{ title }}</h3>
   <Card
-    :class="
-      cn(
-        'border-0 shadow-none p-0 bg-transparent md:bg-white md:border-slate-200 md:p-4 md:drop-shadow-sm',
-        className
-      )
-    "
-  >
+    :class="cn('border-0 shadow-none p-0 bg-transparent md:bg-white md:border md:p-4 md:drop-shadow-sm', props.class)">
     <slot />
   </Card>
 </template>
