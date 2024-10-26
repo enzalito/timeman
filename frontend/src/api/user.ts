@@ -1,9 +1,9 @@
 import { z } from "zod"
 import { type Clock } from "@/api/clock"
 import { type WorkingTime } from "@/api/working-time"
-import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
+import { fetchWithOfflineSupport } from "@/lib/offline-queue"
 
-export const roles = ["employee", "manager"] as const
+export const roles = ["employee", "manager", "admin"] as const
 export const role = z.enum(roles)
 export type Role = z.infer<typeof role>
 

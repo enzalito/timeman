@@ -6,10 +6,9 @@ import {
   type CalendarDate,
 } from "@internationalized/date"
 import { getWorkingTimes, type WorkingTime } from "@/api/working-time"
-import { formatDate, filterWorkingHours, type DateRange } from "@/lib/utils"
+import { cn, formatDate, filterWorkingHours, type DateRange } from "@/lib/utils"
 
 import { Moon } from "lucide-vue-next"
-import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import ResponsiveCard from "@/components/Card.vue"
 import WorkSessionCard from "@/components/work-sessions/WorkSessionCard.vue"
@@ -63,8 +62,11 @@ const getFilteredWorkingTimes = (
   <div>
     <DatePicker v-model="date as CalendarDate" class="mb-2" />
     <ResponsiveCard class="flex flex-row gap-8 items-stretch">
-      <div v-for="(workingTimes, i) in sortedWorkingTimes" :key="i" class="grow basis-0 flex flex-col gap-2">
-        <h3 class="font-medium">{{ date.add({ days: i }).toDate(getLocalTimeZone()).toDateString() }}</h3>
+      <div v-for="(workingTimes, i) in sortedWorkingTimes" :key="i"
+        :class="cn('grow basis-0 flex md:flex flex-col gap-2', i !== 0 && 'hidden')">
+        <h3 class="font-medium pb-2 md:block hidden">{{ date.add({
+          days: i
+        }).toDate(getLocalTimeZone()).toDateString() }}</h3>
         <p v-if="workingTimes.day.length === 0 && workingTimes.night.length === 0" class="text-sm">
           No work session this day
         </p>

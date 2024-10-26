@@ -16,28 +16,11 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 import Card from "@/components/Card.vue"
 import { useUserStore } from "@/stores/user"
 
-// FIXME
-// const userStore = useUserStore()
-const user: User = {
-  id: 1,
-  username: "mock",
-  email: "mock@user.com",
-  role: "manager",
-  teams: [{
-    id: 1,
-    name: "mock"
-  },{
-    id: 2,
-    name: "mock2"
-  },{
-    id: 3,
-    name: "mock3"
-  }]
-}
+const userStore = useUserStore()
 
 // this component shouldn't be rendered if the current user
 // doesn't belong to at least one team
-const selectedTeamId = ref<string>(`${user!.teams[0].id}`)
+const selectedTeamId = ref<string>(`${userStore.user!.teams[0].id}`)
 
 const selectedTeam = ref<TeamWithUsers<UserWithClock> | undefined>()
 
@@ -50,14 +33,14 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <Card class="p-2">
+  <Card>
     <Select v-model="selectedTeamId">
       <SelectTrigger>
         <SelectValue placeholder="Select a team" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem v-for="team in user!.teams" :key="team.id" :value="`${team.id}`">{{
+          <SelectItem v-for="team in userStore.user!.teams" :key="team.id" :value="`${team.id}`">{{
             team.name
           }}</SelectItem>
         </SelectGroup>

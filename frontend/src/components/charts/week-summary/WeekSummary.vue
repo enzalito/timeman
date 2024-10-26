@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue"
+import { computed, ref, watchEffect } from 'vue';
 import { today, getLocalTimeZone } from "@internationalized/date"
 import { getWorkingTimes } from "@/api/working-time"
 import { getWeekRangeStr, getWeekRange } from "@/lib/utils"
@@ -20,7 +20,7 @@ const data = ref([
   { name: "Remaining", total: 0 }
 ])
 
-onBeforeMount(async () => {
+watchEffect(async () => {
   const todayDate = today(getLocalTimeZone())
   const { start, end } = getWeekRangeStr(todayDate)
   const weekWorkingTimes = await getWorkingTimes(userId, start, end)

@@ -1,4 +1,4 @@
-import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
+import { fetchWithOfflineSupport } from "@/lib/offline-queue"
 import type { UserLogin, UserResponse } from "./user"
 import Cookies from "js-cookie"
 

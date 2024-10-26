@@ -1,4 +1,4 @@
-import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
+import { fetchWithOfflineSupport } from "@/lib/offline-queue"
 import { z } from "zod"
 
 export const clock = z.object({

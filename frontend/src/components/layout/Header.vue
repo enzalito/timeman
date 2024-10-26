@@ -15,22 +15,18 @@ import { computed } from "vue"
 
 const { currentTime } = useCurrentTime()
 
-// TODO: get username
 const userStore = useUserStore()
-
-const username = computed(() => userStore.user?.username)
 
 async function logOut() {
   await logout()
   userStore.unset()
-  router.push({name: 'login'})
+  router.push({ name: 'login' })
 }
 </script>
 
 <template>
   <div
-    class="bg-white w-full header flex justify-between items-center flex-row p-4 md:px-6 md:py-2 border-b border-slate-200"
-  >
+    class="bg-white w-full header flex justify-between items-center flex-row p-4 md:px-6 md:py-2 border-b border-slate-200">
     <Logo class="show md:hidden" />
     <div class="hidden md:block">
       <div class="hour text-xl font-medium">
@@ -41,9 +37,9 @@ async function logOut() {
       </div>
     </div>
 
-    <Popover v-if="username !== undefined">
+    <Popover v-if="userStore.user?.username !== undefined">
       <PopoverTrigger>
-        <Avatar>{{ username.charAt(0).toUpperCase() }}</Avatar>
+        <Avatar>{{ userStore.user.username?.charAt(0).toUpperCase() }}</Avatar>
       </PopoverTrigger>
       <PopoverContent class="w-32 grid p-1 mr-4">
         <router-link to="/profile" class="w-full">
