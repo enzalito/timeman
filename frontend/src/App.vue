@@ -2,9 +2,9 @@
 import { RouterView, useRoute } from "vue-router"
 
 import Layout from "./components/layout/Layout.vue"
+import Toaster from "./components/ui/toast/Toaster.vue";
 
 const route = useRoute();
-console.log(route.path);
 
 const authRoutes = ['/auth/login', '/auth/signup']
 
@@ -15,5 +15,6 @@ const authRoutes = ['/auth/login', '/auth/signup']
     <RouterView />
   </Layout>
   <RouterView v-else/>
+  <Toaster />
 
 </template>

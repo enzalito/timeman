@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import type { UserLogin } from "@/api/user";
+  import type { UserSignup } from "@/api/user";
 import { FormControl, FormField, FormLabel, FormMessage, FormItem } from "./ui/form";
   import { Input } from "./ui/input";
 
 
-  const { includeFields } = defineProps<{includeFields: (keyof UserLogin['user'])[]}>()
+  const { includeFields } = defineProps<{includeFields: (keyof UserSignup['user'])[]}>()
 
 
 

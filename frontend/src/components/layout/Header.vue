@@ -9,14 +9,22 @@ import PopoverContent from "@/components/ui/popover/PopoverContent.vue"
 import Button from "@/components/ui/button/Button.vue"
 import Logo from "@/components/layout/Logo.vue"
 import Avatar from "@/components/Avatar.vue"
+import { logout } from "@/api/sessions"
+import router from "@/router"
+import { computed } from "vue"
 
 const { currentTime } = useCurrentTime()
 
 // TODO: get username
 const userStore = useUserStore()
 
-const username = userStore.user?.username
-const initial = username?.charAt(0).toUpperCase()
+const username = computed(() => userStore.user?.username)
+
+async function logOut() {
+  await logout()
+  userStore.unset()
+  router.push({name: 'login'})
+}
 </script>
 
 <template>
@@ -35,7 +43,7 @@ const initial = username?.charAt(0).toUpperCase()
 
     <Popover v-if="username !== undefined">
       <PopoverTrigger>
-        <Avatar>{{ initial }}</Avatar>
+        <Avatar>{{ username.charAt(0).toUpperCase() }}</Avatar>
       </PopoverTrigger>
       <PopoverContent class="w-32 grid p-1 mr-4">
         <router-link to="/profile" class="w-full">
@@ -44,7 +52,7 @@ const initial = username?.charAt(0).toUpperCase()
             <p class="grid-span-2">Profile</p>
           </Button>
         </router-link>
-        <Button variant="ghost" class="grid-col-3 items-center justify-start gap-2">
+        <Button @click="logOut" variant="ghost" class="grid-col-3 items-center justify-start gap-2">
           <LogOut />
           <p>Log out</p>
         </Button>
