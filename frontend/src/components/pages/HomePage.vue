@@ -19,7 +19,7 @@ const userStore = useUserStore()
         <ClockIn :user-id="userStore.user.id" class="grow" />
       </div>
       <Separator class="md:hidden block mt-6 mb-2" />
-      <div class="md:w-5/12 flex flex-col">
+      <div v-if="userStore.user.teams.length > 0" class="md:w-5/12 flex flex-col">
         <SectionTitle>Team</SectionTitle>
         <TeamOverview class="grow" />
       </div>

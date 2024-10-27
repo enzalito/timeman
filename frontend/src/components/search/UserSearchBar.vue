@@ -7,6 +7,7 @@ import { getTeams, type Team } from "@/api/team"
 import { Users } from "lucide-vue-next"
 import Avatar from "@/components/Avatar.vue"
 import SearchBar from "@/components/search/SearchBar.vue"
+import { Button } from "../ui/button"
 
 const { searchTeams } = defineProps<{ searchTeams?: boolean }>()
 
@@ -44,13 +45,13 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
         </div>
         <template v-if="suggestedUsers && suggestedUsers.length !== 0">
           <div class="px-4 py-2 text-sm font-medium text-gray-400">Users</div>
-          <div class="space-y-1">
-            <li v-for="user in suggestedUsers" :key="user.id">
-              <div class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
+          <div class="space-y-2">
+            <li v-for="user in suggestedUsers" :key="user.id" class="list-none">
+              <Button variant='ghost' class="flex w-full flex-row justify-start items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
                 @click="$emit('userSelected', user)">
                 <Avatar class="h-8 w-8">{{ user.username.charAt(0) }}</Avatar>
                 {{ user.username }}
-              </div>
+            </Button>
             </li>
           </div>
         </template>

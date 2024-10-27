@@ -17,7 +17,7 @@ const userStore = useUserStore()
   <Link link="/stats" text="Stats" :mode="mode">
   <ChartColumn />
   </Link>
-  <Link v-if="userStore.user && ['manager', 'admin'].includes(userStore.user.role)" link="/users" text="Users"
+  <Link v-if="userStore.user && ['manager', 'administrator'].includes(userStore.user.role)" link="/users" text="Users"
     :mode="mode">
   <Users />
   </Link>

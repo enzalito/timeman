@@ -14,7 +14,14 @@ const { userId } = defineProps<{ userId: number }>()
 const clock = ref<Clock | undefined>()
 
 onMounted(async () => {
-  clock.value = (await getClock(userId)).data ?? { status: false, time: "", userId }
+  try {
+    const clockRes = await getClock(userId)
+    clock.value = clockRes.data
+
+  } catch (error) {
+    clock.value  = { status: false, time: "", user_id: userId }
+
+  }
 })
 
 const description = ref("")

@@ -30,11 +30,11 @@ const setTeamId = (team: Team) => {
   <div v-if="userStore.user" class="flex flex-col">
     <div class="flex justify-between">
       <PageTitle>Statistics</PageTitle>
-      <UserSearchBar v-if="['manager', 'admin'].includes(userStore.user.role)" @user-selected="setUserId"
+      <UserSearchBar v-if="['manager', 'administrator'].includes(userStore.user.role)" @user-selected="setUserId"
         @team-selected="setTeamId" :search-teams="true" class="pt-4" />
     </div>
     <SectionTitle>Week summary</SectionTitle>
-    <WeekSummaryTeam v-if="['manager', 'admin'].includes(userStore.user.role) && teamId" :team-id="teamId" />
+    <WeekSummaryTeam v-if="['manager', 'administrator'].includes(userStore.user.role) && teamId" :team-id="teamId" />
     <WeekSummary v-else :user-id="userId" />
     <Separator class="md:hidden block mt-6 mb-2" />
     <SectionTitle class="md:mt-4">Working time chart</SectionTitle>

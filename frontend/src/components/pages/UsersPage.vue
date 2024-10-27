@@ -10,7 +10,7 @@ const userStore = useUserStore()
 </script>
 
 <template>
-  <div v-if="userStore.user && ['manager', 'admin'].includes(userStore.user.role)"
+  <div v-if="userStore.user && ['manager', 'administrator'].includes(userStore.user.role)"
     class="flex flex-col max-w-screen-md">
     <PageTitle>Users</PageTitle>
     <SectionTitle>Team management</SectionTitle>

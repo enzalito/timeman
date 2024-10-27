@@ -7,7 +7,7 @@ const { isOpen, ...props } = defineProps<{ isOpen: boolean; class?: HTMLAttribut
 
 <template>
   <div :class="cn(
-    'h-full w-[100vw] bg-white p-4 absolute right-0 top-0 bottom-0 transition-all translate-x-full',
+    'h-full w-[100vw] bg-white p-4 absolute right-0 top-0 bottom-0 transition-all translate-x-full z-50',
     isOpen === true && 'translate-x-0',
     props.class,
   )

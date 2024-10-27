@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue"
-import { type User, type UserWithClock } from "@/api/user"
+import { type UserWithClock } from "@/api/user"
 import { getTeam, type TeamWithUsers } from "@/api/team"
 
 import { CircleDot } from "lucide-vue-next"

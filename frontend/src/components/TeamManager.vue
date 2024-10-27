@@ -87,6 +87,8 @@ const handleDelete = async () => {
 }
 
 const handleAddUser = async (user: User) => {
+  console.log('handled', user);
+
   if (!selectedTeam.value) {
     return
   }
@@ -114,7 +116,7 @@ const handleRemoveUser = async (user: User) => {
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const TeamContainer = computed(() => isDesktop.value ? Card : SideDrawer)
-const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 self-start hidden", selectedTeam.value !== undefined && "block")]} : {})
+const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 self-start hidden z-40", selectedTeam.value !== undefined && "block")]} : {})
 
 </script>
 
@@ -178,7 +180,7 @@ const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 s
             </TableRow>
           </TableBody>
         </Table>
-        <UserSearchBar class="mt-4" @user-selected="handleAddUser" />
+        <UserSearchBar class="mt-4 z-30" @user-selected="handleAddUser" />
       </div>
     </TeamContainer>
   </div>
