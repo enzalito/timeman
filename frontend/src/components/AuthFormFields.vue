@@ -3,11 +3,7 @@
   import { FormControl, FormField, FormLabel, FormMessage, FormItem } from "./ui/form";
   import { Input } from "./ui/input";
 
-
   const { includeFields } = defineProps<{includeFields: (keyof UserSignup['user'])[]}>()
-
-
-
 </script>
 
 <template>
@@ -20,7 +16,7 @@
       <FormItem class="space-y-1">
         <FormLabel>Username</FormLabel>
         <FormControl>
-          <Input type="text" placeholder="user name" v-bind="componentField" />
+          <Input type="text" placeholder="username" v-bind="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
