@@ -60,7 +60,7 @@ defmodule Timeman.Clocks do
   def create_default_clock(user_id) do
     attrs = %{
       time: "1970-01-01 00:00:00",
-      status: true,
+      status: false,
       user_id: user_id
     }
 
