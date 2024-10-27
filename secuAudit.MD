@@ -21,7 +21,7 @@ PORT     STATE    SERVICE
 443/tcp  open     https
 445/tcp  filtered microsoft-ds
 4000/tcp open     remoteanything
-5432/tcp open     postgresql```
+5432/tcp open     postgresql ```
 
 Après firewall
 
@@ -40,7 +40,7 @@ PORT     STATE  SERVICE
 2376/tcp closed docker
 
 Il n'est pas non plus possible de se connecter au ssh de manière anonyme. 
-Nous avons ensuite testé les pages Http et https avec Ghostbuster.```
+Nous avons ensuite testé les pages Http et https avec Ghostbuster. ```
 
 
 ## Gobuster
