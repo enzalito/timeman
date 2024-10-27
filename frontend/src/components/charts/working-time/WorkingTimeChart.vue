@@ -13,7 +13,6 @@ import { getTeam } from "@/api/team"
 import { type DateRange } from "@/lib/utils"
 import { useUserStore } from "@/stores/user"
 
-import { Card } from "@/components/ui/card"
 import { BarChart } from "@/components/ui/chart-bar"
 import { LineChart } from "@/components/ui/chart-line"
 import { AreaChart } from "@/components/ui/chart-area"
@@ -25,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import Card from "@/components/Card.vue"
 import DatePicker from "@/components/datepicker/DateRangePicker.vue"
 import CustomTooltip from "@/components/charts/working-time/WorkingTimeTooltip.vue"
 
