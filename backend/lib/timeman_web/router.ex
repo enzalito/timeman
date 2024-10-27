@@ -2,16 +2,6 @@ defmodule TimemanWeb.Router do
   alias WorkingTimeController
   use TimemanWeb, :router
 
-  # TODO: virer pipeline front
-  pipeline :browser do
-    plug(:accepts, ["html"])
-    plug(:fetch_session)
-    plug(:fetch_live_flash)
-    plug(:put_root_layout, html: {TimemanWeb.Layouts, :root})
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
-  end
-
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -87,42 +77,19 @@ defmodule TimemanWeb.Router do
     delete("/teams/:team_id/user/:user_id", TeamController, :remove_team)
   end
 
-  scope "/", TimemanWeb do
-    pipe_through(:browser)
-
-    get("/", PageController, :home)
+  scope "/api/swagger" do
+    forward("/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :timeman,
+      swagger_file: "swagger.json",
+      swagger_ui_opts: [
+        validatorUrl: nil,
+        oauth2RedirectUrl: nil,
+        displayOperationId: true
+      ]
+    )
   end
 
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:timeman, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through(:browser)
-
-      live_dashboard("/dashboard", metrics: TimemanWeb.Telemetry)
-      forward("/mailbox", Plug.Swoosh.MailboxPreview)
-    end
-
-    scope "/api/swagger" do
-      forward("/", PhoenixSwagger.Plug.SwaggerUI,
-        otp_app: :timeman,
-        swagger_file: "swagger.json",
-        swagger_ui_opts: [
-          validatorUrl: nil,
-          oauth2RedirectUrl: nil,
-          displayOperationId: true
-        ]
-      )
-    end
-
-    def swagger_info do
-      TimemanWeb.Swagger.swagger_info()
-    end
+  def swagger_info do
+    TimemanWeb.Swagger.swagger_info()
   end
 end
