@@ -35,7 +35,7 @@ export const userRequest = z.object({
 export type UserRequest = z.infer<typeof userRequest>
 
 // Minimum 8 characters, at least one uppercase letter, one lowercase letter, and one special character
-const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
+export const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
 
 const hasPassword = z.object({
   password: z.string().min(1)
@@ -110,13 +110,32 @@ export async function createUser(user: UserSignup): Promise<UserResponse> {
   return await response.json()
 }
 
-export async function updateUser(user: UserRequest): Promise<UserResponse> {
-  const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user)
-  })
+export async function updateUser(user: UserRequest, userId: number): Promise<UserResponse> {
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/users/${userId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user)
+    }
+  )
   return await response.json()
+}
+
+export async function updatePassword(newPass: {
+  username: string
+  current_password: string
+  new_password: string
+}): Promise<Response> {
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/users/update_password`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPass)
+    }
+  )
+  return response
 }
 
 export async function deleteUser(userId: number) {

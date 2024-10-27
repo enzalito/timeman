@@ -11,7 +11,6 @@ import Logo from "@/components/layout/Logo.vue"
 import Avatar from "@/components/Avatar.vue"
 import { logout } from "@/api/sessions"
 import router from "@/router"
-import { computed } from "vue"
 
 const { currentTime } = useCurrentTime()
 
