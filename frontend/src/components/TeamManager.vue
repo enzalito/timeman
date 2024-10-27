@@ -87,8 +87,6 @@ const handleDelete = async () => {
 }
 
 const handleAddUser = async (user: User) => {
-  console.log('handled', user);
-
   if (!selectedTeam.value) {
     return
   }
@@ -116,7 +114,7 @@ const handleRemoveUser = async (user: User) => {
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const TeamContainer = computed(() => isDesktop.value ? Card : SideDrawer)
-const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 self-start hidden z-40", selectedTeam.value !== undefined && "block")]} : {})
+const TeamContainerProps = computed(() => isDesktop.value ? { class: [cn("w-1/2 self-start hidden z-40", selectedTeam.value !== undefined && "block")] } : {})
 
 </script>
 
@@ -130,7 +128,9 @@ const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 s
           </TableRow>
           <TableRow v-for="team in teams" :key="team.id" @click="setTeam(team.id)">
             <TableCell class="w-0">
-              <Avatar class="h-8 w-8"><Users class="h-4 w-4 stroke-current" /></Avatar>
+              <Avatar class="h-8 w-8">
+                <Users class="h-4 w-4 stroke-current" />
+              </Avatar>
             </TableCell>
             <TableCell>{{ team.name }}</TableCell>
             <TableCell class="text-right">
@@ -153,14 +153,17 @@ const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 s
     <TeamContainer v-bind="TeamContainerProps" :isOpen="selectedTeam !== undefined">
       <div v-if="selectedTeam">
 
-          <Button v-if="!isDesktop" class="py-8" variant="ghost" @click="() => selectedTeam = undefined"><ChevronLeft class="mr-2 inline-block"/><p class="inline-block text-2xl font-medium">Edit</p></Button>
+        <Button v-if="!isDesktop" class="py-8" variant="ghost" @click="() => selectedTeam = undefined">
+          <ChevronLeft class="mr-2 inline-block" />
+          <p class="inline-block text-2xl font-medium">Edit</p>
+        </Button>
 
 
         <div class="flex flex-row gap-2 mt-4">
           <Input type="text" placeholder="Team name" v-model="selectedTeamName" />
           <Button variant="destructive">
-            <Trash2 class="h-5 w-5 stroke-current" @click="handleDelete"
-          /></Button>
+            <Trash2 class="h-5 w-5 stroke-current" @click="handleDelete" />
+          </Button>
         </div>
         <Table class="mt-4">
           <TableBody>
