@@ -1,13 +1,15 @@
-import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
+import { fetchWithOfflineSupport } from "@/lib/offline-queue"
 import { z } from "zod"
+
+const dateTimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
 
 export const workingTime = z.object({
   id: z.number().min(1),
   user_id: z.string(),
-  start: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
-  end: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/),
+  start: z.string().regex(dateTimeRegex),
+  end: z.string().regex(dateTimeRegex),
   description: z.string(),
-  type: z.enum(["day", "night"])
+  period: z.enum(["day", "night"])
 })
 export type WorkingTime = z.infer<typeof workingTime>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onBeforeMount } from "vue"
+import { ref, watch, onBeforeMount, computed } from "vue"
 import { type User } from "@/api/user"
 import {
   createTeam,
@@ -15,17 +15,20 @@ import {
 } from "@/api/team"
 import { toTypedSchema } from "@vee-validate/zod"
 import { useForm } from "vee-validate"
-import { useDebounceFn } from "@vueuse/core"
+import { useDebounceFn, useMediaQuery } from "@vueuse/core"
 
 import { vAutoAnimate } from "@formkit/auto-animate/vue"
 import { FormControl, FormField, FormItem } from "@/components/ui/form"
-import { ChevronRight, Users, Trash2 } from "lucide-vue-next"
+import { ChevronRight, Users, Trash2, ChevronLeft } from "lucide-vue-next"
 import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Avatar from "@/components/Avatar.vue"
 import Card from "@/components/Card.vue"
 import UserSearchBar from "@/components/search/UserSearchBar.vue"
+import SideDrawer from "./SideDrawer.vue"
+import { cn } from "@/lib/utils"
+import PageTitle from "./titles/PageTitle.vue"
 
 const teams = ref<Team[]>([])
 
@@ -84,6 +87,8 @@ const handleDelete = async () => {
 }
 
 const handleAddUser = async (user: User) => {
+  console.log('handled', user);
+
   if (!selectedTeam.value) {
     return
   }
@@ -107,11 +112,17 @@ const handleRemoveUser = async (user: User) => {
   }
   selectedTeam.value?.users.splice(userIdx, 1)
 }
+
+const isDesktop = useMediaQuery('(min-width: 768px)')
+
+const TeamContainer = computed(() => isDesktop.value ? Card : SideDrawer)
+const TeamContainerProps = computed(() => isDesktop.value ? { class:[cn("w-1/2 self-start hidden z-40", selectedTeam.value !== undefined && "block")]} : {})
+
 </script>
 
 <template>
   <div class="flex flex-row gap-2">
-    <Card class="w-1/2 self-start">
+    <Card class=" self-start w-full md:w-1/2">
       <Table>
         <TableBody>
           <TableRow v-if="!teams || teams.length === 0">
@@ -139,32 +150,38 @@ const handleRemoveUser = async (user: User) => {
         <Button type="submit" variant="secondary">Add team</Button>
       </form>
     </Card>
-    <Card v-if="selectedTeam" class="w-1/2 self-start">
-      <div class="flex flex-row gap-2 mt-4">
-        <Input type="text" placeholder="Team name" v-model="selectedTeamName" />
-        <Button variant="destructive">
-          <Trash2 class="h-5 w-5 stroke-current" @click="handleDelete"
-        /></Button>
+    <TeamContainer v-bind="TeamContainerProps" :isOpen="selectedTeam !== undefined">
+      <div v-if="selectedTeam">
+
+          <Button v-if="!isDesktop" class="py-8" variant="ghost" @click="() => selectedTeam = undefined"><ChevronLeft class="mr-2 inline-block"/><p class="inline-block text-2xl font-medium">Edit</p></Button>
+
+
+        <div class="flex flex-row gap-2 mt-4">
+          <Input type="text" placeholder="Team name" v-model="selectedTeamName" />
+          <Button variant="destructive">
+            <Trash2 class="h-5 w-5 stroke-current" @click="handleDelete"
+          /></Button>
+        </div>
+        <Table class="mt-4">
+          <TableBody>
+            <TableRow v-if="!selectedTeam.users || selectedTeam.users.length === 0">
+              <TableCell>There are no users in this team</TableCell>
+            </TableRow>
+            <TableRow v-for="user in selectedTeam.users" :key="user.id">
+              <TableCell class="w-0">
+                <Avatar class="h-8 w-8">{{ user.username.charAt(0) }}</Avatar>
+              </TableCell>
+              <TableCell>{{ user.username }}</TableCell>
+              <TableCell class="text-right">
+                <Button variant="outline" size="icon" @click="handleRemoveUser(user)">
+                  <Trash2 stroke-width="1" class="h-5 w-5" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+        <UserSearchBar class="mt-4 z-30" @user-selected="handleAddUser" />
       </div>
-      <Table class="mt-4">
-        <TableBody>
-          <TableRow v-if="!selectedTeam.users || selectedTeam.users.length === 0">
-            <TableCell>There are no users in this team</TableCell>
-          </TableRow>
-          <TableRow v-for="user in selectedTeam.users" :key="user.id">
-            <TableCell class="w-0">
-              <Avatar class="h-8 w-8">{{ user.username.charAt(0) }}</Avatar>
-            </TableCell>
-            <TableCell>{{ user.username }}</TableCell>
-            <TableCell class="text-right">
-              <Button variant="outline" size="icon" @click="handleRemoveUser(user)">
-                <Trash2 stroke-width="1" class="h-5 w-5" />
-              </Button>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <UserSearchBar class="mt-4" @user-selected="handleAddUser" />
-    </Card>
+    </TeamContainer>
   </div>
 </template>

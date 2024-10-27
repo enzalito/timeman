@@ -7,7 +7,7 @@ import {
   type UserWithRelations
 } from "@/api/user"
 import { toQueryParams } from "@/api/lib/utils"
-import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
+import { fetchWithOfflineSupport } from "@/lib/offline-queue"
 
 export const team = z.object({
   id: z.number().min(1),

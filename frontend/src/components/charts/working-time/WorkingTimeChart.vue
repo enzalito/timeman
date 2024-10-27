@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, watchEffect, onBeforeMount } from "vue"
-import { getWorkingTimes, type WorkingTime } from "@/api/workingTime"
+import { ref, computed, watchEffect } from "vue"
+import {
+  today,
+  startOfWeek,
+  endOfWeek,
+  getLocalTimeZone,
+  CalendarDate
+} from "@internationalized/date"
+import { getWorkingTimes, type WorkingTime } from "@/api/working-time"
+import { getUser, type User } from '@/api/user';
 import { getTeam } from "@/api/team"
 import { type DateRange } from "@/lib/utils"
+import { useUserStore } from "@/stores/user"
 
 import { Card } from "@/components/ui/card"
 import { BarChart } from "@/components/ui/chart-bar"
@@ -16,18 +25,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import DatePicker from "@/components/DatePicker.vue"
+import DatePicker from "@/components/datepicker/DateRangePicker.vue"
 import CustomTooltip from "@/components/charts/working-time/WorkingTimeTooltip.vue"
-import { useUserStore } from "@/stores/user"
-import {
-  today,
-  startOfWeek,
-  endOfWeek,
-  getLocalTimeZone,
-  CalendarDate
-} from "@internationalized/date"
 
-const { teamId } = defineProps<{ teamId?: number }>()
+const { userId, teamId } = defineProps<{ userId?: number, teamId?: number }>()
 
 const userStore = useUserStore()
 
@@ -42,30 +43,38 @@ const dateRange = ref<{ start: CalendarDate; end: CalendarDate }>({
   end: endOfWeek(today(getLocalTimeZone()), "fr-FR")
 })
 
-const chartCategories: string[] = []
+const chartCategories = ref<string[]>([])
 const workingTimesByUsername = ref(new Map<string, WorkingTime[]>())
 
 const getUserChartKey = (username: string): string => {
   return `${username} hours`
 }
 
-onBeforeMount(async () => {
-  if (!teamId) {
-    const user = userStore.user
-    if (!user) {
-      return
+watchEffect(async () => {
+  if (teamId) {
+    const team = (await getTeam(teamId, { withUsers: true, withWorkingTimes: true })).data
+
+    const tmpCats: string[] = []
+    const tmpWork = new Map<string, WorkingTime[]>()
+    for (let user of team.users) {
+      tmpCats.push(getUserChartKey(user.username))
+      tmpWork.set(user.username, user.workingTimes)
     }
 
-    chartCategories.push(getUserChartKey(user.username))
-    const res = await getWorkingTimes(user.id)
-    workingTimesByUsername.value.set(user.username, res.data)
-    return
+    chartCategories.value = tmpCats
+    workingTimesByUsername.value = tmpWork
   }
+  else if (userId) {
+    let user: User
+    if (userStore.user && userId === userStore.user.id) {
+      user = userStore.user
+    } else {
+      user = (await getUser(userId)).data
+    }
 
-  const team = (await getTeam(teamId, { withUsers: true, withWorkingTimes: true })).data
-  for (let user of team.users) {
-    chartCategories.push(getUserChartKey(user.username))
-    workingTimesByUsername.value.set(user.username, user.workingTimes)
+    chartCategories.value = [getUserChartKey(user.username)]
+    const res = await getWorkingTimes(user.id)
+    workingTimesByUsername.value = new Map<string, WorkingTime[]>([[user.username, res.data]])
   }
 })
 
@@ -153,14 +162,8 @@ const chartComponent = computed(() => {
   </div>
 
   <Card class="p-4 w-[85vw] max-w-[750px] min-w-[460px]">
-    <component
-      v-if="datedWorkHours.length !== 0"
-      :is="chartComponent"
-      :data="datedWorkHours"
-      index="dateEpochMs"
-      :categories="chartCategories"
-      :colors="[0, 1, 2, 3, 4, 5].map((n) => `var(--vis-color${n})`)"
-      :custom-tooltip="CustomTooltip"
-    />
+    <component v-if="datedWorkHours.length !== 0" :is="chartComponent" :data="datedWorkHours" index="dateEpochMs"
+      :categories="chartCategories" :colors="[0, 1, 2, 3, 4, 5].map((n) => `var(--vis-color${n})`)"
+      :custom-tooltip="CustomTooltip" />
   </Card>
 </template>

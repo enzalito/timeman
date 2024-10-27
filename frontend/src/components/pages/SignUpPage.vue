@@ -3,14 +3,26 @@
   import { Form } from "vee-validate";
   import { Button } from "../ui/button";
   import { toTypedSchema } from "@vee-validate/zod";
-  import { getUsers, userSignup, type UserLogin, type UserSignup } from "@/api/user";
-  import { useUserStore } from "@/stores/user";
+  import { createUser, userSignup, type UserSignup } from "@/api/user";
   import AuthFormFields from "../AuthFormFields.vue";
+  import router from "@/router";
+import { useToast } from "../ui/toast";
 
-  const userStore = useUserStore()
+  const { toast } = useToast()
 
   async function handleSubmit(data: UserSignup) {
-    userStore.set((await getUsers(data)).data[0])
+    try {
+      const res = await createUser(data)
+
+      router.push({name: 'login', query: {username: res.data.username}})
+      toast({
+        title: 'Your account has been created ! 💪',
+        description: 'You can now log in to access your dashboard',
+        duration: 5000
+      })
+    } catch (error) {
+      console.log('signup error');
+    }
   }
   const formSchema = toTypedSchema(userSignup)
 </script>

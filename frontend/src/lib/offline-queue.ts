@@ -1,3 +1,5 @@
+import Cookies from "js-cookie"
+
 interface QueuedRequest {
   timestamp: number
   url: string
@@ -136,17 +138,29 @@ interface FetchOptions extends RequestInit {
   timeout?: number
 }
 
+const optionWithAuth = (options: FetchOptions) => {
+  const token = Cookies.get("auth_token")
+  const headers = new Headers(options.headers)
+
+  headers.append("Authorization", `Bearer ${token}`)
+
+  return {
+    ...options,
+    headers
+  }
+}
+
 export async function fetchWithOfflineSupport(
   url: string,
   options: FetchOptions = {}
 ): Promise<Response> {
   try {
-    const response = await fetch(url, options)
+    const response = await fetch(url, optionWithAuth(options))
     return response
   } catch (error) {
     if (!navigator.onLine) {
       // Store the request for later
-      await offlineQueue.addToQueue(new Request(url, options))
+      await offlineQueue.addToQueue(new Request(url, optionWithAuth(options)))
       throw new Error("Offline: Request queued for later")
     }
     throw error

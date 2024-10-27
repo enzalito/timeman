@@ -81,9 +81,7 @@ defmodule Timeman.Clocks do
     old_clock = Repo.one(query)
     start_time = old_clock.time
     end_time = Map.get(clock, "time")
-    start_hour = start_time.hour
     {:ok, end_time} = NaiveDateTime.from_iso8601(end_time)
-    end_hour = end_time.hour
 
     working_time = %{
       start: start_time,
@@ -98,67 +96,47 @@ defmodule Timeman.Clocks do
   defp add_working_time(working_time) do
     start_time = working_time.start
     end_time = working_time.end
-    start_hour = start_time.hour
-    end_hour = end_time.hour
     wt1 = working_time
     wt2 = working_time
     wt3 = working_time
 
     cond do
-      start_hour < 6 && end_hour >= 6 && start_time.day == end_time.day ->
-        new_end_time = %NaiveDateTime{end_time | hour: 5, minute: 59}
-        wt1 = %{working_time | end: new_end_time}
+      start_time.day !== end_time.day ->
+        wt1 = %{working_time | end: %NaiveDateTime{start_time | hour: 23, minute: 59, second: 59}}
 
-        new_start_time = %NaiveDateTime{start_time | hour: 6, minute: 00}
-        wt2 = %{working_time | start: new_start_time}
+        wt2 = %{
+          working_time
+          | start:
+              NaiveDateTime.add(start_time, 1 * 86_400)
+              |> Map.put(:hour, 0)
+              |> Map.put(:minute, 0)
+              |> Map.put(:second, 0)
+        }
+
+        add_working_time(wt1)
+        add_working_time(wt2)
+
+      start_time.hour < 6 && end_time.hour >= 6 && start_time.day == end_time.day ->
+        wt1 = %{working_time | end: %NaiveDateTime{end_time | hour: 5, minute: 59, second: 59}}
+
+        wt2 = %{
+          working_time
+          | start: %NaiveDateTime{start_time | hour: 6, minute: 00, second: 59}
+        }
+
         Work.create_working_time(wt1)
         add_working_time(wt2)
 
-      end_hour >= 22 && start_hour < 22 && start_time.day == end_time.day ->
-        new_end_time = %NaiveDateTime{end_time | hour: 21, minute: 59}
-        wt1 = %{working_time | end: new_end_time}
+      end_time.hour >= 22 && start_time.hour < 22 && start_time.day == end_time.day ->
+        wt1 = %{working_time | end: %NaiveDateTime{end_time | hour: 21, minute: 59, second: 59}}
 
-        new_start_time = %NaiveDateTime{start_time | hour: 22, minute: 00}
-        wt2 = %{working_time | start: new_start_time}
-
-        Work.create_working_time(wt1)
-        add_working_time(wt2)
-
-      start_hour < 6 && start_time.day != end_time.day ->
-        new_end_time = %NaiveDateTime{end_time | hour: 5, minute: 59}
-        wt1 = %{working_time | end: new_end_time}
-
-        new_start_time = %NaiveDateTime{start_time | hour: 6, minute: 00}
-        wt2_end_time = %NaiveDateTime{start_time | hour: 23, minute: 59}
-        wt2 = %{working_time | start: new_start_time, end: wt2_end_time}
-
-        wt3_start_time = %NaiveDateTime{start_time | hour: 0, minute: 0}
-
-        wt3_start_time =
-          NaiveDateTime.add(start_time, 1 * 86_400) |> Map.put(:hour, 0) |> Map.put(:minute, 0)
-
-        wt3 = %{working_time | start: wt3_start_time}
+        wt2 = %{
+          working_time
+          | start: %NaiveDateTime{start_time | hour: 22, minute: 00, second: 00}
+        }
 
         Work.create_working_time(wt1)
         add_working_time(wt2)
-        add_working_time(wt3)
-
-      start_hour < 22 && start_time.day != end_time.day ->
-        new_end_time = %NaiveDateTime{end_time | hour: 21, minute: 59}
-        wt1 = %{working_time | end: new_end_time}
-
-        new_start_time = %NaiveDateTime{start_time | hour: 22, minute: 00}
-        wt2_end_time = %NaiveDateTime{start_time | hour: 23, minute: 59}
-        wt2 = %{working_time | start: new_start_time, end: wt2_end_time}
-
-        wt3_start_time =
-          NaiveDateTime.add(start_time, 1 * 86_400) |> Map.put(:hour, 0) |> Map.put(:minute, 0)
-
-        wt3 = %{working_time | start: wt3_start_time}
-
-        Work.create_working_time(wt1)
-        Work.create_working_time(wt2)
-        add_working_time(wt3)
 
       true ->
         Work.create_working_time(working_time)
@@ -213,7 +191,7 @@ defmodule Timeman.Clocks do
     Clock.changeset(clock, attrs)
   end
 
-  def list_clocks_from_user(user_id) do
-    Repo.all(from(c in Clock, where: c.user_id == ^user_id))
+  def get_from_user(user_id) do
+    Repo.one(from(c in Clock, where: c.user_id == ^user_id))
   end
 end

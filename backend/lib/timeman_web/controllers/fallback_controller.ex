@@ -21,4 +21,26 @@ defmodule TimemanWeb.FallbackController do
     |> put_view(html: TimemanWeb.ErrorHTML, json: TimemanWeb.ErrorJSON)
     |> render(:"404")
   end
+
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(json: TimemanWeb.ErrorJSON)
+    |> render(:"401")
+  end
+
+  def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: TimemanWeb.ErrorJSON)
+    |> render(:"422", changeset: changeset)
+  end
+
+  # Gestion des requêtes mal formées
+  def call(conn, {:error, :bad_request}) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(json: TimemanWeb.ErrorJSON)
+    |> render(:"400")
+  end
 end

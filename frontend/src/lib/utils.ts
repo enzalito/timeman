@@ -8,12 +8,14 @@ import {
   CalendarDate,
   CalendarDateTime
 } from "@internationalized/date"
+import { type WorkingTime } from "@/api/working-time"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 export type DateRange = { start: CalendarDate; end: CalendarDate }
+export type TimeRange = { start: CalendarDateTime; end: CalendarDateTime }
 
 export function getWeekRange(date: CalendarDate = today(getLocalTimeZone())): DateRange {
   return {
@@ -40,6 +42,16 @@ export function formatDate(date: CalendarDate): string {
   return `${year}-${month}-${day} 00:00:00`
 }
 
+export function formatDateTime(date: Date): string {
+  const year = String(date.getFullYear()).padStart(4, "0")
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  const hour = String(date.getHours()).padStart(2, "0")
+  const minute = String(date.getMinutes()).padStart(2, "0")
+  const second = String(date.getSeconds()).padStart(2, "0")
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+}
+
 export function parseDateTime(date: string): CalendarDateTime {
   const year = +date.substring(0, 4)
   const month = +date.substring(5, 7)
@@ -55,4 +67,31 @@ export function formatHours(hours: number): string {
   const minutes = Math.round((hours - wholeHours) * 60) // Get the decimal part and convert to minutes
 
   return `${wholeHours}h${minutes}m`
+}
+
+export function filterWorkingHours(
+  workingTimes: WorkingTime[] | undefined,
+  range: DateRange,
+  callback: (wt: WorkingTime, tr: TimeRange) => void
+) {
+  if (!workingTimes) {
+    return 0
+  }
+
+  for (let workingTime of workingTimes) {
+    const timeRange = {
+      start: parseDateTime(workingTime.start),
+      end: parseDateTime(workingTime.end)
+    }
+    // working times spanning over multiple days aren't possible (backend garantee)
+    // so handling this case only should be enought
+    if (
+      timeRange.start.compare(range.start) >= 0 &&
+      timeRange.start.compare(range.end) <= 0 &&
+      timeRange.end.compare(range.start) >= 0 &&
+      timeRange.end.compare(range.end) <= 0
+    ) {
+      callback(workingTime, timeRange)
+    }
+  }
 }

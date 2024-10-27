@@ -1,9 +1,9 @@
 import { z } from "zod"
-import { type Clock } from "./clock"
-import { type WorkingTime } from "./workingTime"
-import { fetchWithOfflineSupport } from "@/lib/offlineQueue"
+import { type Clock } from "@/api/clock"
+import { type WorkingTime } from "@/api/working-time"
+import { fetchWithOfflineSupport } from "@/lib/offline-queue"
 
-export const roles = ["employee", "manager"] as const
+export const roles = ["employee", "manager", "administrator"] as const
 export const role = z.enum(roles)
 export type Role = z.infer<typeof role>
 
@@ -11,7 +11,13 @@ export const user = z.object({
   id: z.number().min(1),
   username: z.string(),
   email: z.string().email(),
-  role: role
+  role: role,
+  teams: z
+    .object({
+      id: z.number().min(1),
+      name: z.string()
+    })
+    .array()
 })
 export type User = z.infer<typeof user>
 
@@ -32,6 +38,9 @@ export type UserRequest = z.infer<typeof userRequest>
 export const passwordValidation = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/)
 
 const hasPassword = z.object({
+  password: z.string().min(1)
+})
+const hasPasswordWithRegex = z.object({
   password: z
     .string()
     .min(8, "Must have at least 8 characters")
@@ -42,12 +51,12 @@ const hasPassword = z.object({
 })
 
 export const userLogin = z.object({
-  user: user.omit({ id: true, role: true, email: true }).merge(hasPassword)
+  user: user.omit({ id: true, role: true, email: true, teams: true }).merge(hasPassword)
 })
 export type UserLogin = z.infer<typeof userLogin>
 
 export const userSignup = z.object({
-  user: user.omit({ id: true, role: true }).merge(hasPassword)
+  user: user.omit({ id: true, role: true, teams: true }).merge(hasPasswordWithRegex)
 })
 export type UserSignup = z.infer<typeof userSignup>
 
@@ -90,7 +99,7 @@ export async function getUsers(user: UserSearchRequest): Promise<UserBulkRespons
   return await response.json()
 }
 
-export async function createUser(user: UserRequest): Promise<UserResponse> {
+export async function createUser(user: UserSignup): Promise<UserResponse> {
   const response = await fetchWithOfflineSupport(`${import.meta.env.VITE_BACKEND_URL}/users`, {
     method: "POST",
     headers: {
@@ -111,6 +120,22 @@ export async function updateUser(user: UserRequest, userId: number): Promise<Use
     }
   )
   return await response.json()
+}
+
+export async function updatePassword(newPass: {
+  username: string
+  current_password: string
+  new_password: string
+}): Promise<Response> {
+  const response = await fetchWithOfflineSupport(
+    `${import.meta.env.VITE_BACKEND_URL}/users/update_password`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPass)
+    }
+  )
+  return response
 }
 
 export async function deleteUser(userId: number) {

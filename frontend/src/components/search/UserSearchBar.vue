@@ -7,6 +7,7 @@ import { getTeams, type Team } from "@/api/team"
 import { Users } from "lucide-vue-next"
 import Avatar from "@/components/Avatar.vue"
 import SearchBar from "@/components/search/SearchBar.vue"
+import { Button } from "../ui/button"
 
 const { searchTeams } = defineProps<{ searchTeams?: boolean }>()
 
@@ -35,40 +36,34 @@ const updateSearchSuggestions = useDebounceFn(async (event: Event) => {
 <template>
   <div class="relative w-full max-w-md">
     <SearchBar @focus="focus" @blur="unfocus" @input="updateSearchSuggestions" />
-    <div
-      v-show="isFocused"
-      class="absolute z-10 w-full mt-2 overflow-auto max-h-[300px] rounded-md border border-muted bg-background shadow-lg"
-    >
+    <div v-show="isFocused"
+      class="absolute z-10 w-full mt-2 overflow-auto max-h-[300px] rounded-md border border-muted bg-background shadow-lg">
       <div class="py-2">
-        <div
-          v-if="!suggestedUsers && !suggestedTeams"
-          class="px-4 py-2 text-sm font-medium text-muted-foreground"
-        >
+        <div v-if="(!suggestedUsers || suggestedUsers.length === 0) && (!suggestedTeams || suggestedTeams.length === 0)"
+          class="px-4 py-2 text-sm font-medium text-muted-foreground">
           No result
         </div>
-        <template v-if="suggestedUsers">
+        <template v-if="suggestedUsers && suggestedUsers.length !== 0">
           <div class="px-4 py-2 text-sm font-medium text-gray-400">Users</div>
-          <div class="space-y-1">
-            <li v-for="user in suggestedUsers">
-              <div
-                class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
-                @click="$emit('userSelected', user)"
-              >
+          <div class="space-y-2">
+            <li v-for="user in suggestedUsers" :key="user.id" class="list-none">
+              <Button variant='ghost' class="flex w-full flex-row justify-start items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
+                @click="$emit('userSelected', user)">
                 <Avatar class="h-8 w-8">{{ user.username.charAt(0) }}</Avatar>
                 {{ user.username }}
-              </div>
+            </Button>
             </li>
           </div>
         </template>
-        <template v-if="suggestedTeams">
+        <template v-if="suggestedTeams && suggestedTeams.length !== 0">
           <div class="px-4 py-2 text-sm font-medium text-gray-400">Teams</div>
           <div class="space-y-1">
-            <li v-for="team in suggestedTeams">
-              <div
-                class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
-                @click="$emit('teamSelected', team)"
-              >
-                <Avatar class="h-8 w-8"><Users class="h-4 w-4 stroke-current" /></Avatar>
+            <li v-for="team in suggestedTeams" :key="team.id">
+              <div class="flex flex-row items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
+                @click="$emit('teamSelected', team)">
+                <Avatar class="h-8 w-8">
+                  <Users class="h-4 w-4 stroke-current" />
+                </Avatar>
                 {{ team.name }}
               </div>
             </li>

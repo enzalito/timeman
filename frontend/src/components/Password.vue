@@ -3,17 +3,18 @@ import { useForm } from 'vee-validate';
 import Card from './Card.vue';
 import { Button } from './ui/button';
 import { z } from 'zod';
-import { passwordValidation, type User } from '@/api/user';
+import { passwordValidation, updatePassword, type User } from '@/api/user';
 import { ref } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 import { FormControl, FormField, FormLabel, FormMessage } from './ui/form';
 import FormItem from './ui/form/FormItem.vue';
 import { Input } from './ui/input';
-
+import { useToast } from './ui/toast';
 
 const { user } = defineProps<{user: User}>()
 
-const { handleSubmit, resetForm, isFieldDirty } = useForm({
+
+const { handleSubmit, resetForm, isFieldDirty, setFieldError } = useForm({
 
   validationSchema: toTypedSchema(z.object({
     password: z.object({
@@ -29,12 +30,25 @@ const { handleSubmit, resetForm, isFieldDirty } = useForm({
 
 const updateError = ref<string | null>(null)
 
-const onSubmit = handleSubmit(async (values) => {
-  try {
-    // TODO: when backend route for changing password has been done: implememt the call
-    // const res = await updateUser({user: {...values.user, role: user!.role}}, user.id)
+const {toast} = useToast()
 
-    resetForm()
+const onSubmit = handleSubmit(async ({password: {current, new: new_password}}) => {
+  try {
+
+    const res = await updatePassword({current_password: current, new_password, username: user.username })
+
+
+    if (res.status === 200) {
+      toast({
+        description: "Password successfully changed",
+        duration: 3000
+      })
+      resetForm()
+    } else if(res.status === 401) {
+      setFieldError('password.current', "Cannot authenticate you")
+    }
+
+
 
     updateError.value = null
   } catch (error) {
@@ -42,6 +56,7 @@ const onSubmit = handleSubmit(async (values) => {
     console.error("update password: ", error);
   }
 })
+
 
 
 </script>

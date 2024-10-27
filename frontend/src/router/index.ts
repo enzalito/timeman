@@ -7,6 +7,9 @@ import ProfilePage from "@/components/pages/ProfilePage.vue"
 
 import { createRouter, createWebHistory } from "vue-router"
 import { useUserStore } from "@/stores/user"
+import Cookies from "js-cookie"
+import { jwtDecode } from "jwt-decode"
+import { currentUser } from "@/api/sessions"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,16 +25,23 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const user = useUserStore()
-  const isAuthenticated = user.user !== undefined && user.user !== null
 
   const authRoutes = ["/auth/login", "/auth/signup"]
 
-  //TODO: uncomment when auth is raeady
+  if (authRoutes.includes(to.path)) {
+    return
+  }
 
-  // if (!isAuthenticated && !authRoutes.includes(to.path)) {
-  //   // redirect the user to the login page
-  //   return { name: "login" }
-  // }
+  try {
+    const { data } = await currentUser()
+
+    if (!data || Object.keys(data).length < 1) {
+      throw new Error("User not found")
+    }
+    user.set(data)
+  } catch (error) {
+    return { name: "login" }
+  }
 })
 
 export default router

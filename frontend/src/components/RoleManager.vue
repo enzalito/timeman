@@ -17,7 +17,8 @@ import SearchBar from "@/components/search/SearchBar.vue"
 
 const roleNames = new Map<Role, string>([
   ["employee", "Employee"],
-  ["manager", "Manager"]
+  ["manager", "Manager"],
+  ["admin", "Administrator"]
 ])
 
 const usernameFilter = ref("")
@@ -65,9 +66,9 @@ onBeforeMount(async () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem v-for="role in roles" :value="role">{{
+                  <SelectItem v-for="role in roles" :key="role" :value="role">{{
                     roleNames.get(role)
-                  }}</SelectItem>
+                    }}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

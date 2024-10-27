@@ -8,8 +8,8 @@ defmodule TimemanWeb.ClockController do
   action_fallback(TimemanWeb.FallbackController)
 
   def clocks_by_user(conn, %{"user_id" => user_id}) do
-    clocks = Clocks.list_clocks_from_user(user_id)
-    render(conn, "index.json", clocks: clocks)
+    clock = Clocks.get_from_user(user_id)
+    render(conn, "index.json", clock: clock)
   end
 
   def upsert_clock(conn, %{"user_id" => user_id, "clock" => clock}) do
@@ -21,6 +21,7 @@ defmodule TimemanWeb.ClockController do
     end
 
     clock = Clocks.create_or_update_clock(clock)
+
     render(conn, :show, clock: clock)
   end
 
@@ -44,7 +45,7 @@ defmodule TimemanWeb.ClockController do
                 time: %{type: :string, description: "Timestamp of the clock", required: true}
               },
               example: %{
-                status: "true",
+                status: true,
                 time: "2024-10-08T14:30:00"
               }
             },
@@ -82,6 +83,7 @@ defmodule TimemanWeb.ClockController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :integer, "User ID", required: true)
+    security([%{Bearer: []}])
 
     response(200, "OK", Schema.ref(:ClockResponse),
       example: %{
@@ -99,6 +101,7 @@ defmodule TimemanWeb.ClockController do
     produces("application/json")
     deprecated(false)
     parameter(:user_id, :path, :integer, "User ID", required: true, example: 1)
+    security([%{Bearer: []}])
 
     parameter(:clock, :body, Schema.ref(:ClockRequest), "The clock details",
       example: %{
