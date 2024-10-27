@@ -27,9 +27,10 @@ PORT     STATE    SERVICE
 
 Après firewall
 
-PORT    STATE  SERVICE
 
 ```bash
+
+PORT    STATE  SERVICE
 Starting Nmap 7.92 ( https://nmap.org ) at 2024-10-27 17:30 CET
 Nmap scan report for timeman.chickenkiller.com (157.230.106.92)
 Host is up (0.053s latency).
@@ -50,7 +51,7 @@ Nous avons ensuite testé les pages Http et https avec Ghostbuster.
 
 Exemple de commande passée :
 
-➜  ~ gobuster dir -b "200,204,301,302,307,400,401,403" -u http://157.230.106.92:443 -w ~/gobuster.txt
+` ➜  ~ gobuster dir -b "200,204,301,302,307,400,401,403" -u http://157.230.106.92:443 -w ~/gobuster.txt `
 
 Les tests sur Gobuster n'ont rien donné.
 
