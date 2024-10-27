@@ -15,8 +15,10 @@ const userStore = useUserStore()
     <PageTitle>Users</PageTitle>
     <SectionTitle>Team management</SectionTitle>
     <TeamManager />
-    <Separator class="md:hidden block mt-6 mb-2" />
-    <SectionTitle class="md:mt-4">Role assignment</SectionTitle>
-    <RoleManager />
+    <template v-if="userStore.user.role === 'administrator'">
+      <Separator class="md:hidden block mt-6 mb-2" />
+      <SectionTitle class="md:mt-4">Role assignment</SectionTitle>
+      <RoleManager />
+    </template>
   </div>
 </template>
