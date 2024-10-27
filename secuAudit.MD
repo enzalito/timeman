@@ -10,7 +10,7 @@ Nmap nous a permis de contrôler les ports ouverts sur le serveur avec la comman
 
 ### Avant firewall
 
-Not shown: 65525 closed tcp ports (conn-refused)
+``` Not shown: 65525 closed tcp ports (conn-refused)
 PORT     STATE    SERVICE
 22/tcp   open     ssh
 80/tcp   open     http
@@ -21,13 +21,13 @@ PORT     STATE    SERVICE
 443/tcp  open     https
 445/tcp  filtered microsoft-ds
 4000/tcp open     remoteanything
-5432/tcp open     postgresql
+5432/tcp open     postgresql```
 
 Après firewall
 
 PORT    STATE  SERVICE
 
-Starting Nmap 7.92 ( https://nmap.org ) at 2024-10-27 17:30 CET
+``` Starting Nmap 7.92 ( https://nmap.org ) at 2024-10-27 17:30 CET
 Nmap scan report for timeman.chickenkiller.com (157.230.106.92)
 Host is up (0.053s latency).
 Not shown: 65527 filtered tcp ports (no-response)
@@ -40,7 +40,7 @@ PORT     STATE  SERVICE
 2376/tcp closed docker
 
 Il n'est pas non plus possible de se connecter au ssh de manière anonyme. 
-Nous avons ensuite testé les pages Http et https avec Ghostbuster.
+Nous avons ensuite testé les pages Http et https avec Ghostbuster.```
 
 
 ## Gobuster
