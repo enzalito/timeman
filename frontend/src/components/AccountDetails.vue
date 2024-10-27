@@ -9,7 +9,7 @@ import { ref } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 
 
-const { user } = defineProps<{user: User}>()
+const { user } = defineProps<{ user: User }>()
 
 const { handleSubmit, setFieldValue, isFieldDirty } = useForm({
   initialValues: {
@@ -30,7 +30,7 @@ const updateError = ref<string | null>(null)
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    const res = await updateUser({user: {...values.user, role: user!.role}}, user.id)
+    const res = await updateUser({ user: values.user }, user.id)
 
     setFieldValue('user.email', res.data.email)
     setFieldValue('user.username', res.data.username)
@@ -49,7 +49,7 @@ const onSubmit = handleSubmit(async (values) => {
   <Card title="Account details" class="md:w-[460px] mx-auto md:mx-0">
     <form class="space-y-6" @submit="onSubmit">
 
-      <AuthFormFields :include-fields="['username', 'email']"/>
+      <AuthFormFields :include-fields="['username', 'email']" />
 
       <Button type="submit" :disabled="!isFieldDirty('user')" class="w-full mt-10">
         Save
