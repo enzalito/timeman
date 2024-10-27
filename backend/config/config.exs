@@ -18,7 +18,8 @@ config :timeman, TimemanWeb.Endpoint,
   render_errors: [
     formats: [html: TimemanWeb.ErrorHTML, json: TimemanWeb.ErrorJSON],
     layout: false
-  ]
+  ],
+  pubsub_server: Timeman.PubSub
 
 # Configures the mailer
 #

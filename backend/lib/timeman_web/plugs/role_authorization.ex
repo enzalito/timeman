@@ -6,7 +6,6 @@ defmodule TimemanWeb.RoleAuthorizationPlug do
 
   def call(conn, roles) when is_list(roles) do
     user = conn.assigns[:current_user]
-    IO.inspect(user, label: "user")
 
     if has_required_role?(user, roles) do
       conn

@@ -42,15 +42,22 @@ defmodule TimemanWeb.SessionController do
   end
 
   def current_user(conn, _params) do
-    case Guardian.Plug.current_resource(conn) do
-      nil ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "Not authenticated"})
+    auth_token = Map.get(conn.cookies, "auth_token")
 
-      user ->
-        conn
-        |> render(UserJSON, :show, user: user)
+    case Guardian.decode_and_verify(auth_token) do
+      {:ok, claims} ->
+        user_id = claims["sub"]
+
+        case Account.get_user!(String.to_integer(user_id)) do
+          nil ->
+            conn
+            |> put_status(:unauthorized)
+            |> json(%{error: "User not found"})
+
+          user ->
+            conn
+            |> render(UserJSON, :show, user: user)
+        end
     end
   end
 
