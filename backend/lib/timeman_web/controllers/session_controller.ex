@@ -45,7 +45,16 @@ defmodule TimemanWeb.SessionController do
     auth_token = Map.get(conn.cookies, "auth_token")
 
     case Guardian.decode_and_verify(auth_token) do
+      {:error, :invalid_token} ->
+        IO.puts("invalid token #{auth_token}")
+
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Invalid auth token"})
+
       {:ok, claims} ->
+        IO.puts("valid token #{auth_token}")
+
         user_id = claims["sub"]
 
         case Account.get_user!(String.to_integer(user_id)) do
