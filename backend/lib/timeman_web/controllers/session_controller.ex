@@ -46,7 +46,7 @@ defmodule TimemanWeb.SessionController do
     auth_token = if not is_nil(auth_cookie) do
         auth_cookie
       else
-        auth_headers = get_req_header(conn, "Athorization")
+        auth_headers = get_req_header(conn, "authorization")
         if is_nil(auth_headers) or lenght(auth_headers) === 0 do
           ""
         end
