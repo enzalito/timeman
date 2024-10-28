@@ -50,7 +50,7 @@ defmodule TimemanWeb.SessionController do
         if is_nil(auth_headers) or length(auth_headers) === 0 do
           ""
         end
-        auth_header_parts = String.split(auth_headers[0], "")
+        auth_header_parts = String.split(List.first(auth_headers), "")
         if length(auth_header_parts) !== 2 do
           ""
         end
