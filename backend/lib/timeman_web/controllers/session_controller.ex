@@ -54,7 +54,7 @@ defmodule TimemanWeb.SessionController do
         if length(auth_header_parts) !== 2 do
           ""
         end
-        auth_header_parts[1]
+        Enum.at(auth_header_parts, 1)
       end
 
     case Guardian.decode_and_verify(auth_token) do
