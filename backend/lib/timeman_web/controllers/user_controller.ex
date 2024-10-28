@@ -383,7 +383,7 @@ defmodule TimemanWeb.UserController do
   end
 
   swagger_path :update_password do
-    PhoenixSwagger.Path.delete("/api/users/{user_id}")
+    PhoenixSwagger.Path.post("/api/users/{user_id}")
     summary("update password")
     produces("application/json")
     deprecated(false)
