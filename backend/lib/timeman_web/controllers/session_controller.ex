@@ -54,6 +54,7 @@ defmodule TimemanWeb.SessionController do
         if length(auth_header_parts) !== 2 do
           ""
         end
+        IO.puts(Enum.at(auth_header_parts, 1))
         Enum.at(auth_header_parts, 1)
       end
 
