@@ -46,11 +46,11 @@ defmodule TimemanWeb.SessionController do
     auth_token = if not is_nil(auth_cookie) do
         auth_cookie
       else
-        auth_header = get_req_header(conn, "auth_token")
-        if is_nil(auth_header) do
+        auth_headers = get_req_header(conn, "Athorization")
+        if is_nil(auth_headers) or lenght(auth_headers) === 0 do
           ""
         end
-        auth_header_parts = String.split(auth_header, "")
+        auth_header_parts = String.split(auth_headers[0], "")
         if length(auth_header_parts) !== 2 do
           ""
         end
